@@ -10,19 +10,14 @@
 
 namespace IFRS\Transactions;
 
-use IFRS\Interfaces\Assignable;
-use IFRS\Interfaces\Clearable;
-
-use IFRS\Models\LineItem;
-
-use IFRS\Traits\Assigning;
-use IFRS\Traits\Clearing;
-
-use IFRS\Models\Transaction;
-
-use IFRS\Exceptions\InvalidVatRate;
 use IFRS\Exceptions\MissingMainAccountAmount;
 use IFRS\Exceptions\MultipleVatError;
+use IFRS\Interfaces\Assignable;
+use IFRS\Interfaces\Clearable;
+use IFRS\Models\LineItem;
+use IFRS\Models\Transaction;
+use IFRS\Traits\Assigning;
+use IFRS\Traits\Clearing;
 
 /**
  * Class JournalEntry
@@ -54,7 +49,7 @@ class JournalEntry extends Transaction implements Assignable, Clearable
      *
      * @var string
      */
-    const PREFIX = Transaction::JN;
+    public const PREFIX = Transaction::JN;
 
     /**
      * Construct new JournalEntry
@@ -96,7 +91,7 @@ class JournalEntry extends Transaction implements Assignable, Clearable
     public function save(array $options = []): bool
     {
 
-        if ($this->compound && (is_null($this->main_account_amount) || $this->main_account_amount == 0)) {
+        if ($this->compound && (is_null($this->main_account_amount) || 0 == $this->main_account_amount)) {
             throw new MissingMainAccountAmount();
         }
         return parent::save();

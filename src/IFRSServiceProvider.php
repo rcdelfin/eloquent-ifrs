@@ -36,6 +36,5 @@ class IFRSServiceProvider extends ServiceProvider
         ]);
 
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-        $this->loadFactoriesFrom(__DIR__ . '/../database/factories');
     }
 }
