@@ -10,19 +10,16 @@
 
 namespace IFRS\Transactions;
 
-
 use IFRS\Interfaces\Clearable;
 use IFRS\Interfaces\Sells;
-
-use IFRS\Traits\Selling;
-use IFRS\Traits\Clearing;
-
 use IFRS\Models\Transaction;
+use IFRS\Traits\Clearing;
+use IFRS\Traits\Selling;
 
 class ClientInvoice extends Transaction implements Sells, Clearable
 {
-    use Selling;
     use Clearing;
+    use Selling;
 
     /**
      * Transaction Number prefix
@@ -30,7 +27,7 @@ class ClientInvoice extends Transaction implements Sells, Clearable
      * @var string
      */
 
-    const PREFIX = Transaction::IN;
+    public const PREFIX = Transaction::IN;
 
     /**
      * Construct new ClientInvoice
