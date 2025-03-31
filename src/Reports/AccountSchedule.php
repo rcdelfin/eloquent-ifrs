@@ -11,19 +11,16 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
-use IFRS\Models\Balance;
+use IFRS\Exceptions\InvalidAccountType;
+use IFRS\Exceptions\MissingAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Assignment;
-use IFRS\Models\Transaction;
+use IFRS\Models\Balance;
 use IFRS\Models\ReportingPeriod;
-
-use IFRS\Exceptions\MissingAccount;
-use IFRS\Exceptions\InvalidAccountType;
+use IFRS\Models\Transaction;
 
 class AccountSchedule extends AccountStatement
 {
-
     /**
      * Account Schedule balances.
      *
@@ -43,7 +40,7 @@ class AccountSchedule extends AccountStatement
      * @param int $currencyId
      * @param string $endDate
      */
-    public function __construct(int $accountId = null, int $currencyId = null, string $endDate = null)
+    public function __construct(?int $accountId = null, ?int $currencyId = null, ?string $endDate = null)
     {
         if (is_null($accountId)) {
             throw new MissingAccount("Account Schedule");
@@ -86,19 +83,19 @@ class AccountSchedule extends AccountStatement
         $transactions = $this->account->transactionsQuery(
             $this->period['startDate'],
             $this->period['endDate'],
-            $this->currencyId
+            $this->currencyId,
         )->whereIn(
             'transaction_type',
-            Assignment::CLEARABLES
+            Assignment::CLEARABLES,
         )->select(config('ifrs.table_prefix') . 'transactions.id');
 
         foreach ($transactions->get() as $transaction) {
             $transaction = Transaction::find($transaction->id);
 
             if (
-                $transaction->transaction_type == Transaction::JN
-                && (($this->account->account_type == Account::RECEIVABLE && $transaction->is_credited)
-                    || ($this->account->account_type == Account::PAYABLE && !$transaction->is_credited))
+                Transaction::JN == $transaction->transaction_type
+                && ((Account::RECEIVABLE == $this->account->account_type && $transaction->is_credited)
+                    || (Account::PAYABLE == $this->account->account_type && !$transaction->is_credited))
             ) {
                 continue;
             }

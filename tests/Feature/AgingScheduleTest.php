@@ -3,21 +3,17 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
 use IFRS\Models\Account;
+use IFRS\Models\Assignment;
 use IFRS\Models\Balance;
 use IFRS\Models\ExchangeRate;
 use IFRS\Models\LineItem;
-use IFRS\Models\Assignment;
 use IFRS\Models\Vat;
-
+use IFRS\Reports\AgingSchedule;
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\ClientInvoice;
 use IFRS\Transactions\CreditNote;
 use IFRS\Transactions\JournalEntry;
-
-use IFRS\Reports\AgingSchedule;
 
 class AgingScheduleTest extends TestCase
 {
@@ -30,11 +26,11 @@ class AgingScheduleTest extends TestCase
     {
         $account1 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $account2 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         # 365+ transaction
@@ -60,7 +56,7 @@ class AgingScheduleTest extends TestCase
             'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             'amount' => 100,
         ]);
@@ -79,7 +75,7 @@ class AgingScheduleTest extends TestCase
             'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             'amount' => 50,
         ]);
@@ -105,7 +101,7 @@ class AgingScheduleTest extends TestCase
             'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             'amount' => 75,
         ]);
@@ -124,7 +120,7 @@ class AgingScheduleTest extends TestCase
             'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             'amount' => 100,
         ]);
@@ -143,7 +139,7 @@ class AgingScheduleTest extends TestCase
             'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             'amount' => 150,
         ]);
@@ -162,7 +158,7 @@ class AgingScheduleTest extends TestCase
             'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             'amount' => 175,
         ]);

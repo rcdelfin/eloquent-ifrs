@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -19,7 +20,7 @@ class CreateIfrsAssignmentsTable extends Migration
      */
     public function up()
     {
-        Schema::create(config('ifrs.table_prefix').'assignments', function (Blueprint $table) {
+        Schema::create(config('ifrs.table_prefix') . 'assignments', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             // relationships
@@ -28,9 +29,9 @@ class CreateIfrsAssignmentsTable extends Migration
             $table->unsignedBigInteger('forex_account_id')->nullable();
 
             // constraints
-            $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix').'entities');
-            $table->foreign('transaction_id')->references('id')->on(config('ifrs.table_prefix').'transactions');
-            $table->foreign('forex_account_id')->references('id')->on(config('ifrs.table_prefix').'accounts');
+            $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
+            $table->foreign('transaction_id')->references('id')->on(config('ifrs.table_prefix') . 'transactions');
+            $table->foreign('forex_account_id')->references('id')->on(config('ifrs.table_prefix') . 'accounts');
 
             // attributes
             $table->dateTime('assignment_date', 0);
@@ -52,6 +53,6 @@ class CreateIfrsAssignmentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix').'assignments');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'assignments');
     }
 }

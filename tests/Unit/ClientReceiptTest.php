@@ -3,21 +3,17 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
+use IFRS\Exceptions\VatCharge;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Currency;
 use IFRS\Models\Ledger;
-use IFRS\Models\Vat;
 use IFRS\Models\LineItem;
-
+use IFRS\Models\Vat;
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\ClientReceipt;
-
-use IFRS\Exceptions\LineItemAccount;
-use IFRS\Exceptions\MainAccount;
-use IFRS\Exceptions\VatCharge;
 
 class ClientReceiptTest extends TestCase
 {
@@ -30,7 +26,7 @@ class ClientReceiptTest extends TestCase
     {
         $clientAccount = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $clientReceipt = new ClientReceipt([
@@ -57,12 +53,12 @@ class ClientReceiptTest extends TestCase
             [
                 "account_id" => factory(Account::class)->create([
                     'account_type' => Account::RECEIVABLE,
-                    'category_id' => null
+                    'category_id' => null,
                 ])->id,
                 "transaction_date" => Carbon::now(),
                 "narration" => $this->faker->word,
                 'currency_id' => $currency->id,
-            ]
+            ],
         );
 
         $lineItem = factory(LineItem::class)->create([
@@ -101,7 +97,7 @@ class ClientReceiptTest extends TestCase
         $clientReceipt = new ClientReceipt([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -113,13 +109,13 @@ class ClientReceiptTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientReceipt->addLineItem($lineItem);
@@ -170,7 +166,7 @@ class ClientReceiptTest extends TestCase
         $clientReceipt = new ClientReceipt([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -182,13 +178,13 @@ class ClientReceiptTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::BANK,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 10
-            ])
+                "rate" => 10,
+            ]),
         );
         $lineItem->save();
         $clientReceipt->addLineItem($lineItem);
@@ -205,7 +201,7 @@ class ClientReceiptTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $transaction = new ClientReceipt([
             "account_id" => $account->id,

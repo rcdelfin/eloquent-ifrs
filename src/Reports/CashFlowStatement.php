@@ -11,46 +11,44 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
 use IFRS\Models\Account;
-use IFRS\Models\ReportingPeriod;
 use IFRS\Models\Entity;
+use IFRS\Models\ReportingPeriod;
 
 class CashFlowStatement extends FinancialStatement
 {
-
     /**
      * Cashflow Statement Title and Headings
      *
      * @var string
      */
-    const TITLE = 'CASH_FLOW_STATEMENT';
-    const OPERATIONS_CASH_FLOW = 'OPERATIONS_CASH_FLOW';
-    const INVESTMENT_CASH_FLOW = 'INVESTMENT_CASH_FLOW';
-    const FINANCING_CASH_FLOW = 'FINANCING_CASH_FLOW';
-    const NET_CASH_FLOW = 'NET_CASH_FLOW';
+    public const TITLE = 'CASH_FLOW_STATEMENT';
+    public const OPERATIONS_CASH_FLOW = 'OPERATIONS_CASH_FLOW';
+    public const INVESTMENT_CASH_FLOW = 'INVESTMENT_CASH_FLOW';
+    public const FINANCING_CASH_FLOW = 'FINANCING_CASH_FLOW';
+    public const NET_CASH_FLOW = 'NET_CASH_FLOW';
 
     /**
      * Cash Flow Statement Sections
      *
      * @var string
      */
-    const PROVISIONS = 'PROVISIONS';
-    const RECEIVABLES = 'RECEIVABLES';
-    const PAYABLES = 'PAYABLES';
-    const CURRENT_ASSETS = 'CURRENT_ASSETS';
-    const CURRENT_LIABILITIES = 'CURRENT_LIABILITIES';
-    const TAXATION = 'TAXATION';
-    const NON_CURRENT_ASSETS = 'NON_CURRENT_ASSETS';
-    const NON_CURRENT_LIABILITIES = 'NON_CURRENT_LIABILITIES';
-    const EQUITY = 'EQUITY';
-    const PROFIT = 'PROFIT';
-    const TOTAL_OPERATIONS_CASH_FLOW = 'OPERATIONS_CASH_FLOW';
-    const TOTAL_INVESTMENT_CASH_FLOW = 'INVESTMENT_CASH_FLOW';
-    const TOTAL_FINANCING_CASH_FLOW = 'FINANCING_CASH_FLOW';
-    const START_CASH_BALANCE = 'START_CASH_BALANCE';
-    const END_CASH_BALANCE = 'END_CASH_BALANCE';
-    const CASHBOOK_BALANCE = 'CASHBOOK_BALANCE';
+    public const PROVISIONS = 'PROVISIONS';
+    public const RECEIVABLES = 'RECEIVABLES';
+    public const PAYABLES = 'PAYABLES';
+    public const CURRENT_ASSETS = 'CURRENT_ASSETS';
+    public const CURRENT_LIABILITIES = 'CURRENT_LIABILITIES';
+    public const TAXATION = 'TAXATION';
+    public const NON_CURRENT_ASSETS = 'NON_CURRENT_ASSETS';
+    public const NON_CURRENT_LIABILITIES = 'NON_CURRENT_LIABILITIES';
+    public const EQUITY = 'EQUITY';
+    public const PROFIT = 'PROFIT';
+    public const TOTAL_OPERATIONS_CASH_FLOW = 'OPERATIONS_CASH_FLOW';
+    public const TOTAL_INVESTMENT_CASH_FLOW = 'INVESTMENT_CASH_FLOW';
+    public const TOTAL_FINANCING_CASH_FLOW = 'FINANCING_CASH_FLOW';
+    public const START_CASH_BALANCE = 'START_CASH_BALANCE';
+    public const END_CASH_BALANCE = 'END_CASH_BALANCE';
+    public const CASHBOOK_BALANCE = 'CASHBOOK_BALANCE';
 
     /**
      * Cash Flow Statement period.
@@ -59,7 +57,7 @@ class CashFlowStatement extends FinancialStatement
      */
     public $period = [
         "startDate" => null,
-        "endDate" => null
+        "endDate" => null,
     ];
 
     /**
@@ -76,7 +74,7 @@ class CashFlowStatement extends FinancialStatement
      * @param string $endDate
      * @param Entity $entity
      */
-    public function __construct(string $startDate = null, string $endDate = null, Entity $entity = null)
+    public function __construct(?string $startDate = null, ?string $endDate = null, ?Entity $entity = null)
     {
         $this->period['startDate'] = is_null($startDate) ? ReportingPeriod::periodStart(null, $entity) : Carbon::parse($startDate);
         $this->period['endDate'] = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
@@ -130,19 +128,18 @@ class CashFlowStatement extends FinancialStatement
                 null,
                 null,
                 true,
-                $this->entity
+                $this->entity,
             )['sectionMovement'];
         }
 
         // Profit for the Period
         $this->balances[self::PROFIT] = Account::sectionBalances(
-                IncomeStatement::getAccountTypes(),
-                null,
-                null,
-                true,
-                $this->entity
-
-            )["sectionClosingBalance"] * -1;
+            IncomeStatement::getAccountTypes(),
+            null,
+            null,
+            true,
+            $this->entity,
+        )["sectionClosingBalance"] * -1;
 
         // Operations Cash Flow
         $this->results[self::OPERATIONS_CASH_FLOW] = $this->balances[self::PROFIT] + array_sum(array_slice($this->balances, 0, 6));
@@ -163,7 +160,7 @@ class CashFlowStatement extends FinancialStatement
             $periodStart,
             $this->period['startDate'],
             true,
-            $this->entity
+            $this->entity,
         )["sectionClosingBalance"];
 
         // Cash at end of the Period
@@ -175,12 +172,12 @@ class CashFlowStatement extends FinancialStatement
             $this->period['startDate'],
             $this->period['endDate'],
             true,
-            $this->entity
+            $this->entity,
         )["sectionClosingBalance"];
 
         return [
             "balances" => $this->balances,
-            "results" => $this->results
+            "results" => $this->results,
         ];
     }
 

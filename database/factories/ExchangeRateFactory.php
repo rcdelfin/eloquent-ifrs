@@ -1,14 +1,13 @@
 <?php
 
 /**
- * @var \Illuminate\Database\Eloquent\Factory $factory
+ * @var Illuminate\Database\Eloquent\Factory $factory
  */
 
-use Faker\Generator as Faker;
 use Carbon\Carbon;
-
-use IFRS\Models\ExchangeRate;
+use Faker\Generator as Faker;
 use IFRS\Models\Currency;
+use IFRS\Models\ExchangeRate;
 
 $factory->define(
     ExchangeRate::class,
@@ -19,5 +18,5 @@ $factory->define(
             'currency_id' => factory(Currency::class)->create()->id,
             'rate' => $faker->randomFloat(2, 1, 5),
         ];
-    }
+    },
 );

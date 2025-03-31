@@ -3,21 +3,15 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Ledger;
 use IFRS\Models\LineItem;
 use IFRS\Models\Vat;
-
-use IFRS\Models\Currency;
-
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\DebitNote;
-
-use IFRS\Exceptions\LineItemAccount;
-use IFRS\Exceptions\MainAccount;
 
 class DebitNoteTest extends TestCase
 {
@@ -30,7 +24,7 @@ class DebitNoteTest extends TestCase
     {
         $supplierAccount = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $debitNote = new DebitNote([
@@ -55,7 +49,7 @@ class DebitNoteTest extends TestCase
         $debitNote = new DebitNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -65,15 +59,15 @@ class DebitNoteTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
 
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $debitNote->addLineItem($lineItem);
@@ -113,7 +107,7 @@ class DebitNoteTest extends TestCase
         $debitNote = new DebitNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -122,22 +116,22 @@ class DebitNoteTest extends TestCase
         $this->expectExceptionMessage(
             "Debit Note LineItem Account must be of type "
             . "Operating Expense, Direct Expense, Overhead Expense, "
-            . "Other Expense, Non Current Asset, Current Asset, Inventory"
+            . "Other Expense, Non Current Asset, Current Asset, Inventory",
         );
 
         $lineItem = factory(LineItem::class)->create([
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
 
 
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $debitNote->addLineItem($lineItem);
@@ -155,7 +149,7 @@ class DebitNoteTest extends TestCase
         $debitNote = new DebitNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -167,14 +161,14 @@ class DebitNoteTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id' => null
-             ])->id,
+                'category_id' => null,
+            ])->id,
         ]);
 
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $debitNote->addLineItem($lineItem);
@@ -191,7 +185,7 @@ class DebitNoteTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $transaction = new DebitNote([
             "account_id" => $account->id,

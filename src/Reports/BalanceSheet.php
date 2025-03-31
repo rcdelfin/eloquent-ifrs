@@ -11,10 +11,9 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
 use IFRS\Models\Account;
-use IFRS\Models\ReportingPeriod;
 use IFRS\Models\Entity;
+use IFRS\Models\ReportingPeriod;
 
 class BalanceSheet extends FinancialStatement
 {
@@ -23,23 +22,23 @@ class BalanceSheet extends FinancialStatement
      *
      * @var string
      */
-    const TITLE = 'BALANCE_SHEET';
+    public const TITLE = 'BALANCE_SHEET';
 
     /**
      * Balance Sheet Sections
      *
      * @var string
      */
-    const ASSETS = 'ASSETS';
-    const LIABILITIES = 'LIABILITIES';
-    const EQUITY = 'EQUITY';
-    const RECONCILIATION = 'RECONCILIATION';
-    const TOTAL_ASSETS = 'TOTAL_ASSETS';
-    const TOTAL_LIABILITIES = 'TOTAL_LIABILITIES';
-    const NET_ASSETS = 'NET_ASSETS';
-    const TOTAL_RECONCILIATION = 'TOTAL_RECONCILIATION';
-    const NET_PROFIT = 'NET_PROFIT';
-    const TOTAL_EQUITY = 'TOTAL_EQUITY';
+    public const ASSETS = 'ASSETS';
+    public const LIABILITIES = 'LIABILITIES';
+    public const EQUITY = 'EQUITY';
+    public const RECONCILIATION = 'RECONCILIATION';
+    public const TOTAL_ASSETS = 'TOTAL_ASSETS';
+    public const TOTAL_LIABILITIES = 'TOTAL_LIABILITIES';
+    public const NET_ASSETS = 'NET_ASSETS';
+    public const TOTAL_RECONCILIATION = 'TOTAL_RECONCILIATION';
+    public const NET_PROFIT = 'NET_PROFIT';
+    public const TOTAL_EQUITY = 'TOTAL_EQUITY';
 
     /**
      * Balance Sheet period.
@@ -47,7 +46,7 @@ class BalanceSheet extends FinancialStatement
      * @var array
      */
     public $period = [
-        "endDate" => null
+        "endDate" => null,
     ];
 
     /**
@@ -56,7 +55,7 @@ class BalanceSheet extends FinancialStatement
      * @param string $endDate
      * @param Entity $entity
      */
-    public function __construct(string $endDate = null, Entity $entity = null)
+    public function __construct(?string $endDate = null, ?Entity $entity = null)
     {
         $this->period['startDate'] = ReportingPeriod::periodStart($endDate, $entity);
         $this->period['endDate'] = is_null($endDate) ? ReportingPeriod::periodEnd(null, $entity) : Carbon::parse($endDate);
@@ -98,7 +97,7 @@ class BalanceSheet extends FinancialStatement
             config('ifrs')[BalanceSheet::ASSETS],
             config('ifrs')[BalanceSheet::LIABILITIES],
             config('ifrs')[BalanceSheet::EQUITY],
-            config('ifrs')[BalanceSheet::RECONCILIATION]
+            config('ifrs')[BalanceSheet::RECONCILIATION],
         );
     }
 
@@ -119,7 +118,7 @@ class BalanceSheet extends FinancialStatement
     {
         parent::getSections($this->period['startDate'], $this->period['endDate']);
 
-        // Net Assets   
+        // Net Assets
         $this->results[self::NET_ASSETS] = $this->totals[self::ASSETS] + ($this->totals[self::LIABILITIES] + $this->totals[self::RECONCILIATION]);
 
         // Net Profit
@@ -128,14 +127,14 @@ class BalanceSheet extends FinancialStatement
             $this->period['startDate'],
             $this->period['endDate'],
             true,
-            $this->entity
+            $this->entity,
         )["sectionClosingBalance"];
 
         $this->balances[self::EQUITY][self::NET_PROFIT] = $netProfit;
         $this->accounts[self::EQUITY][self::NET_PROFIT][config('ifrs')['statements'][self::NET_PROFIT]] = [
             "accounts" => null,
             "total" => $netProfit,
-            "id" => 0
+            "id" => 0,
         ];
 
         // Total Equity

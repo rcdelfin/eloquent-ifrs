@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -20,7 +21,7 @@ class CreateIfrsAccountsTable extends Migration
     public function up()
     {
         Schema::create(
-            config('ifrs.table_prefix').'accounts',
+            config('ifrs.table_prefix') . 'accounts',
             function (Blueprint $table) {
                 $table->bigIncrements('id');
 
@@ -30,9 +31,9 @@ class CreateIfrsAccountsTable extends Migration
                 $table->unsignedBigInteger('currency_id');
 
                 // constraints
-                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix').'entities');
-                $table->foreign('category_id')->references('id')->on(config('ifrs.table_prefix').'categories')  ;
-                $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix').'currencies');
+                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
+                $table->foreign('category_id')->references('id')->on(config('ifrs.table_prefix') . 'categories')  ;
+                $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix') . 'currencies');
 
                 // attributes
                 $table->integer('code');
@@ -40,7 +41,7 @@ class CreateIfrsAccountsTable extends Migration
                 $table->string('description', 1000)->nullable();
                 $table->enum(
                     'account_type',
-                    array_keys(config('ifrs')['accounts'])
+                    array_keys(config('ifrs')['accounts']),
                 );
 
                 // *permanent* deletion
@@ -50,7 +51,7 @@ class CreateIfrsAccountsTable extends Migration
                 $table->softDeletes();
 
                 $table->timestamps();
-            }
+            },
         );
     }
 
@@ -61,6 +62,6 @@ class CreateIfrsAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix').'accounts');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'accounts');
     }
 }

@@ -10,14 +10,11 @@
 
 namespace IFRS\Transactions;
 
+use IFRS\Exceptions\MainAccount;
 use IFRS\Interfaces\Sells;
-
-use IFRS\Traits\Selling;
-
 use IFRS\Models\Account;
 use IFRS\Models\Transaction;
-
-use IFRS\Exceptions\MainAccount;
+use IFRS\Traits\Selling;
 
 class CashSale extends Transaction implements Sells
 {
@@ -29,7 +26,7 @@ class CashSale extends Transaction implements Sells
      * @var string
      */
 
-    const PREFIX = Transaction::CS;
+    public const PREFIX = Transaction::CS;
 
     /**
      * Construct new CashSale
@@ -49,7 +46,7 @@ class CashSale extends Transaction implements Sells
      */
     public function save(array $options = []): bool
     {
-        if (is_null($this->account) || $this->account->account_type != Account::BANK) {
+        if (is_null($this->account) || Account::BANK != $this->account->account_type) {
             throw new MainAccount(self::PREFIX, Account::BANK);
         }
 

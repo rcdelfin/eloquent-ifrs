@@ -19,7 +19,8 @@ class AddCompoundTransactionColumns extends Migration
             function (Blueprint $table) {
                 $table->decimal('main_account_amount', 13, 4)->default(0);
                 $table->boolean('compound')->default(false);
-        });
+            },
+        );
     }
 
     /**
@@ -32,18 +33,20 @@ class AddCompoundTransactionColumns extends Migration
         Schema::table(
             config('ifrs.table_prefix') . 'transactions',
             function (Blueprint $table) {
-                if (config('database.default') == 'sqlite') {
+                if ('sqlite' == config('database.default')) {
                     DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
                 }
                 $table->dropColumn('compound');
-        });
+            },
+        );
         Schema::table(
             config('ifrs.table_prefix') . 'transactions',
             function (Blueprint $table) {
-                if (config('database.default') == 'sqlite') {
+                if ('sqlite' == config('database.default')) {
                     DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
                 }
                 $table->dropColumn('main_account_amount');
-        });
+            },
+        );
     }
 }

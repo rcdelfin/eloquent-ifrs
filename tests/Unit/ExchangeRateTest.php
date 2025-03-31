@@ -3,14 +3,11 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
+use IFRS\Models\Currency;
 use IFRS\Models\ExchangeRate;
 use IFRS\Models\RecycledObject;
-use IFRS\Models\Currency;
+use IFRS\Tests\TestCase;
+use IFRS\User;
 
 class ExchangeRateTest extends TestCase
 {
@@ -27,7 +24,7 @@ class ExchangeRateTest extends TestCase
             'valid_from' => Carbon::now(),
             'valid_to' => Carbon::now()->addMonth(),
             'currency_id' => $currency->id,
-            'rate' => 10
+            'rate' => 10,
         ]);
         $exchangeRate->attributes();
         $exchangeRate->save();
@@ -35,11 +32,11 @@ class ExchangeRateTest extends TestCase
         $this->assertEquals($exchangeRate->currency->name, $currency->name);
         $this->assertEquals(
             $exchangeRate->toString(true),
-            'ExchangeRate: ' . number_format($exchangeRate->rate, 2) . ' for ' . $exchangeRate->currency->toString() . ' from ' . $exchangeRate->valid_from->toDateString()
+            'ExchangeRate: ' . number_format($exchangeRate->rate, 2) . ' for ' . $exchangeRate->currency->toString() . ' from ' . $exchangeRate->valid_from->toDateString(),
         );
         $this->assertEquals(
             $exchangeRate->toString(),
-            number_format($exchangeRate->rate, 2) . ' for ' . $exchangeRate->currency->toString() . ' from ' . $exchangeRate->valid_from->toDateString()
+            number_format($exchangeRate->rate, 2) . ' for ' . $exchangeRate->currency->toString() . ' from ' . $exchangeRate->valid_from->toDateString(),
         );
     }
 
@@ -60,7 +57,7 @@ class ExchangeRateTest extends TestCase
             'valid_from' => Carbon::now(),
             'valid_to' => Carbon::now()->addMonth(),
             'currency_id' => factory(Currency::class)->create()->id,
-            'rate' => 10
+            'rate' => 10,
         ]);
         $exchangeRate->save();
 
@@ -81,7 +78,7 @@ class ExchangeRateTest extends TestCase
             'valid_from' => Carbon::now(),
             'valid_to' => Carbon::now()->addMonth(),
             'currency_id' => factory(Currency::class)->create()->id,
-            'rate' => 10
+            'rate' => 10,
         ]);
         $exchangeRate->delete();
 

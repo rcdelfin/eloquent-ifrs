@@ -3,17 +3,12 @@
 namespace IFRS\Tests;
 
 use Faker\Factory as Faker;
-
-use Orchestra\Testbench\TestCase as Orchestra;
-
-use Illuminate\Support\Facades\Config;
-
-use IFRS\User;
-
 use IFRS\IFRSServiceProvider;
-
 use IFRS\Models\Currency;
 use IFRS\Models\ReportingPeriod;
+use IFRS\User;
+use Illuminate\Support\Facades\Config;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @var \Illuminate\Database\Eloquent\Factory $factory
+ * @var Illuminate\Database\Eloquent\Factory $factory
  */
 
-use IFRS\Models\ReportingPeriod;
 use Faker\Generator as Faker;
+use IFRS\Models\ReportingPeriod;
 
 $factory->define(
     ReportingPeriod::class,
@@ -15,5 +15,5 @@ $factory->define(
             'calendar_year' => $faker->unique()->year,
             'status' => ReportingPeriod::OPEN,
         ];
-    }
+    },
 );

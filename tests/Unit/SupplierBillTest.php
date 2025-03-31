@@ -3,19 +3,15 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Ledger;
 use IFRS\Models\LineItem;
 use IFRS\Models\Vat;
-
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\SupplierBill;
-
-use IFRS\Exceptions\LineItemAccount;
-use IFRS\Exceptions\MainAccount;
 
 class SupplierBillTest extends TestCase
 {
@@ -28,7 +24,7 @@ class SupplierBillTest extends TestCase
     {
         $supplierAccount = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $supplierBill = new SupplierBill([
@@ -53,7 +49,7 @@ class SupplierBillTest extends TestCase
         $supplierBill = new SupplierBill([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -63,14 +59,14 @@ class SupplierBillTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierBill->addLineItem($lineItem);
@@ -110,7 +106,7 @@ class SupplierBillTest extends TestCase
         $supplierBill = new SupplierBill([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -120,20 +116,20 @@ class SupplierBillTest extends TestCase
         $this->expectExceptionMessage(
             "Supplier Bill LineItem Account must be of type "
                 . "Operating Expense, Direct Expense, Overhead Expense, "
-                . "Other Expense, Non Current Asset, Current Asset, Inventory"
+                . "Other Expense, Non Current Asset, Current Asset, Inventory",
         );
 
         $lineItem = factory(LineItem::class)->create([
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierBill->addLineItem($lineItem);
@@ -151,7 +147,7 @@ class SupplierBillTest extends TestCase
         $supplierBill = new SupplierBill([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -163,13 +159,13 @@ class SupplierBillTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierBill->addLineItem($lineItem);
@@ -186,7 +182,7 @@ class SupplierBillTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $transaction = new SupplierBill([
             "account_id" => $account->id,

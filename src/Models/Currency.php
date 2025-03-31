@@ -10,16 +10,14 @@
 
 namespace IFRS\Models;
 
+use IFRS\Interfaces\Recyclable;
+use IFRS\Interfaces\Segregatable;
+use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Recycling;
+use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
-
-use IFRS\Interfaces\Recyclable;
-use IFRS\Interfaces\Segregatable;
-
-use IFRS\Traits\Recycling;
-use IFRS\Traits\ModelTablePrefix;
-use IFRS\Traits\Segregating;
 
 /**
  * Class Currency
@@ -33,10 +31,10 @@ use IFRS\Traits\Segregating;
  */
 class Currency extends Model implements Recyclable, Segregatable
 {
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use ModelTablePrefix;
 
     /**
      * The attributes that are mass assignable.
@@ -87,7 +85,7 @@ class Currency extends Model implements Recyclable, Segregatable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**

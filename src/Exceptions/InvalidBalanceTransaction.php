@@ -14,7 +14,6 @@ use IFRS\Models\Transaction;
 
 class InvalidBalanceTransaction extends IFRSException
 {
-
     /**
      * Invalid Balance Transaction Exception
      *
@@ -22,7 +21,7 @@ class InvalidBalanceTransaction extends IFRSException
      * @param string $message
      * @param int $code
      */
-    public function __construct(array $transactionTypes, string $message = null, int $code = null)
+    public function __construct(array $transactionTypes, ?string $message = null, ?int $code = null)
     {
         $transactionTypes = Transaction::getTypes($transactionTypes);
 

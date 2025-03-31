@@ -3,20 +3,16 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Currency;
 use IFRS\Models\Ledger;
 use IFRS\Models\LineItem;
 use IFRS\Models\Vat;
-
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\ContraEntry;
-
-use IFRS\Exceptions\LineItemAccount;
-use IFRS\Exceptions\MainAccount;
 
 class ContraEntryTest extends TestCase
 {
@@ -29,7 +25,7 @@ class ContraEntryTest extends TestCase
     {
         $bankAccount = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $contraEntry = new ContraEntry([
@@ -100,7 +96,7 @@ class ContraEntryTest extends TestCase
         $contraEntry = new ContraEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -112,13 +108,13 @@ class ContraEntryTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $contraEntry->addLineItem($lineItem);
@@ -137,7 +133,7 @@ class ContraEntryTest extends TestCase
         $contraEntry = new ContraEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -168,7 +164,7 @@ class ContraEntryTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $transaction = new ContraEntry([
             "account_id" => $account->id,

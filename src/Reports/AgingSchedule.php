@@ -11,12 +11,10 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Models\Entity;
 use IFRS\Models\Account;
 use IFRS\Models\Currency;
+use IFRS\Models\Entity;
+use Illuminate\Support\Facades\Auth;
 
 class AgingSchedule
 {
@@ -59,14 +57,14 @@ class AgingSchedule
      * @param string $endDate
      * @param Entity $entity
      */
-    public function __construct(string $accountType = Account::RECEIVABLE, string $endDate = null, int $currencyId = null, Entity $entity = null)
+    public function __construct(string $accountType = Account::RECEIVABLE, ?string $endDate = null, ?int $currencyId = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             $this->entity = Auth::user()->entity;
-        }else{
+        } else {
             $this->entity = $entity;
         }
-        
+
         $this->period['endDate'] = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
         $this->currency = is_null($currencyId) ? $this->entity->currency : Currency::find($currencyId);
 
@@ -107,7 +105,7 @@ class AgingSchedule
      */
     private function getBracket($age, $brackets): string
     {
-        if (count($brackets) == 1) {
+        if (1 == count($brackets)) {
             return array_key_first($brackets);
         } else {
             $bracketName = array_key_first($brackets);
@@ -127,12 +125,12 @@ class AgingSchedule
      */
     public function attributes()
     {
-        return (object)[
+        return (object) [
             "Currency" => $this->currency->name,
             "Entity" => $this->entity->name,
             "Accounts" => $this->accounts,
             "Balances" => $this->balances,
-            "Brackets" => $this->brackets
+            "Brackets" => $this->brackets,
         ];
     }
 }

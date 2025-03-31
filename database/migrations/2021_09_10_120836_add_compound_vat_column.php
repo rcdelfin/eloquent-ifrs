@@ -18,7 +18,8 @@ class AddCompoundVatColumn extends Migration
             config('ifrs.table_prefix') . 'line_items',
             function (Blueprint $table) {
                 $table->boolean('compound_vat')->default(false);
-        });
+            },
+        );
     }
 
     /**
@@ -28,12 +29,14 @@ class AddCompoundVatColumn extends Migration
      */
     public function down()
     {
-        Schema::table( config('ifrs.table_prefix') . 'line_items',
-        function (Blueprint $table) {
-            if (config('database.default') == 'sqlite') {
-                DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
-            }
-            $table->dropColumn('compound_vat');
-        });
+        Schema::table(
+            config('ifrs.table_prefix') . 'line_items',
+            function (Blueprint $table) {
+                if ('sqlite' == config('database.default')) {
+                    DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
+                }
+                $table->dropColumn('compound_vat');
+            },
+        );
     }
 }

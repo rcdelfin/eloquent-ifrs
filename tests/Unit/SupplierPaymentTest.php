@@ -3,20 +3,16 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Currency;
 use IFRS\Models\Ledger;
 use IFRS\Models\LineItem;
 use IFRS\Models\Vat;
-
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\SupplierPayment;
-
-use IFRS\Exceptions\LineItemAccount;
-use IFRS\Exceptions\MainAccount;
 
 class SupplierPaymentTest extends TestCase
 {
@@ -29,7 +25,7 @@ class SupplierPaymentTest extends TestCase
     {
         $supplierAccount = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $supplierPayment = new SupplierPayment([
@@ -55,7 +51,7 @@ class SupplierPaymentTest extends TestCase
         $supplierPayment = new SupplierPayment([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -98,7 +94,7 @@ class SupplierPaymentTest extends TestCase
         $supplierPayment = new SupplierPayment([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -110,13 +106,13 @@ class SupplierPaymentTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierPayment->addLineItem($lineItem);
@@ -135,7 +131,7 @@ class SupplierPaymentTest extends TestCase
         $supplierPayment = new SupplierPayment([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -166,7 +162,7 @@ class SupplierPaymentTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $transaction = new SupplierPayment([
             "account_id" => $account->id,

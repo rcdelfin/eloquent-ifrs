@@ -2,18 +2,15 @@
 
 namespace Tests\Unit;
 
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
+use IFRS\Exceptions\InvalidAccountType;
+use IFRS\Exceptions\MissingVatAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Currency;
 use IFRS\Models\Entity;
 use IFRS\Models\RecycledObject;
 use IFRS\Models\Vat;
-
-use IFRS\Exceptions\InvalidAccountType;
-use IFRS\Exceptions\MissingVatAccount;
+use IFRS\Tests\TestCase;
+use IFRS\User;
 
 class VatTest extends TestCase
 {
@@ -39,7 +36,7 @@ class VatTest extends TestCase
             'rate' => 10,
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $vat->attributes();
@@ -47,11 +44,11 @@ class VatTest extends TestCase
 
         $this->assertEquals(
             $vat->toString(true),
-            'Vat: ' . $vat->name . ' (' . $vat->code . ') at ' . number_format($vat->rate, 2) . '%'
+            'Vat: ' . $vat->name . ' (' . $vat->code . ') at ' . number_format($vat->rate, 2) . '%',
         );
         $this->assertEquals(
             $vat->toString(),
-            $vat->name . ' (' . $vat->code . ') at ' . number_format($vat->rate, 2) . '%'
+            $vat->name . ' (' . $vat->code . ') at ' . number_format($vat->rate, 2) . '%',
         );
         $this->assertEquals(count(Vat::all()), 1);
 
@@ -72,7 +69,7 @@ class VatTest extends TestCase
             'rate' => 10,
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $vat->delete();
@@ -132,12 +129,12 @@ class VatTest extends TestCase
             'rate' => 10,
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $this->expectException(InvalidAccountType::class);
         $this->expectExceptionMessage('Vat Account must be of Type Control ');
 
         $vat->save();
-    } 
+    }
 }

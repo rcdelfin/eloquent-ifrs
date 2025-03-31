@@ -3,21 +3,15 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Ledger;
 use IFRS\Models\LineItem;
 use IFRS\Models\Vat;
-
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\CreditNote;
-
-use IFRS\Exceptions\LineItemAccount;
-use IFRS\Exceptions\MainAccount;
 
 class CreditNoteTest extends TestCase
 {
@@ -30,7 +24,7 @@ class CreditNoteTest extends TestCase
     {
         $clientAccount = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $creditNote = new CreditNote([
@@ -55,7 +49,7 @@ class CreditNoteTest extends TestCase
         $creditNote = new CreditNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -65,14 +59,14 @@ class CreditNoteTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $creditNote->addLineItem($lineItem);
@@ -112,7 +106,7 @@ class CreditNoteTest extends TestCase
         $creditNote = new CreditNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -124,13 +118,13 @@ class CreditNoteTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $creditNote->addLineItem($lineItem);
@@ -148,7 +142,7 @@ class CreditNoteTest extends TestCase
         $creditNote = new CreditNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -160,13 +154,13 @@ class CreditNoteTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $creditNote->addLineItem($lineItem);
@@ -183,7 +177,7 @@ class CreditNoteTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $transaction = new CreditNote([
             "account_id" => $account->id,

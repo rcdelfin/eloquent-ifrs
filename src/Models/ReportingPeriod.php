@@ -11,26 +11,21 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
-
-use IFRS\Interfaces\Recyclable;
-use IFRS\Interfaces\Segregatable;
-
-use IFRS\Traits\Recycling;
-use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
-
-use IFRS\Exceptions\MissingReportingPeriod;
 use IFRS\Exceptions\InvalidAccountType;
 use IFRS\Exceptions\InvalidPeriodStatus;
 use IFRS\Exceptions\MissingClosingRate;
-
+use IFRS\Exceptions\MissingReportingPeriod;
+use IFRS\Interfaces\Recyclable;
+use IFRS\Interfaces\Segregatable;
 use IFRS\Reports\BalanceSheet;
+use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Recycling;
+use IFRS\Traits\Segregating;
 use IFRS\Transactions\JournalEntry;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ReportingPeriod
@@ -46,10 +41,10 @@ use IFRS\Transactions\JournalEntry;
  */
 class ReportingPeriod extends Model implements Segregatable, Recyclable
 {
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use ModelTablePrefix;
 
     /**
      * Reporting Period Status
@@ -57,9 +52,9 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      * @var string
      */
 
-    const OPEN = "OPEN";
-    const CLOSED = "CLOSED";
-    const ADJUSTING = "ADJUSTING";
+    public const OPEN = "OPEN";
+    public const CLOSED = "CLOSED";
+    public const ADJUSTING = "ADJUSTING";
 
     /**
      * The attributes that are mass assignable.
@@ -90,7 +85,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      * @param string|Carbon $date
      * @return ReportingPeriod
      */
-    public static function getPeriod($date = null, Entity $entity = null)
+    public static function getPeriod($date = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             $entity = Auth::user()->entity;
@@ -113,7 +108,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      *
      * @return int
      */
-    public static function year($date = null, Entity $entity = null)
+    public static function year($date = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             $entity = Auth::user()->entity;
@@ -169,7 +164,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**
@@ -197,7 +192,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
                 'localBalance' => $balances[$transaction->currency_id],
                 'foreignBalance' => $balances[$translation->currency_id] * $closingRate,
                 'translation' => $transaction->amount * $credited,
-                'posted' => $transaction->is_posted
+                'posted' => $transaction->is_posted,
             ];
         }
         return $transactions;
@@ -224,14 +219,14 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      *
      * @return array $transactions
      */
-    public function prepareBalancesTranslation($forexAccountId, int $accountId = null): array
+    public function prepareBalancesTranslation($forexAccountId, ?int $accountId = null): array
     {
 
-        if (Account::find($forexAccountId)->account_type != Account::EQUITY) {
+        if (Account::EQUITY != Account::find($forexAccountId)->account_type) {
             throw new InvalidAccountType('Transaltion Forex', Account::EQUITY);
         }
 
-        if ($this->status != ReportingPeriod::ADJUSTING) {
+        if (ReportingPeriod::ADJUSTING != $this->status) {
             throw new InvalidPeriodStatus();
         }
 
@@ -242,7 +237,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
                     $q->where('currency_id', $currency->currency_id);
                 });
 
-            if ($closingRate->count() == 0) {
+            if (0 == $closingRate->count()) {
                 $currencyCode = Currency::find($currency->currency_id)->currency_code;
                 throw new MissingClosingRate($currencyCode);
             }
@@ -259,7 +254,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
         foreach ($accounts->where('entity_id', '=', $this->entity->id)->get() as $account) {
             if (!$account->isClosed($this->calendar_year)) {
                 $balances = $account->closingBalance($periodEnd);
-                if (array_sum($balances) <> 0) {
+                if (0 <> array_sum($balances)) {
                     foreach ($this->transactionCurrencies($account->id) as $currency) {
                         $balances = $account->closingBalance($periodEnd, $currency->currency_id);
                         $localBalance = $balances[$reportingCurrency];
@@ -272,7 +267,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
                                 $localBalance,
                                 $foreignBalance,
                                 $periodEnd,
-                                $currency
+                                $currency,
                             );
                         }
                     }
@@ -313,7 +308,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      *
      * @return Carbon
      */
-    public static function periodEnd($date = null, Entity $entity = null)
+    public static function periodEnd($date = null, ?Entity $entity = null)
     {
         return ReportingPeriod::periodStart($date, $entity)
             ->addYear()
@@ -325,7 +320,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      *
      * @return Carbon $date
      */
-    public static function periodStart($date = null, Entity $entity = null)
+    public static function periodStart($date = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             if (Auth::user()) {
@@ -335,7 +330,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
         return is_null($entity) ? Carbon::parse(date("Y") . "-01-01")->startOfDay() : Carbon::create(
             ReportingPeriod::year($date, $entity),
             $entity->year_start,
-            1
+            1,
         )->startOfDay();
     }
 
@@ -357,9 +352,8 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
         float $localBalance,
         float $foreignBalance,
         Carbon $closingDate,
-        object $currency
-    ): Transaction
-    {
+        object $currency,
+    ): Transaction {
 
         $difference = $foreignBalance - $localBalance;
         $isAsset = in_array($account->account_type, config('ifrs')[BalanceSheet::ASSETS]);
@@ -379,13 +373,13 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
             "narration" => $currency->currency_code . " " . $this->calendar_year . " Forex Balance Translation",
             "reference" => $currency->currency_code,
             "credited" => $credited,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $balanceTransaction->addLineItem(LineItem::create([
             'account_id' => $forexAccountId,
             'amount' => abs($difference),
-            'entity_id' => $entity->id
+            'entity_id' => $entity->id,
         ]));
 
         $balanceTransaction->save();
@@ -394,7 +388,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
             "reporting_period_id" => $this->id,
             "transaction_id" => $balanceTransaction->id,
             "currency_id" => $currency->currency_id,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
         return $balanceTransaction;
     }

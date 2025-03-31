@@ -2,17 +2,14 @@
 
 namespace Tests\Unit;
 
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
+use IFRS\Exceptions\DuplicateClosingRate;
 use IFRS\Models\ClosingRate;
 use IFRS\Models\Entity;
 use IFRS\Models\ExchangeRate;
 use IFRS\Models\RecycledObject;
 use IFRS\Models\ReportingPeriod;
-
-use IFRS\Exceptions\DuplicateClosingRate;
+use IFRS\Tests\TestCase;
+use IFRS\User;
 
 class ClosingRateTest extends TestCase
 {
@@ -39,11 +36,11 @@ class ClosingRateTest extends TestCase
 
         $this->assertEquals(
             $closingRate->toString(true),
-            'ClosingRate: ' . $reportingPeriod->calendar_year . ' ' . $exchangeRate->currency->currency_code . ' at ' . $exchangeRate->rate
+            'ClosingRate: ' . $reportingPeriod->calendar_year . ' ' . $exchangeRate->currency->currency_code . ' at ' . $exchangeRate->rate,
         );
         $this->assertEquals(
             $closingRate->toString(),
-            $reportingPeriod->calendar_year . ' ' . $exchangeRate->currency->currency_code . ' at ' . $exchangeRate->rate
+            $reportingPeriod->calendar_year . ' ' . $exchangeRate->currency->currency_code . ' at ' . $exchangeRate->rate,
         );
     }
 

@@ -3,28 +3,23 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\Models\Currency;
-use IFRS\Models\Transaction;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
+use IFRS\Models\Currency;
 use IFRS\Models\ExchangeRate;
 use IFRS\Models\LineItem;
 use IFRS\Models\ReportingPeriod;
+use IFRS\Models\Transaction;
 use IFRS\Models\Vat;
-
-use IFRS\Transactions\CreditNote;
-use IFRS\Transactions\JournalEntry;
-use IFRS\Transactions\SupplierBill;
+use IFRS\Reports\CashFlowStatement;
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\CashPurchase;
 use IFRS\Transactions\ClientInvoice;
+use IFRS\Transactions\CreditNote;
 use IFRS\Transactions\DebitNote;
-
-use IFRS\Reports\CashFlowStatement;
+use IFRS\Transactions\JournalEntry;
+use IFRS\Transactions\SupplierBill;
+use Illuminate\Support\Facades\Auth;
 
 class CashFlowStatementTest extends TestCase
 {
@@ -36,7 +31,7 @@ class CashFlowStatementTest extends TestCase
     public function testCashFlowStatement()
     {
         $lastMonth = Carbon::now()->subMonths(1);
-        $endDate = date("m") > 1 ? $lastMonth->toDateString() : date("Y-m")."-01";
+        $endDate = date("m") > 1 ? $lastMonth->toDateString() : date("Y-m") . "-01";
         $cashFlowStatement = new CashFlowStatement($endDate);
         $cashFlowStatement->attributes();
 
@@ -50,11 +45,11 @@ class CashFlowStatementTest extends TestCase
             "account_id" => $bank->id,
             "balance_type" => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
             "currency_id" => $bank->currency_id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
 
@@ -67,7 +62,7 @@ class CashFlowStatementTest extends TestCase
         $clientInvoice = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -77,15 +72,15 @@ class CashFlowStatementTest extends TestCase
             "amount" => 500,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
 
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
 
@@ -96,7 +91,7 @@ class CashFlowStatementTest extends TestCase
         $creditNote = new CreditNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -106,7 +101,7 @@ class CashFlowStatementTest extends TestCase
             "amount" => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
@@ -132,15 +127,15 @@ class CashFlowStatementTest extends TestCase
             "amount" => 500,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::NON_OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
 
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $journalEntry->addLineItem($lineItem);
@@ -154,7 +149,7 @@ class CashFlowStatementTest extends TestCase
         $bill = new SupplierBill([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -164,14 +159,14 @@ class CashFlowStatementTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $bill->addLineItem($lineItem);
@@ -185,7 +180,7 @@ class CashFlowStatementTest extends TestCase
         $bill = new SupplierBill([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -195,14 +190,14 @@ class CashFlowStatementTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $bill->addLineItem($lineItem);
@@ -212,7 +207,7 @@ class CashFlowStatementTest extends TestCase
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::CONTRA_ASSET,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -222,7 +217,7 @@ class CashFlowStatementTest extends TestCase
             "amount" => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OTHER_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
@@ -241,7 +236,7 @@ class CashFlowStatementTest extends TestCase
             "amount" => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OTHER_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
@@ -251,7 +246,7 @@ class CashFlowStatementTest extends TestCase
         $debitNote = new DebitNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -261,7 +256,7 @@ class CashFlowStatementTest extends TestCase
             "amount" => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OTHER_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
@@ -278,7 +273,7 @@ class CashFlowStatementTest extends TestCase
         $bill = new SupplierBill([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -288,14 +283,14 @@ class CashFlowStatementTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::INVENTORY,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $bill->addLineItem($lineItem);
@@ -310,7 +305,7 @@ class CashFlowStatementTest extends TestCase
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::CURRENT_LIABILITY,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -343,7 +338,7 @@ class CashFlowStatementTest extends TestCase
             "amount" => 150,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::NON_CURRENT_ASSET,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
@@ -360,7 +355,7 @@ class CashFlowStatementTest extends TestCase
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::NON_CURRENT_LIABILITY,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -385,7 +380,7 @@ class CashFlowStatementTest extends TestCase
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::EQUITY,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "currency_id" => $bank->id,
             "date" => Carbon::now(),
@@ -431,80 +426,80 @@ class CashFlowStatementTest extends TestCase
             [
                 "balances" => $cashFlowStatement->balances,
                 "results" => $cashFlowStatement->results,
-            ]
+            ],
         );
 
 
         // Statement balances
         $this->assertEquals(
             $cashFlowStatement->balances[$provisions],
-            50
+            50,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$receivables],
-            -530
+            -530,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$payables],
-            298
+            298,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$taxation],
-            112
+            112,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$currentAssets],
-            -100
+            -100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$currentLiabilities],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$nonCurrentAssets],
-            -150
+            -150,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$nonCurrentLiabilities],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$equity],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$profit],
-            700
+            700,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$startCashBalance],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$netCashFlow],
-            680
+            680,
         );
 
         // Statement Results
         $this->assertEquals(
             $cashFlowStatement->results[$endCashBalance],
-            780
+            780,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$cashbookBalance],
-            780
+            780,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$operationsCashFlow],
-            630
+            630,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$investmentCashFlow],
-            -150
+            -150,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$financingCashFlow],
-            200
+            200,
         );
     }
 
@@ -520,7 +515,7 @@ class CashFlowStatementTest extends TestCase
         Auth::logout();
 
         $lastMonth = Carbon::now()->subMonths(1);
-        $endDate = date("m") > 1 ? $lastMonth->toDateString() : date("Y-m")."-01";
+        $endDate = date("m") > 1 ? $lastMonth->toDateString() : date("Y-m") . "-01";
         $cashFlowStatement = new CashFlowStatement($endDate, null, $entity);
         $cashFlowStatement->attributes();
 
@@ -540,10 +535,10 @@ class CashFlowStatementTest extends TestCase
                 'currency_id' => Currency::create([
                     'name' => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id' => $entity->id,
                 ])->id,
                 'rate' => 1,
-                'entity_id' => $entity->id
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
             'transaction_date' => Carbon::now()->subYears(1.5),
@@ -551,12 +546,12 @@ class CashFlowStatementTest extends TestCase
             'transaction_type' => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
             'reference' => $this->faker->word,
             'currency_id' => $bank->currency_id,
             'balance' => 100,
-            'entity_id' => $entity->id
+            'entity_id' => $entity->id,
         ]);
 
 
@@ -574,7 +569,7 @@ class CashFlowStatementTest extends TestCase
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -585,7 +580,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $vat = Vat::create([
@@ -596,8 +591,8 @@ class CashFlowStatementTest extends TestCase
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
                 'category_id' => null,
-                'entity_id' => $entity->id
-            ])->id
+                'entity_id' => $entity->id,
+            ])->id,
         ]);
         $lineItem->addVat($vat);
         $lineItem->save();
@@ -614,7 +609,7 @@ class CashFlowStatementTest extends TestCase
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -625,7 +620,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $creditNote->addLineItem($lineItem);
@@ -644,7 +639,7 @@ class CashFlowStatementTest extends TestCase
             "narration" => $this->faker->word,
             "credited" => false,
             'currency_id' => $bank->currency_id,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -655,7 +650,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
         $vat2 = Vat::create([
             'name' => 'Test vat',
@@ -665,8 +660,8 @@ class CashFlowStatementTest extends TestCase
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
                 'category_id' => null,
-                'entity_id' => $entity->id
-            ])->id
+                'entity_id' => $entity->id,
+            ])->id,
         ]);
         $lineItem->addVat($vat2);
         $lineItem->save();
@@ -686,7 +681,7 @@ class CashFlowStatementTest extends TestCase
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -697,7 +692,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
         $vat3 = Vat::create([
             'name' => 'Test vat',
@@ -707,8 +702,8 @@ class CashFlowStatementTest extends TestCase
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
                 'category_id' => null,
-                'entity_id' => $entity->id
-            ])->id
+                'entity_id' => $entity->id,
+            ])->id,
         ]);
         $lineItem->addVat($vat3);
         $lineItem->save();
@@ -729,7 +724,7 @@ class CashFlowStatementTest extends TestCase
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -740,7 +735,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
         $vat4 = Vat::create([
             'name' => 'Test vat',
@@ -750,8 +745,8 @@ class CashFlowStatementTest extends TestCase
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
                 'category_id' => null,
-                'entity_id' => $entity->id
-            ])->id
+                'entity_id' => $entity->id,
+            ])->id,
         ]);
         $lineItem->addVat($vat4);
         $lineItem->save();
@@ -768,7 +763,7 @@ class CashFlowStatementTest extends TestCase
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -779,7 +774,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $journalEntry->addLineItem($lineItem);
@@ -790,7 +785,7 @@ class CashFlowStatementTest extends TestCase
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -801,7 +796,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $cashPurchase->addLineItem($lineItem);
@@ -815,7 +810,7 @@ class CashFlowStatementTest extends TestCase
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -826,7 +821,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $debitNote->addLineItem($lineItem);
@@ -847,7 +842,7 @@ class CashFlowStatementTest extends TestCase
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -858,7 +853,7 @@ class CashFlowStatementTest extends TestCase
                 'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
         $vat5 = Vat::create([
             'name' => 'Test vat',
@@ -868,8 +863,8 @@ class CashFlowStatementTest extends TestCase
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
                 'category_id' => null,
-                'entity_id' => $entity->id
-            ])->id
+                'entity_id' => $entity->id,
+            ])->id,
         ]);
         $lineItem->addVat($vat5);
         $lineItem->save();
@@ -892,14 +887,14 @@ class CashFlowStatementTest extends TestCase
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             'amount' => 100,
             "account_id" => $bank->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $journalEntry->addLineItem($lineItem);
@@ -916,7 +911,7 @@ class CashFlowStatementTest extends TestCase
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
@@ -924,10 +919,10 @@ class CashFlowStatementTest extends TestCase
             "account_id" => Account::create([
                 'account_type' => Account::NON_CURRENT_ASSET,
                 'category_id' => null,
-                'entity_id' => $entity->id
+                'entity_id' => $entity->id,
             ])->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $journalEntry->addLineItem($lineItem);
@@ -943,19 +938,19 @@ class CashFlowStatementTest extends TestCase
             "account_id" => Account::create([
                 'account_type' => Account::NON_CURRENT_LIABILITY,
                 'category_id' => null,
-                'entity_id' => $entity->id
+                'entity_id' => $entity->id,
             ])->id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             'amount' => 100,
             "account_id" => $bank->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $journalEntry->addLineItem($lineItem);
@@ -971,19 +966,19 @@ class CashFlowStatementTest extends TestCase
             "account_id" => Account::create([
                 'account_type' => Account::EQUITY,
                 'category_id' => null,
-                'entity_id' => $entity->id
+                'entity_id' => $entity->id,
             ])->id,
             "currency_id" => $bank->currency_id,
             "date" => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             'amount' => 100,
             "account_id" => $bank->id,
             "quantity" => 1,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
 
         $journalEntry->addLineItem($lineItem);
@@ -1019,80 +1014,80 @@ class CashFlowStatementTest extends TestCase
             [
                 "balances" => $cashFlowStatement->balances,
                 "results" => $cashFlowStatement->results,
-            ]
+            ],
         );
 
 
         // Statement balances
         $this->assertEquals(
             $cashFlowStatement->balances[$provisions],
-            50
+            50,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$receivables],
-            -530
+            -530,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$payables],
-            298
+            298,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$taxation],
-            112
+            112,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$currentAssets],
-            -100
+            -100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$currentLiabilities],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$nonCurrentAssets],
-            -150
+            -150,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$nonCurrentLiabilities],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$equity],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$profit],
-            700
+            700,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$startCashBalance],
-            100
+            100,
         );
         $this->assertEquals(
             $cashFlowStatement->balances[$netCashFlow],
-            680
+            680,
         );
 
         // Statement Results
         $this->assertEquals(
             $cashFlowStatement->results[$endCashBalance],
-            780
+            780,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$cashbookBalance],
-            780
+            780,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$operationsCashFlow],
-            630
+            630,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$investmentCashFlow],
-            -150
+            -150,
         );
         $this->assertEquals(
             $cashFlowStatement->results[$financingCashFlow],
-            200
+            200,
         );
     }
 }

@@ -11,14 +11,11 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
+use IFRS\Interfaces\Segregatable;
+use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
-use IFRS\Interfaces\Segregatable;
-
-use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
 
 /**
  * Class Ledger
@@ -40,9 +37,9 @@ use IFRS\Traits\ModelTablePrefix;
  */
 class Ledger extends Model implements Segregatable
 {
+    use ModelTablePrefix;
     use Segregating;
     use SoftDeletes;
-    use ModelTablePrefix;
 
     /**
      * The attributes that are mass assignable.
@@ -99,7 +96,8 @@ class Ledger extends Model implements Segregatable
             $post->line_item_id = $folio->line_item_id = $appliedVat->line_item_id;
             $post->vat_id = $folio->vat_id = $appliedVat->vat_id;
             $post->amount = $folio->amount = $appliedVat->amount * $rate;
-            $post->rate = $folio->rate = $rate;;
+            $post->rate = $folio->rate = $rate;
+            ;
 
             // different double entry data
             $post->post_account = $folio->folio_account = $lineItem->vat_inclusive ? $lineItem->account_id : $transaction->account_id;
@@ -161,7 +159,7 @@ class Ledger extends Model implements Segregatable
      */
     private static function makeCompountEntryLedgers(array $posts, array $folios, Transaction $transaction, $entryType): bool
     {
-        if (count($posts) == 0) {
+        if (0 == count($posts)) {
             return true;
         } else {
             $key = array_key_first($posts);
@@ -170,7 +168,7 @@ class Ledger extends Model implements Segregatable
     }
 
     /**
-     * Allocate available folio accounts and amounts to the post ledger 
+     * Allocate available folio accounts and amounts to the post ledger
      *
      * @param int $postAccount
      * @param float $amount
@@ -183,7 +181,7 @@ class Ledger extends Model implements Segregatable
      */
     private static function allocateAmount($postAccount, $amount, $posts, $folios, $transaction, $entryType): bool
     {
-        if ($amount == 0) {
+        if (0 == $amount) {
             $key = array_key_first($posts);
             unset($posts[$key]);
             return Ledger::makeCompountEntryLedgers($posts, $folios, $transaction, $entryType);
@@ -232,10 +230,10 @@ class Ledger extends Model implements Segregatable
     {
         extract($transaction->getCompoundEntries());
 
-        // Credit Entry Ledgers 
+        // Credit Entry Ledgers
         Ledger::makeCompountEntryLedgers($C, $D, $transaction, Balance::CREDIT);
 
-        // Debit Entry Ledgers 
+        // Debit Entry Ledgers
         Ledger::makeCompountEntryLedgers($D, $C, $transaction, Balance::DEBIT);
 
         // reload ledgers to reflect changes
@@ -351,7 +349,7 @@ class Ledger extends Model implements Segregatable
      *
      * @return float
      */
-    public static function contribution(Account $account, int $transactionId, int $currencyId = null): float
+    public static function contribution(Account $account, int $transactionId, ?int $currencyId = null): float
     {
         $ledger = new Ledger();
 
@@ -381,7 +379,7 @@ class Ledger extends Model implements Segregatable
      *
      * @return array
      */
-    public static function balance(Account $account, Carbon $startDate, Carbon $endDate, int $currencyId = null): array
+    public static function balance(Account $account, Carbon $startDate, Carbon $endDate, ?int $currencyId = null): array
     {
         $ledger = new Ledger();
         $entity = $account->entity;
@@ -419,7 +417,7 @@ class Ledger extends Model implements Segregatable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**

@@ -11,37 +11,34 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
+use IFRS\Models\Balance;
+use IFRS\Models\Entity;
+use IFRS\Models\ReportingPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-use IFRS\Models\Balance;
-use IFRS\Models\ReportingPeriod;
-use IFRS\Models\Entity;
-
 class IncomeStatement extends FinancialStatement
 {
-
     /**
      * Income Statement Title
      *
      * @var string
      */
-    const TITLE = 'INCOME_STATEMENT';
+    public const TITLE = 'INCOME_STATEMENT';
 
     /**
      * Income Statement Sections
      *
      * @var string
      */
-    const OPERATING_REVENUES = 'OPERATING_REVENUES';
-    const NON_OPERATING_REVENUES = 'NON_OPERATING_REVENUES';
-    const OPERATING_EXPENSES = 'OPERATING_EXPENSES';
-    const NON_OPERATING_EXPENSES = 'NON_OPERATING_EXPENSES';
-    const GROSS_PROFIT = 'GROSS_PROFIT';
-    const TOTAL_REVENUE = 'TOTAL_REVENUE';
-    const TOTAL_EXPENSES = 'TOTAL_EXPENSES';
-    const NET_PROFIT = 'NET_PROFIT';
+    public const OPERATING_REVENUES = 'OPERATING_REVENUES';
+    public const NON_OPERATING_REVENUES = 'NON_OPERATING_REVENUES';
+    public const OPERATING_EXPENSES = 'OPERATING_EXPENSES';
+    public const NON_OPERATING_EXPENSES = 'NON_OPERATING_EXPENSES';
+    public const GROSS_PROFIT = 'GROSS_PROFIT';
+    public const TOTAL_REVENUE = 'TOTAL_REVENUE';
+    public const TOTAL_EXPENSES = 'TOTAL_EXPENSES';
+    public const NET_PROFIT = 'NET_PROFIT';
 
     /**
      * Income Statement period.
@@ -50,7 +47,7 @@ class IncomeStatement extends FinancialStatement
      */
     public $period = [
         "startDate" => null,
-        "endDate" => null
+        "endDate" => null,
     ];
 
     /**
@@ -60,7 +57,7 @@ class IncomeStatement extends FinancialStatement
      * @param string $endDate
      * @param Entity $entity
      */
-    public function __construct(string $startDate = null, string $endDate = null, Entity $entity = null)
+    public function __construct(?string $startDate = null, ?string $endDate = null, ?Entity $entity = null)
     {
         $this->period['startDate'] = is_null($startDate) ? ReportingPeriod::periodStart(null, $entity) : Carbon::parse($startDate);
         $this->period['endDate'] = is_null($endDate) ? ReportingPeriod::periodEnd(null, $entity) : Carbon::parse($endDate);
@@ -103,7 +100,7 @@ class IncomeStatement extends FinancialStatement
             config('ifrs')[self::OPERATING_REVENUES],
             config('ifrs')[self::NON_OPERATING_REVENUES],
             config('ifrs')[self::OPERATING_EXPENSES],
-            config('ifrs')[self::NON_OPERATING_EXPENSES]
+            config('ifrs')[self::NON_OPERATING_EXPENSES],
         );
     }
 
@@ -114,7 +111,7 @@ class IncomeStatement extends FinancialStatement
      * @param int|string year
      * @return array
      */
-    public static function getResults($month, $year, Entity $entity = null)
+    public static function getResults($month, $year, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             $entity = Auth::user()->entity;
@@ -147,7 +144,7 @@ class IncomeStatement extends FinancialStatement
      * @param int month
      * @param int year
      */
-    private static function getBalance(array $accountTypes, Carbon $startDate, Carbon $endDate, Entity $entity = null): float
+    private static function getBalance(array $accountTypes, Carbon $startDate, Carbon $endDate, ?Entity $entity = null): float
     {
         if (is_null($entity)) {
             $entity = Auth::user()->entity;
@@ -157,7 +154,7 @@ class IncomeStatement extends FinancialStatement
         $ledgerTable = config('ifrs.table_prefix') . 'ledgers';
 
         $baseQuery = DB::table(
-            $accountTable
+            $accountTable,
         )
             ->leftJoin($ledgerTable, $accountTable . '.id', '=', $ledgerTable . '.post_account')
             ->whereIn('account_type', $accountTypes)
@@ -200,7 +197,7 @@ class IncomeStatement extends FinancialStatement
         // Gross Profit
         $this->results[self::GROSS_PROFIT] = ($this->totals[self::OPERATING_REVENUES] + $this->totals[self::OPERATING_EXPENSES]) * -1;
 
-        // Total Revenue    
+        // Total Revenue
         $this->results[self::TOTAL_REVENUE] = $this->results[self::GROSS_PROFIT] + $this->totals[self::NON_OPERATING_REVENUES] * -1;
 
         // Net Profit

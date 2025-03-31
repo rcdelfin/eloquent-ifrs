@@ -11,10 +11,9 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
 use IFRS\Models\Account;
-use IFRS\Models\ReportingPeriod;
 use IFRS\Models\Entity;
+use IFRS\Models\ReportingPeriod;
 
 class TrialBalance extends FinancialStatement
 {
@@ -23,7 +22,7 @@ class TrialBalance extends FinancialStatement
      *
      * @var string
      */
-    const TITLE = 'TRIAL_BALANCE';
+    public const TITLE = 'TRIAL_BALANCE';
 
     /**
      * Construct Trial Balance
@@ -31,7 +30,7 @@ class TrialBalance extends FinancialStatement
      * @param string $year
      * @param Entity $entity
      */
-    public function __construct(string $year = null, Entity $entity = null)
+    public function __construct(?string $year = null, ?Entity $entity = null)
     {
         $startDate = $year . "-01-01";
         $period = ReportingPeriod::getPeriod(Carbon::parse($startDate), $entity);
@@ -55,7 +54,7 @@ class TrialBalance extends FinancialStatement
         foreach (Account::where('entity_id', '=', $this->entity->id)->get() as $account) {
             $balance = $account->closingBalance($this->endDate)[$this->entity->currency_id];
 
-            if ($balance <> 0) {
+            if (0 <> $balance) {
                 if ($balance > 0) {
                     $this->balances["debit"] += abs($balance);
                 } else {
@@ -69,7 +68,7 @@ class TrialBalance extends FinancialStatement
 
         return [
             "accounts" => $this->accounts,
-            "results" => $this->results
+            "results" => $this->results,
         ];
     }
 

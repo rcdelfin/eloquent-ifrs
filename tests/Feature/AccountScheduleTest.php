@@ -11,32 +11,26 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\InvalidAccountType;
+use IFRS\Exceptions\MissingAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Assignment;
 use IFRS\Models\Balance;
 use IFRS\Models\Currency;
 use IFRS\Models\ExchangeRate;
+use IFRS\Models\LineItem;
 use IFRS\Models\Transaction;
 use IFRS\Models\Vat;
-use IFRS\Models\LineItem;
-
+use IFRS\Reports\AccountSchedule;
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\ClientInvoice;
-use IFRS\Transactions\CreditNote;
 use IFRS\Transactions\ClientReceipt;
+use IFRS\Transactions\CreditNote;
+use IFRS\Transactions\DebitNote;
 use IFRS\Transactions\JournalEntry;
 use IFRS\Transactions\SupplierBill;
-use IFRS\Transactions\DebitNote;
 use IFRS\Transactions\SupplierPayment;
-
-use IFRS\Reports\AccountSchedule;
-
-use IFRS\Exceptions\MissingAccount;
-use IFRS\Exceptions\InvalidAccountType;
+use Illuminate\Support\Facades\Auth;
 
 class AccountScheduleTest extends TestCase
 {
@@ -64,7 +58,7 @@ class AccountScheduleTest extends TestCase
 
         $account = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $this->expectException(InvalidAccountType::class);
@@ -98,7 +92,7 @@ class AccountScheduleTest extends TestCase
             ])->id,
             "currency_id" => $currency->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 50
+            "balance" => 50,
         ]);
 
         //Client Receipt Transaction
@@ -147,8 +141,8 @@ class AccountScheduleTest extends TestCase
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientInvoice->addLineItem($lineItem);
@@ -167,14 +161,14 @@ class AccountScheduleTest extends TestCase
             "amount" => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $creditNote->addLineItem($lineItem);
@@ -284,7 +278,7 @@ class AccountScheduleTest extends TestCase
             ])->id,
             "currency_id" => $currency->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 60
+            "balance" => 60,
         ]);
 
         //Supplier Payment Transaction
@@ -327,14 +321,14 @@ class AccountScheduleTest extends TestCase
             "amount" => 300,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierBill->addLineItem($lineItem);
@@ -353,14 +347,14 @@ class AccountScheduleTest extends TestCase
             "amount" => 175,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OVERHEAD_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $debitNote->addLineItem($lineItem);
@@ -401,14 +395,14 @@ class AccountScheduleTest extends TestCase
         $lineItem = factory(LineItem::class)->create([
             "amount" => 240,
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
 
@@ -460,11 +454,11 @@ class AccountScheduleTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $rate = factory(ExchangeRate::class)->create([
-            'rate' => 105
+            'rate' => 105,
         ]);
 
         $baseCurrency = Auth::user()->entity->currency_id;
@@ -478,7 +472,7 @@ class AccountScheduleTest extends TestCase
             ])->id,
             "currency_id" => $baseCurrency,
             'reporting_period_id' => $this->period->id,
-            "balance" => 60
+            "balance" => 60,
         ]);
 
         // Base currency Supplier Payment Transaction
@@ -517,7 +511,7 @@ class AccountScheduleTest extends TestCase
             "exchange_rate_id" => $rate->id,
             "currency_id" => $rate->currency->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 60
+            "balance" => 60,
         ]);
 
         // Foreign currency Supplier Payment Transaction
@@ -561,14 +555,14 @@ class AccountScheduleTest extends TestCase
             "amount" => 300,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierBill1->addLineItem($lineItem);
@@ -587,14 +581,14 @@ class AccountScheduleTest extends TestCase
             "amount" => 175,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OVERHEAD_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $debitNote1->addLineItem($lineItem);
@@ -627,8 +621,8 @@ class AccountScheduleTest extends TestCase
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierBill2->addLineItem($lineItem);
@@ -655,8 +649,8 @@ class AccountScheduleTest extends TestCase
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $debitNote2->addLineItem($lineItem);

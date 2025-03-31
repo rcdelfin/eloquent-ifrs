@@ -8,10 +8,10 @@
  * @license MIT
  */
 
+use IFRS\Models\Balance;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use IFRS\Models\Balance;
 
 class CreateIfrsLedgersTable extends Migration
 {
@@ -36,7 +36,7 @@ class CreateIfrsLedgersTable extends Migration
 
             // constraints
             $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
-            $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix').'currencies');
+            $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix') . 'currencies');
             $table->foreign('vat_id')->references('id')->on(config('ifrs.table_prefix') . 'vats');
             $table->foreign('transaction_id')->references('id')->on(config('ifrs.table_prefix') . 'transactions');
             $table->foreign('post_account')->references('id')->on(config('ifrs.table_prefix') . 'accounts');

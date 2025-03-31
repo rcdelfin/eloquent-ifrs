@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -6,10 +7,10 @@
  * @copyright Edward Mungai, 2020, Germany
  * @license MIT
  */
+use IFRS\Models\ReportingPeriod;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use IFRS\Models\ReportingPeriod;
 
 class CreateIfrsReportingPeriodsTable extends Migration
 {
@@ -21,7 +22,7 @@ class CreateIfrsReportingPeriodsTable extends Migration
     public function up()
     {
         Schema::create(
-            config('ifrs.table_prefix').'reporting_periods',
+            config('ifrs.table_prefix') . 'reporting_periods',
             function (Blueprint $table) {
                 $table->bigIncrements('id');
 
@@ -29,14 +30,14 @@ class CreateIfrsReportingPeriodsTable extends Migration
                 $table->unsignedBigInteger('entity_id');
 
                 // constraints
-                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix').'entities');
+                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
 
                 // attributes
                 $table->integer('period_count');
                 $table->enum('status', [
                     ReportingPeriod::OPEN,
                     ReportingPeriod::CLOSED,
-                    ReportingPeriod::ADJUSTING
+                    ReportingPeriod::ADJUSTING,
                 ])->default(ReportingPeriod::OPEN);
                 $table->year('calendar_year');
 
@@ -47,7 +48,7 @@ class CreateIfrsReportingPeriodsTable extends Migration
                 $table->softDeletes();
 
                 $table->timestamps();
-            }
+            },
         );
     }
 
@@ -58,6 +59,6 @@ class CreateIfrsReportingPeriodsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix').'reporting_periods');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'reporting_periods');
     }
 }

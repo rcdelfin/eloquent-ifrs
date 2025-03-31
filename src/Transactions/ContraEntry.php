@@ -10,24 +10,22 @@
 
 namespace IFRS\Transactions;
 
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
+use IFRS\Exceptions\VatCharge;
 use IFRS\Models\Account;
 use IFRS\Models\LineItem;
 use IFRS\Models\Transaction;
 
-use IFRS\Exceptions\LineItemAccount;
-
-use IFRS\Exceptions\MainAccount;
-use IFRS\Exceptions\VatCharge;
-
-class ContraEntry extends Transaction {
-    
+class ContraEntry extends Transaction
+{
     /**
      * Transaction Number prefix
      *
      * @var string
      */
 
-    const PREFIX = Transaction::CE;
+    public const PREFIX = Transaction::CE;
 
     /**
      * Construct new ContraEntry
@@ -47,7 +45,7 @@ class ContraEntry extends Transaction {
      */
     public function save(array $options = []): bool
     {
-        if (is_null($this->account) || $this->account->account_type != Account::BANK) {
+        if (is_null($this->account) || Account::BANK != $this->account->account_type) {
             throw new MainAccount(self::PREFIX, Account::BANK);
         }
 
@@ -59,7 +57,7 @@ class ContraEntry extends Transaction {
      */
     public function addLineItem(LineItem $lineItem): bool
     {
-        if ($lineItem->account->account_type != Account::BANK) {
+        if (Account::BANK != $lineItem->account->account_type) {
             throw new LineItemAccount(self::PREFIX, [Account::BANK]);
         }
 

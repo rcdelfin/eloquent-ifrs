@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class CreateClosingRatesTable extends Migration
@@ -15,7 +15,7 @@ class CreateClosingRatesTable extends Migration
     {
         Schema::create(config('ifrs.table_prefix') . 'closing_rates', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
+
             // relationships
             $table->unsignedBigInteger('entity_id');
             $table->unsignedBigInteger('reporting_period_id');
@@ -43,6 +43,6 @@ class CreateClosingRatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix') .'closing_rates');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'closing_rates');
     }
 }

@@ -14,7 +14,6 @@ use IFRS\Models\Transaction;
 
 class InsufficientBalance extends IFRSException
 {
-
     /**
      * Insufficient Balance Exception
      *
@@ -28,10 +27,9 @@ class InsufficientBalance extends IFRSException
         string $transactionType,
         float $amount,
         string $assignedType,
-        string $message = null,
-        int $code = 0
-    )
-    {
+        ?string $message = null,
+        int $code = 0,
+    ) {
         $transactionType = Transaction::getType($transactionType);
         $assignedType = Transaction::getType($assignedType);
 

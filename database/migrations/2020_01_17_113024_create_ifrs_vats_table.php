@@ -46,7 +46,7 @@ class CreateIfrsVatsTable extends Migration
                 $table->softDeletes();
 
                 $table->timestamps();
-            }
+            },
         );
     }
 

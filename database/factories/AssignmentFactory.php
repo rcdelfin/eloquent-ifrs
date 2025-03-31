@@ -1,9 +1,8 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+/** @var Illuminate\Database\Eloquent\Factory $factory */
 
 use Faker\Generator as Faker;
-
 use IFRS\Models\Assignment;
 use IFRS\Models\Transaction;
 
@@ -17,5 +16,5 @@ $factory->define(
             'cleared_type' => Transaction::class,
             'amount' => $faker->randomFloat(2),
         ];
-    }
+    },
 );

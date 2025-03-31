@@ -2,21 +2,17 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
+use IFRS\Exceptions\MissingReportingCurrency;
+use IFRS\Exceptions\UnauthorizedUser;
+use IFRS\Exceptions\UnconfiguredLocale;
+use IFRS\Models\Account;
 use IFRS\Models\Currency;
 use IFRS\Models\Entity;
 use IFRS\Models\RecycledObject;
 use IFRS\Models\ReportingPeriod;
-use IFRS\Models\Account;
-
-use IFRS\Exceptions\UnauthorizedUser;
-use IFRS\Exceptions\UnconfiguredLocale;
-use IFRS\Exceptions\MissingReportingCurrency;
+use IFRS\Tests\TestCase;
+use IFRS\User;
+use Illuminate\Support\Facades\Auth;
 
 class EntityTest extends TestCase
 {
@@ -41,7 +37,7 @@ class EntityTest extends TestCase
         $this->be($user);
 
         $currency = factory(Currency::class)->create([
-            'name' => 'Test Currency'
+            'name' => 'Test Currency',
         ]);
 
         $entity->currency_id = $currency->id; // Reporting Currency must be explicitly set
@@ -49,11 +45,11 @@ class EntityTest extends TestCase
 
         $period = factory(ReportingPeriod::class)->create([
             'entity_id' => $entity->id,
-            'calendar_year' => date("Y")
+            'calendar_year' => date("Y"),
         ]);
 
         $currency2 = factory(Currency::class)->create([
-            'name' => 'Test Currency 2'
+            'name' => 'Test Currency 2',
         ]);
 
         // Daughter entity
@@ -162,7 +158,7 @@ class EntityTest extends TestCase
 
         $entity = new Entity([
             'name' => $this->faker->company,
-            'locale' => 'ar_BH'
+            'locale' => 'ar_BH',
         ]);
         $entity->save();
 
@@ -178,7 +174,7 @@ class EntityTest extends TestCase
     {
         $entity = new Entity([
             'name' => $this->faker->company,
-            'locale' => 'en_US'
+            'locale' => 'en_US',
         ]);
         $this->expectException(UnconfiguredLocale::class);
         $this->expectExceptionMessage('Locale en_US is not configured');
@@ -198,7 +194,7 @@ class EntityTest extends TestCase
         $currency = factory(Currency::class)->create([
             'name' => 'Euros',
             'currency_code' => 'EUR',
-            'entity_id' => $entity->id
+            'entity_id' => $entity->id,
         ]);
 
         $entity->currency()->associate($currency);
@@ -208,7 +204,7 @@ class EntityTest extends TestCase
 
         $entity = new Entity([
             'name' => $this->faker->company,
-            'locale' => 'ar_BH'
+            'locale' => 'ar_BH',
         ]);
         $entity->save();
 

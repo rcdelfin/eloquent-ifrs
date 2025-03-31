@@ -3,20 +3,16 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\Models\Account;
-use IFRS\Models\Balance;
-use IFRS\Models\Ledger;
-use IFRS\Models\LineItem;
-use IFRS\Models\Currency;
-use IFRS\Models\Vat;
-
-use IFRS\Transactions\CashPurchase;
-
 use IFRS\Exceptions\LineItemAccount;
 use IFRS\Exceptions\MainAccount;
+use IFRS\Models\Account;
+use IFRS\Models\Balance;
+use IFRS\Models\Currency;
+use IFRS\Models\Ledger;
+use IFRS\Models\LineItem;
+use IFRS\Models\Vat;
+use IFRS\Tests\TestCase;
+use IFRS\Transactions\CashPurchase;
 
 class CashPurchaseTest extends TestCase
 {
@@ -29,7 +25,7 @@ class CashPurchaseTest extends TestCase
     {
         $bankAccount = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $cashPurchase = new CashPurchase([
@@ -68,14 +64,14 @@ class CashPurchaseTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $cashPurchase->addLineItem($lineItem);
@@ -115,7 +111,7 @@ class CashPurchaseTest extends TestCase
         $cashPurchase = new CashPurchase([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -125,20 +121,20 @@ class CashPurchaseTest extends TestCase
         $this->expectExceptionMessage(
             "Cash Purchase LineItem Account must be of type "
                 . "Operating Expense, Direct Expense, Overhead Expense, "
-                . "Other Expense, Non Current Asset, Current Asset, Inventory"
+                . "Other Expense, Non Current Asset, Current Asset, Inventory",
         );
 
         $lineItem = factory(LineItem::class)->create([
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $cashPurchase->addLineItem($lineItem);
@@ -156,7 +152,7 @@ class CashPurchaseTest extends TestCase
         $cashPurchase = new CashPurchase([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
             "narration" => $this->faker->word,
@@ -168,14 +164,14 @@ class CashPurchaseTest extends TestCase
             "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_EXPENSE,
-                'category_id' => null
+                'category_id' => null,
             ])->id,
         ]);
 
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $cashPurchase->addLineItem($lineItem);
@@ -192,7 +188,7 @@ class CashPurchaseTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null
+            'category_id' => null,
         ]);
         $transaction = new CashPurchase([
             "account_id" => $account->id,

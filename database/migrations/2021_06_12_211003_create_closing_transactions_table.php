@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class CreateClosingTransactionsTable extends Migration
@@ -45,6 +45,6 @@ class CreateClosingTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix') .'closing_transactions');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'closing_transactions');
     }
 }

@@ -11,16 +11,12 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Models\Entity;
-use IFRS\Models\Ledger;
+use IFRS\Exceptions\MissingAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Currency;
+use IFRS\Models\Entity;
+use IFRS\Models\Ledger;
 use IFRS\Models\ReportingPeriod;
-
-use IFRS\Exceptions\MissingAccount;
 
 class AccountStatement
 {
@@ -31,7 +27,7 @@ class AccountStatement
      */
     public $balances = [
         "opening" => 0,
-        "closing" => 0
+        "closing" => 0,
     ];
     /**
      * Account Statement period.
@@ -40,7 +36,7 @@ class AccountStatement
      */
     public $period = [
         "startDate" => null,
-        "endDate" => null
+        "endDate" => null,
     ];
     /**
      * Account Statement transactions.
@@ -76,12 +72,11 @@ class AccountStatement
      * @param string $endDate
      */
     public function __construct(
-        int $accountId = null,
-        int $currencyId = null,
-        string $startDate = null,
-        string $endDate = null
-    )
-    {
+        ?int $accountId = null,
+        ?int $currencyId = null,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
         if (is_null($accountId)) {
             throw new MissingAccount("Account Statement");
         } else {
@@ -103,13 +98,13 @@ class AccountStatement
      */
     public function attributes()
     {
-        return (object)[
+        return (object) [
             "Account" => $this->account->name,
             "Currency" => $this->currency->name,
             "Entity" => $this->entity->name,
             "Period" => $this->period,
             "Balances" => $this->balances,
-            "Transactions" => $this->transactions
+            "Transactions" => $this->transactions,
         ];
     }
 

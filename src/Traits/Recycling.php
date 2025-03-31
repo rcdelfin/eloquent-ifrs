@@ -11,10 +11,8 @@
 namespace IFRS\Traits;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
 use IFRS\Models\RecycledObject;
+use Illuminate\Support\Facades\Auth;
 
 trait Recycling
 {
@@ -44,12 +42,12 @@ trait Recycling
                                     'entity_id' => $user->entity->id,
                                     'recyclable_id' => $model->id,
                                     'recyclable_type' => static::class,
-                                ]
+                                ],
                             );
                         }
                     }
                 }
-            }
+            },
         );
         static::restoring(
             function ($model) {
@@ -61,7 +59,7 @@ trait Recycling
                     $recycled = $model->recycled->last();
                     $recycled->delete();
                 }
-            }
+            },
         );
     }
 
