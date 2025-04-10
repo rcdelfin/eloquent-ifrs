@@ -72,6 +72,25 @@ class Account extends Model implements Recyclable, Segregatable
     public const RECONCILIATION        = 'RECONCILIATION';
 
     /**
+     * Account Types
+     *
+     * @var array
+     */
+    public const TYPES = [
+        self::CONTRA_ASSET,
+        self::BANK,
+        self::RECEIVABLE,
+        self::NON_CURRENT_LIABILITY,
+        self::CONTROL,
+        self::CURRENT_LIABILITY,
+        self::PAYABLE,
+        self::EQUITY,
+        self::OPERATING_REVENUE,
+        self::NON_OPERATING_REVENUE,
+        self::RECONCILIATION,
+    ];
+
+    /**
      * Purchaseable Account Types
      *
      * @var array
