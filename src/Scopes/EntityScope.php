@@ -29,7 +29,7 @@ class EntityScope implements Scope
         $user = Auth::user();
         if (!is_null($model->entity_id)) {
             $builder->where($model->getTable() . '.entity_id', $model->entity_id);
-        } elseif (!is_null($user)) {
+        } elseif (!is_null($user) && $user?->entity) {
             $builder->where($model->getTable() . '.entity_id', $user->entity->id);
         }
     }
