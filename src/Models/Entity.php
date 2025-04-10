@@ -11,17 +11,14 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 use IFRS\Exceptions\MissingReportingCurrency;
 use IFRS\Exceptions\UnconfiguredLocale;
-
 use IFRS\Interfaces\Recyclable;
-
-use IFRS\Traits\Recycling;
 use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Recycling;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use NumberFormatter;
 
 /**
  * Class Entity
@@ -37,9 +34,9 @@ use IFRS\Traits\ModelTablePrefix;
  */
 class Entity extends Model implements Recyclable
 {
-    use SoftDeletes;
-    use Recycling;
     use ModelTablePrefix;
+    use Recycling;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -133,7 +130,7 @@ class Entity extends Model implements Recyclable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**
@@ -144,9 +141,9 @@ class Entity extends Model implements Recyclable
     public function getDefaultRateAttribute(): ExchangeRate
     {
 
-        $now = Carbon::now();
+        $now      = Carbon::now();
         $existing = ExchangeRate::where([
-            "entity_id" => $this->id,
+            "entity_id"   => $this->id,
             "currency_id" => $this->currency_id,
         ])->where("valid_from", "<=", $now)
             ->first();
@@ -156,10 +153,10 @@ class Entity extends Model implements Recyclable
         }
 
         $new = new ExchangeRate([
-            'valid_from' => $now,
+            'valid_from'  => $now,
             'currency_id' => $this->reportingCurrency->id,
-            "rate" => 1,
-            'entity_id' => $this->id
+            "rate"        => 1,
+            'entity_id'   => $this->id,
         ]);
 
         $new->save();
@@ -183,8 +180,8 @@ class Entity extends Model implements Recyclable
 
         $new = new ReportingPeriod([
             'calendar_year' => date('Y'),
-            'period_count' => count(ReportingPeriod::where('entity_id', '=', $this->id)->withTrashed()->get()) + 1,
-            'entity_id' => $this->id
+            'period_count'  => count(ReportingPeriod::where('entity_id', '=', $this->id)->withTrashed()->get()) + 1,
+            'entity_id'     => $this->id,
         ]);
 
         $new->save();
@@ -214,7 +211,7 @@ class Entity extends Model implements Recyclable
      * @param string $locale
      * @return string
      */
-    public function localizeAmount(float $amount, string $currencyCode = null, $locale = null)
+    public function localizeAmount(float $amount, ?string $currencyCode = null, $locale = null)
     {
         if (is_null($locale)) {
             $locale = $this->locale;
@@ -223,7 +220,7 @@ class Entity extends Model implements Recyclable
             $currencyCode = $this->reportingCurrency->currency_code;
         }
 
-        $format = \NumberFormatter::create($locale, \NumberFormatter::CURRENCY);
+        $format = NumberFormatter::create($locale, NumberFormatter::CURRENCY);
         return $format->formatCurrency($amount, $currencyCode);
     }
 

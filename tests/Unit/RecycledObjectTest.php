@@ -2,15 +2,12 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
 use IFRS\Models\Account;
 use IFRS\Models\Currency;
 use IFRS\Models\RecycledObject;
+use IFRS\Tests\TestCase;
+use IFRS\User;
+use Illuminate\Support\Facades\Auth;
 
 class RecycledObjectTest extends TestCase
 {
@@ -42,12 +39,12 @@ class RecycledObjectTest extends TestCase
                 function ($period) {
                     $period->entity_id = 2;
                     $period->save();
-                }
+                },
             );
 
         $this->assertEquals(count(RecycledObject::all()), 0);
 
-        $user = factory(User::class)->create();
+        $user            = factory(User::class)->create();
         $user->entity_id = 2;
         $user->save();
 
@@ -64,7 +61,7 @@ class RecycledObjectTest extends TestCase
     public function testObjectRecycling()
     {
         $account = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         //soft delete

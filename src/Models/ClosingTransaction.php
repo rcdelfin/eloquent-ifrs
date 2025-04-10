@@ -10,15 +10,13 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-use IFRS\Traits\Recycling;
-use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
-
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
+use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Recycling;
+use IFRS\Traits\Segregating;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class ClosingTransactions
@@ -33,10 +31,10 @@ use IFRS\Interfaces\Segregatable;
  */
 class ClosingTransaction extends Model implements Segregatable, Recyclable
 {
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use ModelTablePrefix;
 
     /**
      * The attributes that are mass assignable.
@@ -57,7 +55,7 @@ class ClosingTransaction extends Model implements Segregatable, Recyclable
      */
     public function toString($type = false)
     {
-        $classname = explode('\\', self::class);
+        $classname    = explode('\\', self::class);
         $instanceName = $this->reportingPeriod->calendar_year . ' Forex Translation Transaction ' . $this->transaction->toString();
         return $type ? array_pop($classname) . ': ' . $instanceName : $instanceName;
     }
@@ -109,6 +107,6 @@ class ClosingTransaction extends Model implements Segregatable, Recyclable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 }

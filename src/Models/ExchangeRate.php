@@ -10,15 +10,13 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
-
+use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class ExchangeRate
@@ -35,10 +33,10 @@ use IFRS\Traits\ModelTablePrefix;
  */
 class ExchangeRate extends Model implements Segregatable, Recyclable
 {
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use ModelTablePrefix;
 
     /**
      * The attributes that are mass assignable.
@@ -60,7 +58,7 @@ class ExchangeRate extends Model implements Segregatable, Recyclable
      */
     public function toString($type = false)
     {
-        $classname = explode('\\', self::class);
+        $classname   = explode('\\', self::class);
         $description = number_format($this->rate, 2) . ' for ' . $this->currency->toString() . ' from ' . $this->valid_from->toDateString();
         return $type ? array_pop($classname) . ': ' . $description : $description;
     }
@@ -82,7 +80,7 @@ class ExchangeRate extends Model implements Segregatable, Recyclable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**

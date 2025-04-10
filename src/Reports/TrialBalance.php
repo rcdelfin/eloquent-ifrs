@@ -11,10 +11,9 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
 use IFRS\Models\Account;
-use IFRS\Models\ReportingPeriod;
 use IFRS\Models\Entity;
+use IFRS\Models\ReportingPeriod;
 
 class TrialBalance extends FinancialStatement
 {
@@ -23,7 +22,7 @@ class TrialBalance extends FinancialStatement
      *
      * @var string
      */
-    const TITLE = 'TRIAL_BALANCE';
+    public const TITLE = 'TRIAL_BALANCE';
 
     /**
      * Construct Trial Balance
@@ -31,20 +30,20 @@ class TrialBalance extends FinancialStatement
      * @param string $year
      * @param Entity $entity
      */
-    public function __construct(string $year = null, Entity $entity = null)
+    public function __construct(?string $year = null, ?Entity $entity = null)
     {
         $startDate = $year . "-01-01";
-        $period = ReportingPeriod::getPeriod(Carbon::parse($startDate), $entity);
+        $period    = ReportingPeriod::getPeriod(Carbon::parse($startDate), $entity);
 
         parent::__construct($period, $entity);
 
         $this->endDate = ReportingPeriod::periodEnd($startDate, $entity);
 
         $this->accounts[IncomeStatement::TITLE] = [];
-        $this->accounts[BalanceSheet::TITLE] = [];
+        $this->accounts[BalanceSheet::TITLE]    = [];
 
         $this->results[IncomeStatement::TITLE] = ['debit' => 0, 'credit' => 0];
-        $this->results[BalanceSheet::TITLE] = ['debit' => 0, 'credit' => 0];
+        $this->results[BalanceSheet::TITLE]    = ['debit' => 0, 'credit' => 0];
     }
 
     /**
@@ -55,7 +54,7 @@ class TrialBalance extends FinancialStatement
         foreach (Account::where('entity_id', '=', $this->entity->id)->get() as $account) {
             $balance = $account->closingBalance($this->endDate)[$this->entity->currency_id];
 
-            if ($balance <> 0) {
+            if (0 <> $balance) {
                 if ($balance > 0) {
                     $this->balances["debit"] += abs($balance);
                 } else {
@@ -69,7 +68,7 @@ class TrialBalance extends FinancialStatement
 
         return [
             "accounts" => $this->accounts,
-            "results" => $this->results
+            "results"  => $this->results,
         ];
     }
 
@@ -95,7 +94,7 @@ class TrialBalance extends FinancialStatement
                 $this->accounts[IncomeStatement::TITLE][$account->account_type]['balance'] += $balance;
             } else {
                 $this->accounts[IncomeStatement::TITLE][$account->account_type]['accounts'] = collect([$account->attributes()]);
-                $this->accounts[IncomeStatement::TITLE][$account->account_type]['balance'] = $balance;
+                $this->accounts[IncomeStatement::TITLE][$account->account_type]['balance']  = $balance;
             }
         }
     }
@@ -121,7 +120,7 @@ class TrialBalance extends FinancialStatement
                 $this->accounts[BalanceSheet::TITLE][$account->account_type]['balance'] += $balance;
             } else {
                 $this->accounts[BalanceSheet::TITLE][$account->account_type]['accounts'] = collect([$account->attributes()]);
-                $this->accounts[BalanceSheet::TITLE][$account->account_type]['balance'] = $balance;
+                $this->accounts[BalanceSheet::TITLE][$account->account_type]['balance']  = $balance;
             }
         }
     }

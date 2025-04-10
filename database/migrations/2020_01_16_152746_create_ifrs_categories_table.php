@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -20,7 +21,7 @@ class CreateIfrsCategoriesTable extends Migration
     public function up()
     {
         Schema::create(
-            config('ifrs.table_prefix').'categories',
+            config('ifrs.table_prefix') . 'categories',
             function (Blueprint $table) {
                 $table->bigIncrements('id');
 
@@ -28,12 +29,12 @@ class CreateIfrsCategoriesTable extends Migration
                 $table->unsignedBigInteger('entity_id');
 
                 // constraints
-                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix').'entities');
+                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
 
                 // attributes
                 $table->enum(
                     'category_type',
-                    array_keys(config('ifrs')['accounts'])
+                    array_keys(config('ifrs')['accounts']),
                 );
                 $table->string('name', 300);
 
@@ -44,7 +45,7 @@ class CreateIfrsCategoriesTable extends Migration
                 $table->softDeletes();
 
                 $table->timestamps();
-            }
+            },
         );
     }
 
@@ -55,6 +56,6 @@ class CreateIfrsCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix').'categories');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'categories');
     }
 }

@@ -3,30 +3,24 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Currency;
 use IFRS\Models\ExchangeRate;
 use IFRS\Models\LineItem;
 use IFRS\Models\ReportingPeriod;
-use IFRS\Models\Vat;
-
 use IFRS\Models\Transaction;
-
+use IFRS\Models\Vat;
 use IFRS\Reports\BalanceSheet;
 use IFRS\Reports\IncomeStatement;
 use IFRS\Reports\TrialBalance;
-
+use IFRS\Tests\TestCase;
+use IFRS\Transactions\CashPurchase;
+use IFRS\Transactions\ClientInvoice;
+use IFRS\Transactions\ContraEntry;
 use IFRS\Transactions\JournalEntry;
 use IFRS\Transactions\SupplierBill;
-use IFRS\Transactions\CashPurchase;
-use IFRS\Transactions\ContraEntry;
-use IFRS\Transactions\ClientInvoice;
+use Illuminate\Support\Facades\Auth;
 
 class TrialBalanceTest extends TestCase
 {
@@ -49,56 +43,56 @@ class TrialBalanceTest extends TestCase
 
         $nonCurrentAsset = factory(Account::class)->create([
             'account_type' => Account::NON_CURRENT_ASSET,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
 
-            "account_id" => $nonCurrentAsset,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $nonCurrentAsset,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
-            "date" => Carbon::now(),
+            "date"      => Carbon::now(),
             "narration" => $this->faker->word,
         ]);
 
         $bill->addLineItem(
-            factory(LineItem::class)->create(["account_id" => $nonCurrentAsset])
+            factory(LineItem::class)->create(["account_id" => $nonCurrentAsset]),
         );
         $bill->post();
 
 
         $contraAsset = factory(Account::class)->create([
             'account_type' => Account::CONTRA_ASSET,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $contraAsset,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $contraAsset,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $journal = new JournalEntry([
             "account_id" => $contraAsset->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journal->addLineItem(factory(LineItem::class)->create());
@@ -107,30 +101,30 @@ class TrialBalanceTest extends TestCase
 
         $inventory = factory(Account::class)->create([
             'account_type' => Account::INVENTORY,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $inventory,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $inventory,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
-        $currency = factory(Currency::class)->create();
+        $currency     = factory(Currency::class)->create();
         $cashPurchase = new CashPurchase([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $currency->id,
+                'category_id'  => null,
+                'currency_id'  => $currency->id,
             ])->id,
-            "date" => Carbon::now(),
+            "date"        => Carbon::now(),
             'currency_id' => $currency->id,
-            "narration" => $this->faker->word,
+            "narration"   => $this->faker->word,
         ]);
 
         $cashPurchase->addLineItem(factory(LineItem::class)->create(["account_id" => $inventory]));
@@ -139,63 +133,63 @@ class TrialBalanceTest extends TestCase
 
         $bank = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null,
-            'currency_id' => $currency->id,
+            'category_id'  => null,
+            'currency_id'  => $currency->id,
         ]);
 
         //balance
         factory(Balance::class)->create([
 
-            "account_id" => $bank->id,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $bank->id,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
             "currency_id" => $bank->currency_id,
-            "balance" => 100
+            "balance"     => 100,
         ]);
 
         //transaction
         $contraEntry = new ContraEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $bank->currency_id,
+                'category_id'  => null,
+                'currency_id'  => $bank->currency_id,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $bank->currency_id,
         ]);
 
         $contraEntry->addLineItem(
             factory(LineItem::class)->create([
                 "account_id" => $bank,
-            ])
+            ]),
         );
         $contraEntry->post();
 
 
         $currentAsset = factory(Account::class)->create([
             'account_type' => Account::CURRENT_ASSET,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
 
-            "account_id" => $currentAsset,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $currentAsset,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $currentAsset->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journalEntry->addLineItem(factory(LineItem::class)->create());
@@ -204,33 +198,33 @@ class TrialBalanceTest extends TestCase
 
         $receivable = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $receivable,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $receivable,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $clientInvoice = new ClientInvoice([
             "account_id" => $receivable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $clientInvoice->addLineItem(
             factory(LineItem::class)->create([
                 "account_id" => factory(Account::class)->create([
                     'account_type' => Account::OPERATING_REVENUE,
-                    'category_id' => null
+                    'category_id'  => null,
                 ])->id,
-            ])
+            ]),
         );
         $clientInvoice->post();
 
@@ -242,24 +236,24 @@ class TrialBalanceTest extends TestCase
 
         $nonCurrentLiability = factory(Account::class)->create([
             'account_type' => Account::NON_CURRENT_LIABILITY,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $nonCurrentLiability,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $nonCurrentLiability,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $nonCurrentLiability->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journalEntry->addLineItem(factory(LineItem::class)->create());
@@ -268,24 +262,24 @@ class TrialBalanceTest extends TestCase
 
         $controlAccount = factory(Account::class)->create([
             'account_type' => Account::CONTROL,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $controlAccount,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $controlAccount,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $controlAccount->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journalEntry->addLineItem(factory(LineItem::class)->create());
@@ -294,26 +288,26 @@ class TrialBalanceTest extends TestCase
 
         $currentLiability = factory(Account::class)->create([
             'account_type' => Account::CURRENT_LIABILITY,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create(
             [
-                "account_id" => $currentLiability,
-                "balance_type" => Balance::CREDIT,
+                "account_id"       => $currentLiability,
+                "balance_type"     => Balance::CREDIT,
                 "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                    "rate" => 1
+                    "rate" => 1,
                 ])->id,
-                "balance" => 100
-            ]
+                "balance" => 100,
+            ],
         );
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $currentLiability->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journalEntry->addLineItem(factory(LineItem::class)->create());
@@ -322,24 +316,24 @@ class TrialBalanceTest extends TestCase
 
         $payable = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $payable,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $payable,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => $payable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $bill->addLineItem(factory(LineItem::class)->create(["account_id" => $nonCurrentAsset]));
@@ -348,24 +342,24 @@ class TrialBalanceTest extends TestCase
 
         $reconciliation = factory(Account::class)->create([
             'account_type' => Account::RECONCILIATION,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $reconciliation,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $reconciliation,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $reconciliation->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journalEntry->addLineItem(factory(LineItem::class)->create());
@@ -379,24 +373,24 @@ class TrialBalanceTest extends TestCase
 
         $equity = factory(Account::class)->create([
             'account_type' => Account::EQUITY,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //balance
         factory(Balance::class)->create([
-            "account_id" => $equity,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $equity,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
-            "balance" => 100
+            "balance" => 100,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $equity->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journalEntry->addLineItem(factory(LineItem::class)->create());
@@ -410,38 +404,38 @@ class TrialBalanceTest extends TestCase
 
         $operatingIncome = factory(Account::class)->create([
             'account_type' => Account::OPERATING_REVENUE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //transaction
         $clientInvoice = new ClientInvoice([
             "account_id" => $receivable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $clientInvoice->addLineItem(
             factory(LineItem::class)->create([
                 "account_id" => $operatingIncome->id,
-            ])
+            ]),
         );
         $clientInvoice->post();
 
         $operatingExpenses = factory(Account::class)->create([
             'account_type' => Account::OPERATING_EXPENSE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //transaction
-        $currency = factory(Currency::class)->create();
+        $currency     = factory(Currency::class)->create();
         $cashPurchase = new CashPurchase([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $currency->id,
+                'category_id'  => null,
+                'currency_id'  => $currency->id,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $currency->id,
         ]);
 
@@ -456,14 +450,14 @@ class TrialBalanceTest extends TestCase
 
         $nonOperatingRevenue = factory(Account::class)->create([
             'account_type' => Account::NON_OPERATING_REVENUE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $nonOperatingRevenue->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $journalEntry->addLineItem(factory(LineItem::class)->create());
@@ -471,14 +465,14 @@ class TrialBalanceTest extends TestCase
 
         $directExpense = factory(Account::class)->create([
             'account_type' => Account::DIRECT_EXPENSE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => $payable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $bill->addLineItem(factory(LineItem::class)->create(["account_id" => $directExpense]));
@@ -486,18 +480,18 @@ class TrialBalanceTest extends TestCase
 
         $overheadExpense = factory(Account::class)->create([
             'account_type' => Account::OVERHEAD_EXPENSE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //transaction
         $cashPurchase = new CashPurchase([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $currency->id,
+                'category_id'  => null,
+                'currency_id'  => $currency->id,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $currency->id,
         ]);
 
@@ -506,31 +500,31 @@ class TrialBalanceTest extends TestCase
 
         $otherExpense = factory(Account::class)->create([
             'account_type' => Account::OTHER_EXPENSE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => $payable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $bill->addLineItem(factory(LineItem::class)->create(["account_id" => $otherExpense]));
         $bill->post();
 
         $startDate = ReportingPeriod::periodStart();
-        $endDate = ReportingPeriod::periodEnd();
+        $endDate   = ReportingPeriod::periodEnd();
 
         $trialBalance = new TrialBalance();
-        $sections = $trialBalance->getSections($startDate, $endDate);
+        $sections     = $trialBalance->getSections($startDate, $endDate);
 
         $this->assertEquals(
             $sections,
             [
                 "accounts" => $trialBalance->accounts,
-                "results" => $trialBalance->results,
-            ]
+                "results"  => $trialBalance->results,
+            ],
         );
 
 
@@ -542,7 +536,7 @@ class TrialBalanceTest extends TestCase
 
         $this->assertEquals(
             round($trialBalance->balances['debit'], 0),
-            round($trialBalance->balances['credit'], 0)
+            round($trialBalance->balances['credit'], 0),
         );
         /*
          | ------------------------------
@@ -555,48 +549,48 @@ class TrialBalanceTest extends TestCase
             $bsAccounts[Account::NON_CURRENT_ASSET]["accounts"]->contains(
                 function ($item, $key) use ($nonCurrentAsset) {
                     return $item->id == $nonCurrentAsset->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CONTRA_ASSET]["accounts"]->contains(
                 function ($item, $key) use ($contraAsset) {
                     return $item->id == $contraAsset->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::INVENTORY]["accounts"]->contains(
                 function ($item, $key) use ($inventory) {
                     return $item->id == $inventory->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::BANK]["accounts"]->contains(
                 function ($item, $key) use ($bank) {
                     return $item->id == $bank->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CURRENT_ASSET]["accounts"]->contains(
                 function ($item, $key) use ($currentAsset) {
                     return $item->id == $currentAsset->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::RECEIVABLE]["accounts"]->contains(
                 function ($item, $key) use ($receivable) {
                     return $item->id == $receivable->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -608,40 +602,40 @@ class TrialBalanceTest extends TestCase
             $bsAccounts[Account::NON_CURRENT_LIABILITY]["accounts"]->contains(
                 function ($item, $key) use ($nonCurrentLiability) {
                     return $item->id == $nonCurrentLiability->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CONTROL]["accounts"]->contains(
                 function ($item, $key) use ($controlAccount) {
                     return $item->id == $controlAccount->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CURRENT_LIABILITY]["accounts"]->contains(
                 function ($item, $key) use ($currentLiability) {
                     return $item->id == $currentLiability->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::PAYABLE]["accounts"]->contains(
                 function ($item, $key) use ($payable) {
                     return $item->id == $payable->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::RECONCILIATION]["accounts"]->contains(
                 function ($item, $key) use ($reconciliation) {
                     return $item->id == $reconciliation->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -654,8 +648,8 @@ class TrialBalanceTest extends TestCase
             $bsAccounts[Account::EQUITY]["accounts"]->contains(
                 function ($item, $key) use ($equity) {
                     return $item->id == $equity->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -669,16 +663,16 @@ class TrialBalanceTest extends TestCase
             $isAccounts[Account::OPERATING_REVENUE]["accounts"]->contains(
                 function ($item, $key) use ($operatingIncome) {
                     return $item->id == $operatingIncome->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::OPERATING_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($operatingExpenses) {
                     return $item->id == $operatingExpenses->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -691,32 +685,32 @@ class TrialBalanceTest extends TestCase
             $isAccounts[Account::NON_OPERATING_REVENUE]["accounts"]->contains(
                 function ($item, $key) use ($nonOperatingRevenue) {
                     return $item->id == $nonOperatingRevenue->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::DIRECT_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($directExpense) {
                     return $item->id == $directExpense->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::OVERHEAD_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($overheadExpense) {
                     return $item->id == $overheadExpense->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::OTHER_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($otherExpense) {
                     return $item->id == $otherExpense->id;
-                }
-            )
+                },
+            ),
         );
     }
 
@@ -737,65 +731,65 @@ class TrialBalanceTest extends TestCase
 
         $nonCurrentAsset = Account::create([
             'account_type' => Account::NON_CURRENT_ASSET,
-            'category_id' => null ,
-            'entity_id' => $entity->id,
+            'category_id'  => null ,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $nonCurrentAsset->id,
-            'balance_type' => Balance::DEBIT,
+            'account_id'       => $nonCurrentAsset->id,
+            'balance_type'     => Balance::DEBIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
             'reference' => $this->faker->word,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'   => 100,
+            'entity_id' => $entity->id,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => Account::create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null ,
-                'entity_id' => $entity->id,
+                'category_id'  => null ,
+                'entity_id'    => $entity->id,
             ])->id,
-            "date" => Carbon::now(),
+            "date"      => Carbon::now(),
             "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "entity_id" => $entity->id,
         ]);
         $lineItem = LineItem::create([
             "account_id" => $nonCurrentAsset->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
 
         $vat = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat);
@@ -806,61 +800,61 @@ class TrialBalanceTest extends TestCase
 
         $contraAsset = Account::create([
             'account_type' => Account::CONTRA_ASSET,
-            'category_id' => null ,
-            'entity_id' => $entity->id,
+            'category_id'  => null ,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $contraAsset->id,
-            'balance_type' => Balance::DEBIT,
+            'account_id'       => $contraAsset->id,
+            'balance_type'     => Balance::DEBIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
             'reference' => $this->faker->word,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'   => 100,
+            'entity_id' => $entity->id,
         ]);
 
         //transaction
         $journal = new JournalEntry([
             "account_id" => $contraAsset->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $nonCurrentAsset->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat2 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat2);
@@ -872,72 +866,72 @@ class TrialBalanceTest extends TestCase
 
         $inventory = Account::create([
             'account_type' => Account::INVENTORY,
-            'category_id' => null ,
-            'entity_id' => $entity->id,
+            'category_id'  => null ,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $inventory->id,
-            'balance_type' => Balance::DEBIT,
+            'account_id'       => $inventory->id,
+            'balance_type'     => Balance::DEBIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
             'reference' => $this->faker->word,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'   => 100,
+            'entity_id' => $entity->id,
         ]);
 
         //transaction
         $currency = Currency::create([
-            'name' => $this->faker->name,
+            'name'          => $this->faker->name,
             'currency_code' => $this->faker->currencyCode,
-            'entity_id' => $entity->id
+            'entity_id'     => $entity->id,
         ]);
         $cashPurchase = new CashPurchase([
             "account_id" => Account::create([
                 'account_type' => Account::BANK,
-                'category_id' => null ,
-                'currency_id' => $currency->id,
-                'entity_id' => $entity->id,
+                'category_id'  => null ,
+                'currency_id'  => $currency->id,
+                'entity_id'    => $entity->id,
             ])->id,
-            "date" => Carbon::now(),
+            "date"        => Carbon::now(),
             'currency_id' => $currency->id,
-            "narration" => $this->faker->word,
-            'entity_id' => $entity->id
+            "narration"   => $this->faker->word,
+            'entity_id'   => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $inventory->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat3 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigit(),
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigit(),
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat3);
@@ -948,59 +942,59 @@ class TrialBalanceTest extends TestCase
 
         $bank = Account::create([
             'account_type' => Account::BANK,
-            'category_id' => null,
-            'entity_id' => $entity->id,
-            'currency_id' => $currency->id,
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
+            'currency_id'  => $currency->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $bank->id,
-            'balance_type' => Balance::DEBIT,
+            'account_id'       => $bank->id,
+            'balance_type'     => Balance::DEBIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $contraEntry = new ContraEntry([
             "account_id" => Account::create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'entity_id' => $entity->id,
-                'currency_id' => $bank->currency_id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
+                'currency_id'  => $bank->currency_id,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'entity_id' => $entity->id
+            'entity_id'   => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $bank->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
 
         $contraEntry->addLineItem($lineItem);
@@ -1008,66 +1002,66 @@ class TrialBalanceTest extends TestCase
 
         $currentAsset = Account::create([
             'account_type' => Account::CURRENT_ASSET,
-            'category_id' => null,
-            'entity_id' => $entity->id,
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $currentAsset->id,
-            'balance_type' => Balance::DEBIT,
+            'account_id'       => $currentAsset->id,
+            'balance_type'     => Balance::DEBIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $currentAsset->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => Account::create([
                 'account_type' => Account::CURRENT_ASSET,
-                'category_id' => null,
-                'entity_id' => $entity->id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'  => $this->faker->randomNumber(),
+            'amount'    => $this->faker->randomFloat(2, 0, 200),
+            "entity_id" => $entity->id,
         ]);
         $vat5 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat5);
@@ -1079,66 +1073,66 @@ class TrialBalanceTest extends TestCase
 
         $receivable = Account::create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null,
-            'entity_id' => $entity->id,
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $receivable->id,
-            'balance_type' => Balance::DEBIT,
+            'account_id'       => $receivable->id,
+            'balance_type'     => Balance::DEBIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $clientInvoice = new ClientInvoice([
             "account_id" => $receivable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => Account::create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id' => null,
-                'entity_id' => $entity->id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'  => $this->faker->randomNumber(),
+            'amount'    => $this->faker->randomFloat(2, 0, 200),
+            "entity_id" => $entity->id,
         ]);
         $vat6 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat6);
@@ -1155,66 +1149,66 @@ class TrialBalanceTest extends TestCase
 
         $nonCurrentLiability = Account::create([
             'account_type' => Account::NON_CURRENT_LIABILITY,
-            'category_id' => null,
-            'entity_id' => $entity->id,
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $nonCurrentLiability->id,
-            'balance_type' => Balance::CREDIT,
+            'account_id'       => $nonCurrentLiability->id,
+            'balance_type'     => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $nonCurrentLiability->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => Account::create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id' => null,
-                'entity_id' => $entity->id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'  => $this->faker->randomNumber(),
+            'amount'    => $this->faker->randomFloat(2, 0, 200),
+            "entity_id" => $entity->id,
         ]);
         $vat7 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat7);
@@ -1226,66 +1220,66 @@ class TrialBalanceTest extends TestCase
 
         $controlAccount = Account::create([
             'account_type' => Account::CONTROL,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $controlAccount->id,
-            'balance_type' => Balance::CREDIT,
+            'account_id'       => $controlAccount->id,
+            'balance_type'     => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $controlAccount->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => Account::create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id' => null,
-                'entity_id' => $entity->id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'  => $this->faker->randomNumber(),
+            'amount'    => $this->faker->randomFloat(2, 0, 200),
+            "entity_id" => $entity->id,
         ]);
         $vat8 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat8);
@@ -1297,66 +1291,66 @@ class TrialBalanceTest extends TestCase
 
         $currentLiability = Account::create([
             'account_type' => Account::CURRENT_LIABILITY,
-            'category_id' => null,
-            'entity_id' => $entity->id,
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $currentLiability->id,
-            'balance_type' => Balance::CREDIT,
+            'account_id'       => $currentLiability->id,
+            'balance_type'     => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $currentLiability->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => Account::create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id' => null,
-                'entity_id' => $entity->id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'  => $this->faker->randomNumber(),
+            'amount'    => $this->faker->randomFloat(2, 0, 200),
+            "entity_id" => $entity->id,
         ]);
         $vat9 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat9);
@@ -1368,62 +1362,62 @@ class TrialBalanceTest extends TestCase
 
         $payable = Account::create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null,
-            'entity_id' => $entity->id,
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $payable->id,
-            'balance_type' => Balance::CREDIT,
+            'account_id'       => $payable->id,
+            'balance_type'     => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => $payable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $nonCurrentAsset->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat10 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat10);
@@ -1435,62 +1429,62 @@ class TrialBalanceTest extends TestCase
 
         $reconciliation = Account::create([
             'account_type' => Account::RECONCILIATION,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $reconciliation->id,
-            'balance_type' => Balance::CREDIT,
+            'account_id'       => $reconciliation->id,
+            'balance_type'     => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $reconciliation->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $nonCurrentAsset->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat11 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat11);
@@ -1507,66 +1501,66 @@ class TrialBalanceTest extends TestCase
 
         $equity = Account::create([
             'account_type' => Account::EQUITY,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //balance
         Balance::create([
-            'account_id' => $equity->id,
-            'balance_type' => Balance::CREDIT,
+            'account_id'       => $equity->id,
+            'balance_type'     => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from' => $this->faker->dateTimeThisMonth(),
-                'valid_to' => Carbon::now(),
+                'valid_from'  => $this->faker->dateTimeThisMonth(),
+                'valid_to'    => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name' => $this->faker->name,
+                    'name'          => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id' => $entity->id
+                    'entity_id'     => $entity->id,
                 ])->id,
-                'rate' => 1,
-                'entity_id' => $entity->id
+                'rate'      => 1,
+                'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date' => Carbon::now()->subYears(1.5),
-            'transaction_no' => $this->faker->word,
-            'transaction_type' => $this->faker->randomElement([
+            'transaction_date'    => Carbon::now()->subYears(1.5),
+            'transaction_no'      => $this->faker->word,
+            'transaction_type'    => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ]),
-            'reference' => $this->faker->word,
+            'reference'   => $this->faker->word,
             'currency_id' => $bank->currency_id,
-            'balance' => 100,
-            'entity_id' => $entity->id
+            'balance'     => 100,
+            'entity_id'   => $entity->id,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $equity->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => Account::create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id' => null,
-                'entity_id' => $entity->id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'  => $this->faker->randomNumber(),
+            'amount'    => $this->faker->randomFloat(2, 0, 200),
+            "entity_id" => $entity->id,
         ]);
         $vat12 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat12);
@@ -1583,33 +1577,33 @@ class TrialBalanceTest extends TestCase
 
         $operatingIncome = Account::create([
             'account_type' => Account::OPERATING_REVENUE,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //transaction
         $clientInvoice = new ClientInvoice([
             "account_id" => $receivable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $operatingIncome->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat13 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat13);
@@ -1620,44 +1614,44 @@ class TrialBalanceTest extends TestCase
 
         $operatingExpenses = Account::create([
             'account_type' => Account::OPERATING_EXPENSE,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //transaction
         $currency = Currency::create([
-            'name' => $this->faker->name,
+            'name'          => $this->faker->name,
             'currency_code' => $this->faker->currencyCode,
-            'entity_id' => $entity->id
+            'entity_id'     => $entity->id,
         ]);
         $cashPurchase = new CashPurchase([
             "account_id" => Account::create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $currency->id,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'currency_id'  => $currency->id,
+                'entity_id'    => $entity->id,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $currency->id,
-            'entity_id' => $entity->id
+            'entity_id'   => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $operatingExpenses->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat14 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat14);
@@ -1674,37 +1668,37 @@ class TrialBalanceTest extends TestCase
 
         $nonOperatingRevenue = Account::create([
             'account_type' => Account::NON_OPERATING_REVENUE,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //transaction
         $journalEntry = new JournalEntry([
             "account_id" => $nonOperatingRevenue->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => Account::create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id' => null,
-                'entity_id' => $entity->id,
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'  => $this->faker->randomNumber(),
+            'amount'    => $this->faker->randomFloat(2, 0, 200),
+            "entity_id" => $entity->id,
         ]);
         $vat15 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat15);
@@ -1715,33 +1709,33 @@ class TrialBalanceTest extends TestCase
 
         $directExpense = Account::create([
             'account_type' => Account::DIRECT_EXPENSE,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => $payable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $directExpense->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat16 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat16);
@@ -1752,39 +1746,39 @@ class TrialBalanceTest extends TestCase
 
         $overheadExpense = Account::create([
             'account_type' => Account::OVERHEAD_EXPENSE,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //transaction
         $cashPurchase = new CashPurchase([
             "account_id" => Account::create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $currency->id,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'currency_id'  => $currency->id,
+                'entity_id'    => $entity->id,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $currency->id,
-            'entity_id' => $entity->id
+            'entity_id'   => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $overheadExpense->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat17 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat17);
@@ -1795,33 +1789,33 @@ class TrialBalanceTest extends TestCase
 
         $otherExpense = Account::create([
             'account_type' => Account::OTHER_EXPENSE,
-            'category_id' => null,
-            'entity_id' => $entity->id
+            'category_id'  => null,
+            'entity_id'    => $entity->id,
         ]);
 
         //transaction
         $bill = new SupplierBill([
             "account_id" => $payable->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "entity_id" => $entity->id
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
+            "entity_id"  => $entity->id,
         ]);
 
         $lineItem = LineItem::create([
             "account_id" => $otherExpense->id,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 200),
-            "entity_id" => $entity->id
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => $this->faker->randomFloat(2, 0, 200),
+            "entity_id"  => $entity->id,
         ]);
         $vat18 = Vat::create([
-            'name' => $this->faker->name,
-            'code' => $this->faker->randomLetter(),
-            'entity_id' => $entity->id,
-            'rate' => $this->faker->randomDigitNotNull,
+            'name'       => $this->faker->name,
+            'code'       => $this->faker->randomLetter(),
+            'entity_id'  => $entity->id,
+            'rate'       => $this->faker->randomDigitNotNull,
             'account_id' => Account::create([
                 'account_type' => Account::CONTROL,
-                'category_id' => null,
-                'entity_id' => $entity->id
+                'category_id'  => null,
+                'entity_id'    => $entity->id,
             ])->id,
         ]);
         $lineItem->addVat($vat18);
@@ -1831,17 +1825,17 @@ class TrialBalanceTest extends TestCase
         $bill->post();
 
         $startDate = ReportingPeriod::periodStart();
-        $endDate = ReportingPeriod::periodEnd();
+        $endDate   = ReportingPeriod::periodEnd();
 
-        $trialBalance = new TrialBalance(null,$entity);
-        $sections = $trialBalance->getSections($startDate, $endDate);
+        $trialBalance = new TrialBalance(null, $entity);
+        $sections     = $trialBalance->getSections($startDate, $endDate);
 
         $this->assertEquals(
             $sections,
             [
                 "accounts" => $trialBalance->accounts,
-                "results" => $trialBalance->results,
-            ]
+                "results"  => $trialBalance->results,
+            ],
         );
 
 
@@ -1853,7 +1847,7 @@ class TrialBalanceTest extends TestCase
 
         $this->assertEquals(
             round($trialBalance->balances['debit'], 0),
-            round($trialBalance->balances['credit'], 0)
+            round($trialBalance->balances['credit'], 0),
         );
         /*
          | ------------------------------
@@ -1866,48 +1860,48 @@ class TrialBalanceTest extends TestCase
             $bsAccounts[Account::NON_CURRENT_ASSET]["accounts"]->contains(
                 function ($item, $key) use ($nonCurrentAsset) {
                     return $item->id == $nonCurrentAsset->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CONTRA_ASSET]["accounts"]->contains(
                 function ($item, $key) use ($contraAsset) {
                     return $item->id == $contraAsset->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::INVENTORY]["accounts"]->contains(
                 function ($item, $key) use ($inventory) {
                     return $item->id == $inventory->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::BANK]["accounts"]->contains(
                 function ($item, $key) use ($bank) {
                     return $item->id == $bank->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CURRENT_ASSET]["accounts"]->contains(
                 function ($item, $key) use ($currentAsset) {
                     return $item->id == $currentAsset->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::RECEIVABLE]["accounts"]->contains(
                 function ($item, $key) use ($receivable) {
                     return $item->id == $receivable->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -1919,40 +1913,40 @@ class TrialBalanceTest extends TestCase
             $bsAccounts[Account::NON_CURRENT_LIABILITY]["accounts"]->contains(
                 function ($item, $key) use ($nonCurrentLiability) {
                     return $item->id == $nonCurrentLiability->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CONTROL]["accounts"]->contains(
                 function ($item, $key) use ($controlAccount) {
                     return $item->id == $controlAccount->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::CURRENT_LIABILITY]["accounts"]->contains(
                 function ($item, $key) use ($currentLiability) {
                     return $item->id == $currentLiability->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::PAYABLE]["accounts"]->contains(
                 function ($item, $key) use ($payable) {
                     return $item->id == $payable->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $bsAccounts[Account::RECONCILIATION]["accounts"]->contains(
                 function ($item, $key) use ($reconciliation) {
                     return $item->id == $reconciliation->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -1965,8 +1959,8 @@ class TrialBalanceTest extends TestCase
             $bsAccounts[Account::EQUITY]["accounts"]->contains(
                 function ($item, $key) use ($equity) {
                     return $item->id == $equity->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -1980,16 +1974,16 @@ class TrialBalanceTest extends TestCase
             $isAccounts[Account::OPERATING_REVENUE]["accounts"]->contains(
                 function ($item, $key) use ($operatingIncome) {
                     return $item->id == $operatingIncome->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::OPERATING_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($operatingExpenses) {
                     return $item->id == $operatingExpenses->id;
-                }
-            )
+                },
+            ),
         );
 
         /*
@@ -2002,32 +1996,32 @@ class TrialBalanceTest extends TestCase
             $isAccounts[Account::NON_OPERATING_REVENUE]["accounts"]->contains(
                 function ($item, $key) use ($nonOperatingRevenue) {
                     return $item->id == $nonOperatingRevenue->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::DIRECT_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($directExpense) {
                     return $item->id == $directExpense->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::OVERHEAD_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($overheadExpense) {
                     return $item->id == $overheadExpense->id;
-                }
-            )
+                },
+            ),
         );
 
         $this->assertTrue(
             $isAccounts[Account::OTHER_EXPENSE]["accounts"]->contains(
                 function ($item, $key) use ($otherExpense) {
                     return $item->id == $otherExpense->id;
-                }
-            )
+                },
+            ),
         );
     }
 }

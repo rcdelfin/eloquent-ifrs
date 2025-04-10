@@ -3,22 +3,17 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\Models\Account;
-use IFRS\Models\Balance;
-use IFRS\Models\LineItem;
-use IFRS\Models\Ledger;
-use IFRS\Models\Transaction;
-use IFRS\Models\Vat;
-
-use IFRS\Transactions\JournalEntry;
-
-use IFRS\Exceptions\UnbalancedTransaction;
-use IFRS\Exceptions\InvalidVatRate;
 use IFRS\Exceptions\MissingMainAccountAmount;
 use IFRS\Exceptions\MultipleVatError;
+use IFRS\Exceptions\UnbalancedTransaction;
+use IFRS\Models\Account;
+use IFRS\Models\Balance;
+use IFRS\Models\Ledger;
+use IFRS\Models\LineItem;
+use IFRS\Models\Transaction;
+use IFRS\Models\Vat;
+use IFRS\Tests\TestCase;
+use IFRS\Transactions\JournalEntry;
 
 class JournalEntryTest extends TestCase
 {
@@ -30,13 +25,13 @@ class JournalEntryTest extends TestCase
     public function testCreateJournalEntryTransaction()
     {
         $mainAccount = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $journalEntry = new JournalEntry([
-            "account_id" => $mainAccount->id,
+            "account_id"       => $mainAccount->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "narration"        => $this->faker->word,
         ]);
         $journalEntry->save();
 
@@ -54,14 +49,14 @@ class JournalEntryTest extends TestCase
     {
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "narration"        => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"   => 100,
             "quantity" => 1,
         ]);
         $journalEntry->addLineItem($lineItem);
@@ -69,8 +64,8 @@ class JournalEntryTest extends TestCase
         $journalEntry->post();
 
         $ledgers = Ledger::where("transaction_id", $journalEntry->id)->get();
-        $debit = $ledgers->where("entry_type", Balance::DEBIT)->first();
-        $credit = $ledgers->where("entry_type", Balance::CREDIT)->first();
+        $debit   = $ledgers->where("entry_type", Balance::DEBIT)->first();
+        $credit  = $ledgers->where("entry_type", Balance::CREDIT)->first();
 
         $this->assertEquals($debit->folio_account, $journalEntry->account->id);
         $this->assertEquals($debit->post_account, $lineItem->account_id);
@@ -83,25 +78,25 @@ class JournalEntryTest extends TestCase
 
         $journalEntry2 = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "credited" => false,
+            "narration"        => $this->faker->word,
+            "credited"         => false,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"   => 50,
             "quantity" => 1,
         ]);
         $lineItem2 = factory(LineItem::class)->create([
-            "amount" => 25,
+            "amount"   => 25,
             "quantity" => 1,
         ]);
         $lineItem2->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem2->save();
         $journalEntry2->addLineItem($lineItem1);
@@ -111,16 +106,16 @@ class JournalEntryTest extends TestCase
 
         $ledgers = Ledger::where("transaction_id", $journalEntry2->id)->get();
 
-        $debits = $ledgers->where("entry_type", Balance::DEBIT);
+        $debits  = $ledgers->where("entry_type", Balance::DEBIT);
         $credits = $ledgers->where("entry_type", Balance::CREDIT);
 
-        $debit1 = $debits->where("amount", 50)->first();
+        $debit1  = $debits->where("amount", 50)->first();
         $credit1 = $credits->where("amount", 50)->first();
 
-        $debit2 = $debits->where("amount", 25)->first();
+        $debit2  = $debits->where("amount", 25)->first();
         $credit2 = $credits->where("amount", 25)->first();
 
-        $debit3 = $debits->where("amount", 4)->first();
+        $debit3  = $debits->where("amount", 4)->first();
         $credit3 = $credits->where("amount", 4)->first();
 
         // lineItem 1
@@ -153,13 +148,13 @@ class JournalEntryTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null
+            'category_id'  => null,
         ]);
         $transaction = new JournalEntry([
-            "account_id" => $account->id,
+            "account_id"       => $account->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            'currency_id' => $account->currency_id,
+            "narration"        => $this->faker->word,
+            'currency_id'      => $account->currency_id,
         ]);
         $transaction->save();
 
@@ -177,42 +172,42 @@ class JournalEntryTest extends TestCase
 
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
-            "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "compound" => true,
-            "main_account_amount" => 10
+            "transaction_date"    => Carbon::now(),
+            "narration"           => $this->faker->word,
+            "compound"            => true,
+            "main_account_amount" => 10,
         ]);
 
         $journalEntry->save();
 
         $doubleAccount = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
-            "amount" => 30,
-            "quantity" => 1,
-            "credited" => true,
-            "account_id" => $doubleAccount->id
+            "amount"     => 30,
+            "quantity"   => 1,
+            "credited"   => true,
+            "account_id" => $doubleAccount->id,
         ]);
 
         $lineItem2 = factory(LineItem::class)->create([
-            "amount" => 25,
+            "amount"   => 25,
             "quantity" => 1,
         ]);
 
         $lineItem3 = factory(LineItem::class)->create([
-            "amount" => 20,
+            "amount"   => 20,
             "quantity" => 1,
         ]);
 
         $lineItem4 = factory(LineItem::class)->create([
-            "amount" => 5,
-            "quantity" => 1,
-            "credited" => true,
-            "account_id" => $doubleAccount->id
+            "amount"     => 5,
+            "quantity"   => 1,
+            "credited"   => true,
+            "account_id" => $doubleAccount->id,
         ]);
 
         $journalEntry->addLineItem($lineItem1);
@@ -225,12 +220,12 @@ class JournalEntryTest extends TestCase
             "C" => [
                 ['id' => $journalEntry->account_id, 'amount' =>  10.0],
                 ['id' => $lineItem1->account_id, 'amount' =>  30],
-                ['id' => $lineItem4->account_id, 'amount' =>  5]
+                ['id' => $lineItem4->account_id, 'amount' =>  5],
             ],
             "D" => [
                 ['id' => $lineItem2->account_id, 'amount' =>  25],
-                ['id' => $lineItem3->account_id, 'amount' =>  20]
-            ]
+                ['id' => $lineItem3->account_id, 'amount' =>  20],
+            ],
         ]);
 
         $journalEntry->post();
@@ -245,8 +240,8 @@ class JournalEntryTest extends TestCase
             ],
             "D" => [
                 ['id' => $lineItem2->account_id, 'amount' =>  25],
-                ['id' => $lineItem3->account_id, 'amount' =>  20]
-            ]
+                ['id' => $lineItem3->account_id, 'amount' =>  20],
+            ],
         ]);
 
         // Main Account
@@ -273,16 +268,16 @@ class JournalEntryTest extends TestCase
     {
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
-            "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "compound" => true,
-            "main_account_amount" => 10
+            "transaction_date"    => Carbon::now(),
+            "narration"           => $this->faker->word,
+            "compound"            => true,
+            "main_account_amount" => 10,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
-            "amount" => 30,
+            "amount"   => 30,
             "quantity" => 1,
         ]);
 
@@ -303,16 +298,16 @@ class JournalEntryTest extends TestCase
     {
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
-            "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "compound" => true,
-            "main_account_amount" => 10
+            "transaction_date"    => Carbon::now(),
+            "narration"           => $this->faker->word,
+            "compound"            => true,
+            "main_account_amount" => 10,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 30,
+            "amount"   => 30,
             "quantity" => 1,
         ]);
         $lineItem->addVat(factory(Vat::class)->create(["rate" => 1]));
@@ -333,11 +328,11 @@ class JournalEntryTest extends TestCase
     {
         $journalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "compound" => true
+            "narration"        => $this->faker->word,
+            "compound"         => true,
         ]);
 
         $this->expectException(MissingMainAccountAmount::class);

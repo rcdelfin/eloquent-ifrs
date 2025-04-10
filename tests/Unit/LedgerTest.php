@@ -3,9 +3,6 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Currency;
@@ -13,7 +10,7 @@ use IFRS\Models\ExchangeRate;
 use IFRS\Models\Ledger;
 use IFRS\Models\LineItem;
 use IFRS\Models\Vat;
-
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\JournalEntry;
 
 class LedgerTest extends TestCase
@@ -26,21 +23,21 @@ class LedgerTest extends TestCase
     public function testLedgerRelationships()
     {
         $account = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
         $lineAccount = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $transaction = new JournalEntry([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
             "account_id" => $lineAccount->id,
-            "amount" => 50,
+            "amount"     => 50,
         ]);
 
         $transaction->addLineItem($lineItem);
@@ -62,33 +59,33 @@ class LedgerTest extends TestCase
     public function testLedgerAccountContribution()
     {
         $account = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
         $lineAccount1 = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
         $lineAccount2 = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $transaction = new JournalEntry([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
             "account_id" => $lineAccount1->id,
-            "amount" => 75,
-            "quantity" => 1,
+            "amount"     => 75,
+            "quantity"   => 1,
         ]);
 
         $transaction->addLineItem($lineItem1);
 
         $lineItem2 = factory(LineItem::class)->create([
             "account_id" => $lineAccount2->id,
-            "amount" => 120,
-            "quantity" => 1,
+            "amount"     => 120,
+            "quantity"   => 1,
         ]);
 
         $transaction->addLineItem($lineItem2);
@@ -108,22 +105,22 @@ class LedgerTest extends TestCase
     public function testLedgerAccountBalance()
     {
         $account = factory(Account::class)->create([
-            'category_id' => null,
-            "account_type" => Account::INVENTORY
+            'category_id'  => null,
+            "account_type" => Account::INVENTORY,
         ]);
 
         factory(Ledger::class, 3)->create([
             "post_account" => $account->id,
-            "entry_type" => Balance::DEBIT,
+            "entry_type"   => Balance::DEBIT,
             "posting_date" => Carbon::now(),
-            "amount" => 50
+            "amount"       => 50,
         ]);
 
         factory(Ledger::class, 2)->create([
             "post_account" => $account->id,
-            "entry_type" => Balance::CREDIT,
+            "entry_type"   => Balance::CREDIT,
             "posting_date" => Carbon::now(),
-            "amount" => 95
+            "amount"       => 95,
         ]);
 
         $localBalance = Ledger::balance($account, Carbon::now()->startOfYear(), Carbon::now());
@@ -138,35 +135,35 @@ class LedgerTest extends TestCase
     public function testLedgerForeignCurrency()
     {
         $account = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $lineAccount1 = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $lineAccount2 = factory(Account::class)->create([
-            'category_id' => null
+            'category_id' => null,
         ]);
 
         $rate = factory(ExchangeRate::class)->create([
-            'rate' => 105
+            'rate' => 105,
         ]);
 
         $transaction = new JournalEntry([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "exchange_rate_id" => $rate->id
+            "account_id"       => $account->id,
+            "date"             => Carbon::now(),
+            "narration"        => $this->faker->word,
+            "exchange_rate_id" => $rate->id,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
             "account_id" => $lineAccount1->id,
-            "amount" => 75,
-            "quantity" => 1,
+            "amount"     => 75,
+            "quantity"   => 1,
         ]);
         $lineItem1->addVat(
-            factory(Vat::class)->create(["rate" => 10])
+            factory(Vat::class)->create(["rate" => 10]),
         );
         $lineItem1->save();
 
@@ -174,11 +171,11 @@ class LedgerTest extends TestCase
 
         $lineItem2 = factory(LineItem::class)->create([
             "account_id" => $lineAccount2->id,
-            "amount" => 120,
-            "quantity" => 1,
+            "amount"     => 120,
+            "quantity"   => 1,
         ]);
         $lineItem2->addVat(
-            factory(Vat::class)->create(["rate" => 10])
+            factory(Vat::class)->create(["rate" => 10]),
         );
         $lineItem2->save();
 
@@ -195,25 +192,25 @@ class LedgerTest extends TestCase
         $this->assertEquals($account->currentBalance(), [$this->reportingCurrencyId => -22522.50]);
         $this->assertEquals(
             $account->currentBalance(null, null, $rate->currency_id),
-            [$this->reportingCurrencyId => -22522.50, $rate->currency_id => -214.50]
+            [$this->reportingCurrencyId => -22522.50, $rate->currency_id => -214.50],
         );
 
         $rate1 = factory(ExchangeRate::class)->create([
-            'rate' => 10,
-            'currency_id' => factory(Currency::class)->create()->id
+            'rate'        => 10,
+            'currency_id' => factory(Currency::class)->create()->id,
         ]);
 
         $transaction = new JournalEntry([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "exchange_rate_id" => $rate1->id
+            "account_id"       => $account->id,
+            "date"             => Carbon::now(),
+            "narration"        => $this->faker->word,
+            "exchange_rate_id" => $rate1->id,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
             "account_id" => $lineAccount1->id,
-            "amount" => 75,
-            "quantity" => 1,
+            "amount"     => 75,
+            "quantity"   => 1,
         ]);
 
         $transaction->addLineItem($lineItem1);
@@ -223,7 +220,7 @@ class LedgerTest extends TestCase
         $this->assertEquals($account->currentBalance(), [$this->reportingCurrencyId => -23272.50]);
         $this->assertEquals(
             $account->currentBalance(null, null, $rate1->currency_id),
-            [$this->reportingCurrencyId => -750, $rate1->currency_id => -75]
+            [$this->reportingCurrencyId => -750, $rate1->currency_id => -75],
         );
     }
 }

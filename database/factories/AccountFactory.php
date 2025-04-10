@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @var \Illuminate\Database\Eloquent\Factory $factory
+ * @var Illuminate\Database\Eloquent\Factory $factory
  */
 
-use IFRS\Models\Account;
 use Faker\Generator as Faker;
+use IFRS\Models\Account;
 
 $factory->define(
     Account::class,
@@ -15,12 +15,12 @@ $factory->define(
 
         $type = $this->faker->randomElement($types);
         return [
-            'name' => $faker->name,
+            'name'         => $faker->name,
             'account_type' => $type,
-            'category_id' => factory('IFRS\Models\Category')->create([
+            'category_id'  => factory('IFRS\Models\Category')->create([
                 'category_type' => $type,
             ])->id,
             'code' => $faker->randomDigit,
         ];
-    }
+    },
 );

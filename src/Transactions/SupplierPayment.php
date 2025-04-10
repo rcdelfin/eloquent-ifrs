@@ -10,19 +10,14 @@
 
 namespace IFRS\Transactions;
 
-use IFRS\Interfaces\Assignable;
-use IFRS\Interfaces\Fetchable;
-
-use IFRS\Traits\Assigning;
-use IFRS\Traits\Fetching;
-
-use IFRS\Models\Account;
-use IFRS\Models\LineItem;
-use IFRS\Models\Transaction;
-
 use IFRS\Exceptions\LineItemAccount;
 use IFRS\Exceptions\MainAccount;
 use IFRS\Exceptions\VatCharge;
+use IFRS\Interfaces\Assignable;
+use IFRS\Models\Account;
+use IFRS\Models\LineItem;
+use IFRS\Models\Transaction;
+use IFRS\Traits\Assigning;
 
 class SupplierPayment extends Transaction implements Assignable
 {
@@ -34,7 +29,7 @@ class SupplierPayment extends Transaction implements Assignable
      * @var string
      */
 
-    const PREFIX = Transaction::PY;
+    public const PREFIX = Transaction::PY;
 
     /**
      * Construct new ContraEntry
@@ -43,7 +38,7 @@ class SupplierPayment extends Transaction implements Assignable
      */
     public function __construct($attributes = [])
     {
-        $attributes['credited'] = false;
+        $attributes['credited']         = false;
         $attributes['transaction_type'] = self::PREFIX;
 
         parent::__construct($attributes);
@@ -54,7 +49,7 @@ class SupplierPayment extends Transaction implements Assignable
      */
     public function save(array $options = []): bool
     {
-        if (is_null($this->account) || $this->account->account_type != Account::PAYABLE) {
+        if (is_null($this->account) || Account::PAYABLE != $this->account->account_type) {
             throw new MainAccount(self::PREFIX, Account::PAYABLE);
         }
 
@@ -66,7 +61,7 @@ class SupplierPayment extends Transaction implements Assignable
      */
     public function addLineItem(LineItem $lineItem): bool
     {
-        if ($lineItem->account->account_type != Account::BANK) {
+        if (Account::BANK != $lineItem->account->account_type) {
             throw new LineItemAccount(self::PREFIX, [Account::BANK]);
         }
 

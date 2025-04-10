@@ -12,11 +12,9 @@ namespace IFRS\Transactions;
 
 use IFRS\Interfaces\Buys;
 use IFRS\Interfaces\Clearable;
-
+use IFRS\Models\Transaction;
 use IFRS\Traits\Buying;
 use IFRS\Traits\Clearing;
-
-use IFRS\Models\Transaction;
 
 class SupplierBill extends Transaction implements Buys, Clearable
 {
@@ -29,7 +27,7 @@ class SupplierBill extends Transaction implements Buys, Clearable
      * @var string
      */
 
-    const PREFIX = Transaction::BL;
+    public const PREFIX = Transaction::BL;
 
     /**
      * Construct new ContraEntry
@@ -38,7 +36,7 @@ class SupplierBill extends Transaction implements Buys, Clearable
      */
     public function __construct($attributes = [])
     {
-        $attributes['credited'] = true;
+        $attributes['credited']         = true;
         $attributes['transaction_type'] = self::PREFIX;
 
         parent::__construct($attributes);

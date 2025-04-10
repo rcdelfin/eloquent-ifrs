@@ -1,20 +1,20 @@
 <?php
 
 /**
- * @var \Illuminate\Database\Eloquent\Factory $factory
+ * @var Illuminate\Database\Eloquent\Factory $factory
  */
 
-use IFRS\Models\Category;
 use Faker\Generator as Faker;
+use IFRS\Models\Category;
 
 $factory->define(
     Category::class,
     function (Faker $faker) {
         return [
-            'name' => $faker->word,
+            'name'          => $faker->word,
             'category_type' => $faker->randomElement(
-                array_keys(config('ifrs')['accounts'])
+                array_keys(config('ifrs')['accounts']),
             ),
         ];
-    }
+    },
 );

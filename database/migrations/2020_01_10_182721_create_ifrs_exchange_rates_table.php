@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -20,7 +21,7 @@ class CreateIfrsExchangeRatesTable extends Migration
     public function up()
     {
         Schema::create(
-            config('ifrs.table_prefix').'exchange_rates',
+            config('ifrs.table_prefix') . 'exchange_rates',
             function (Blueprint $table) {
                 $table->bigIncrements('id');
 
@@ -29,8 +30,8 @@ class CreateIfrsExchangeRatesTable extends Migration
                 $table->unsignedBigInteger('currency_id');
 
                 // constraints
-                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix').'entities');
-                $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix').'currencies');
+                $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
+                $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix') . 'currencies');
 
                 // attributes
                 $table->dateTime('valid_from', 0);
@@ -44,7 +45,7 @@ class CreateIfrsExchangeRatesTable extends Migration
                 $table->softDeletes();
 
                 $table->timestamps();
-            }
+            },
         );
     }
 
@@ -55,6 +56,6 @@ class CreateIfrsExchangeRatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix').'exchange_rates');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'exchange_rates');
     }
 }

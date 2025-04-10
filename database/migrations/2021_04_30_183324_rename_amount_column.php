@@ -13,7 +13,7 @@ class RenameAmountColumn extends Migration
      */
     public function up()
     {
-        Schema::table(config('ifrs.table_prefix').'balances', function (Blueprint $table) {
+        Schema::table(config('ifrs.table_prefix') . 'balances', function (Blueprint $table) {
             $table->renameColumn('amount', 'balance');
         });
     }
@@ -25,7 +25,7 @@ class RenameAmountColumn extends Migration
      */
     public function down()
     {
-        Schema::table(config('ifrs.table_prefix').'balances', function (Blueprint $table) {
+        Schema::table(config('ifrs.table_prefix') . 'balances', function (Blueprint $table) {
             $table->renameColumn('balance', 'amount');
         });
     }

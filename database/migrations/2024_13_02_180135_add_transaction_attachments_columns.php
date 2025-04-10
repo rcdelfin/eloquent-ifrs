@@ -19,7 +19,7 @@ class AddTransactionAttachmentsColumns extends Migration
             function (Blueprint $table) {
                 $table->unsignedBigInteger('attachment_id')->nullable();
                 $table->string('attachment_type')->nullable();
-            }
+            },
         );
     }
 
@@ -33,18 +33,18 @@ class AddTransactionAttachmentsColumns extends Migration
         Schema::table(
             config('ifrs.table_prefix') . 'transactions',
             function (Blueprint $table) {
-                if (config('database.default') == 'sqlite') {
+                if ('sqlite' == config('database.default')) {
                     DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
                 }
                 $table->dropColumn('attachment_id');
-            }
+            },
         );
 
         Schema::table(
             config('ifrs.table_prefix') . 'transactions',
             function (Blueprint $table) {
                 $table->dropColumn('attachment_type');
-            }
+            },
         );
     }
 }

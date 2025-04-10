@@ -22,9 +22,9 @@ trait ModelTablePrefix
     public function getTable()
     {
 
-        $table = parent::getTable();
-        $prefix = (string)config('ifrs.table_prefix');
+        $table  = parent::getTable();
+        $prefix = (string) config('ifrs.table_prefix');
 
-        return strpos($table, $prefix) !== false ? $table : $prefix . $table;
+        return str_contains($table, $prefix) ? $table : $prefix . $table;
     }
 }

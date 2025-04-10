@@ -11,33 +11,29 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-use IFRS\Interfaces\Clearable;
+use IFRS\Exceptions\AdjustingReportingPeriod;
+use IFRS\Exceptions\ClosedReportingPeriod;
+use IFRS\Exceptions\HangingClearances;
+use IFRS\Exceptions\InvalidCurrency;
+use IFRS\Exceptions\InvalidTransactionDate;
+use IFRS\Exceptions\InvalidTransactionType;
+use IFRS\Exceptions\MissingLineItem;
+use IFRS\Exceptions\PostedTransaction;
+use IFRS\Exceptions\RedundantTransaction;
+use IFRS\Exceptions\UnbalancedTransaction;
+use IFRS\Exceptions\UnpostedAssignment;
 use IFRS\Interfaces\Assignable;
+use IFRS\Interfaces\Clearable;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
-
-use IFRS\Traits\Clearing;
 use IFRS\Traits\Assigning;
+use IFRS\Traits\Clearing;
+use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
-
-use IFRS\Exceptions\MissingLineItem;
-use IFRS\Exceptions\HangingClearances;
-use IFRS\Exceptions\PostedTransaction;
-use IFRS\Exceptions\UnpostedAssignment;
-use IFRS\Exceptions\RedundantTransaction;
-use IFRS\Exceptions\ClosedReportingPeriod;
-use IFRS\Exceptions\InvalidTransactionDate;
-use IFRS\Exceptions\AdjustingReportingPeriod;
-use IFRS\Exceptions\InvalidCurrency;
-use IFRS\Exceptions\InvalidTransactionType;
-use IFRS\Exceptions\UnbalancedTransaction;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Transaction
@@ -62,12 +58,12 @@ use IFRS\Exceptions\UnbalancedTransaction;
  */
 class Transaction extends Model implements Segregatable, Recyclable, Clearable, Assignable
 {
+    use Assigning;
+    use Clearing;
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use Clearing;
-    use Assigning;
-    use ModelTablePrefix;
 
     /**
      * Transaction Model Name
@@ -75,7 +71,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      * @var string
      */
 
-    const MODELNAME = self::class;
+    public const MODELNAME = self::class;
 
     /**
      * Transaction Types
@@ -83,16 +79,16 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      * @var string
      */
 
-    const CS = 'CS';
-    const IN = 'IN';
-    const CN = 'CN';
-    const RC = 'RC';
-    const CP = 'CP';
-    const BL = 'BL';
-    const DN = 'DN';
-    const PY = 'PY';
-    const CE = 'CE';
-    const JN = 'JN';
+    public const CS = 'CS';
+    public const IN = 'IN';
+    public const CN = 'CN';
+    public const RC = 'RC';
+    public const CP = 'CP';
+    public const BL = 'BL';
+    public const DN = 'DN';
+    public const PY = 'PY';
+    public const CE = 'CE';
+    public const JN = 'JN';
 
     /**
      * The attributes that are mass assignable.
@@ -113,11 +109,11 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
         'transaction_no',
         'entity_id',
         'attachment_id',
-        'attachment_type'
+        'attachment_type',
     ];
 
     protected $dates = [
-        'transaction_date'
+        'transaction_date',
     ];
 
     /**
@@ -136,7 +132,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     private $assigned = [];
 
     /**
-     * Compound Ledger entries for the transaction 
+     * Compound Ledger entries for the transaction
      *
      * @var array $compoundEntries
      */
@@ -150,12 +146,12 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      *
      * @return int|false
      */
-    private function lineItemExists(int $id = null)
+    private function lineItemExists(?int $id = null)
     {
         return collect($this->items)->search(
             function ($item, $key) use ($id) {
                 return $item->id == $id;
-            }
+            },
         );
     }
 
@@ -166,12 +162,12 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      *
      * @return int|false
      */
-    private function assignedTransactionExists(int $id = null)
+    private function assignedTransactionExists(?int $id = null)
     {
         return collect($this->assigned)->search(
             function ($transaction, $key) use ($id) {
                 return $transaction['id'] == $id;
-            }
+            },
         );
     }
 
@@ -187,7 +183,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
 
     /**
      * Get the sum of the amounts on the given side of the compound entries
-     * 
+     *
      * @param string entryType
      * @return float
      */
@@ -217,7 +213,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      */
     public function __construct($attributes = [])
     {
-        $this->table = config('ifrs.table_prefix') . 'transactions';
+        $this->table                    = config('ifrs.table_prefix') . 'transactions';
         $attributes['transaction_date'] = !isset($attributes['transaction_date']) ? Carbon::now() : Carbon::parse($attributes['transaction_date']);
 
         parent::__construct($attributes);
@@ -410,8 +406,8 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
                 ->selectRaw("SUM(amount/rate) as amount")
                 ->where([
                     "transaction_id" => $this->id,
-                    "entry_type" => Transaction::getCompoundEntrytype($this->credited),
-                    "currency_id" => $this->currency_id
+                    "entry_type"     => Transaction::getCompoundEntrytype($this->credited),
+                    "currency_id"    => $this->currency_id,
                 ]);
 
             if (!$this->compound) {
@@ -443,7 +439,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
 
             $this->compoundEntries = [
                 Balance::CREDIT => [],
-                Balance::DEBIT => []
+                Balance::DEBIT  => [],
             ];
 
             $this->compoundEntries[Transaction::getCompoundEntrytype($this->credited)][] = ['id' => $this->account_id, 'amount' => floatval($this->main_account_amount)];
@@ -464,7 +460,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     public function getLineItems()
     {
         foreach ($this->lineItems as $lineItem) {
-            if ($this->lineItemExists($lineItem->id) === false) {
+            if (false === $this->lineItemExists($lineItem->id)) {
                 $this->items[] = $lineItem;
             }
         }
@@ -480,12 +476,13 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     {
         $vats = ['total' => 0];
         foreach ($this->getLineItems() as $lineItem) {
-            foreach ($lineItem->vat as $type => $amount)
+            foreach ($lineItem->vat as $type => $amount) {
                 if (array_key_exists($type, $vats)) {
                     $vats[$type] += $amount;
                 } else {
                     $vats[$type] = $amount;
                 }
+            }
         }
         return $vats;
     }
@@ -497,7 +494,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      */
     public function getAssignableAttribute(): bool
     {
-        return count($this->clearances) == 0 && in_array($this->transaction_type, Assignment::ASSIGNABLES);
+        return 0 == count($this->clearances) && in_array($this->transaction_type, Assignment::ASSIGNABLES);
     }
 
     /**
@@ -507,7 +504,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      */
     public function getClearableAttribute(): bool
     {
-        return count($this->assignments) == 0 && in_array($this->transaction_type, Assignment::CLEARABLES);
+        return 0 == count($this->assignments) && in_array($this->transaction_type, Assignment::CLEARABLES);
     }
 
     /**
@@ -527,7 +524,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**
@@ -555,7 +552,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
 
         $this->getLineItems();
 
-        if ($this->lineItemExists($lineItem->id) === false) {
+        if (false === $this->lineItemExists($lineItem->id)) {
             $this->items[] = $lineItem;
             return true;
         }
@@ -575,7 +572,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
 
         $key = $this->lineItemExists($lineItem->id);
 
-        if ($key !== false) {
+        if (false !== $key) {
             unset($this->items[$key]);
         }
 
@@ -622,13 +619,13 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
             $existing->delete();
         }
 
-        if ($this->assignedTransactionExists($toBeAssigned['id']) === false && $toBeAssigned['amount'] > 0) {
+        if (false === $this->assignedTransactionExists($toBeAssigned['id']) && $toBeAssigned['amount'] > 0) {
             if ($this->assignedAmountBalance() > $toBeAssigned['amount']) {
                 $this->assigned[] = $toBeAssigned;
             } elseif ($this->assignedAmountBalance() > 0) {
                 $this->assigned[] = [
-                    'id' => $toBeAssigned['id'],
-                    'amount' => $this->assignedAmountBalance()
+                    'id'     => $toBeAssigned['id'],
+                    'amount' => $this->assignedAmountBalance(),
                 ];
             }
         }
@@ -656,18 +653,18 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      *
      * @return null
      */
-    public function processAssigned(int $forexAccountId = null): void
+    public function processAssigned(?int $forexAccountId = null): void
     {
         foreach ($this->assigned as $outstanding) {
             $cleared = Transaction::find($outstanding['id']);
 
             Assignment::create([
-                'assignment_date' => Carbon::now(),
-                'transaction_id' => $this->id,
+                'assignment_date'  => Carbon::now(),
+                'transaction_id'   => $this->id,
                 'forex_account_id' => $forexAccountId,
-                'cleared_id' => $cleared->id,
-                'cleared_type' => $cleared->cleared_type,
-                'amount' => $outstanding['amount'],
+                'cleared_id'       => $cleared->id,
+                'cleared_type'     => $cleared->cleared_type,
+                'amount'           => $outstanding['amount'],
             ]);
         }
     }
@@ -719,11 +716,11 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
             throw new InvalidTransactionDate();
         }
 
-        if ($period->status == ReportingPeriod::CLOSED) {
+        if (ReportingPeriod::CLOSED == $period->status) {
             throw new ClosedReportingPeriod($period->calendar_year);
         }
 
-        if ($period->status == ReportingPeriod::ADJUSTING && $this->transaction_type != Transaction::JN) {
+        if (ReportingPeriod::ADJUSTING == $period->status && Transaction::JN != $this->transaction_type) {
             throw new AdjustingReportingPeriod();
         }
 
@@ -743,7 +740,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
             $this->transaction_no = Transaction::transactionNo(
                 $this->transaction_type,
                 Carbon::parse($this->transaction_date),
-                $entity
+                $entity,
             );
         }
 
@@ -772,7 +769,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      *
      * @return string
      */
-    public static function transactionNo(string $type, Carbon $transaction_date = null, Entity $entity = null)
+    public static function transactionNo(string $type, ?Carbon $transaction_date = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             $entity = Auth::user()->entity;
@@ -787,7 +784,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
             ->where("entity_id", '=', $entity->id)
             ->count() + 1;
 
-        return $type . str_pad((string)$periodCount, 2, "0", STR_PAD_LEFT)
+        return $type . str_pad((string) $periodCount, 2, "0", STR_PAD_LEFT)
             . "/" .
             str_pad((string) $nextId, 4, "0", STR_PAD_LEFT);
     }
@@ -825,7 +822,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
             function ($clearance, $key) {
                 $clearance->delete();
                 return $clearance;
-            }
+            },
         );
 
         return parent::delete();
@@ -840,7 +837,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
         return $this->ledgers->every(
             function ($ledger, $key) {
                 return hash(config('ifrs')['hashing_algorithm'], $ledger->hashed()) == $ledger->hash;
-            }
+            },
         );
     }
 }

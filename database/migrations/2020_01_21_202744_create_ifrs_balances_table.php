@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -6,11 +7,11 @@
  * @copyright Edward Mungai, 2020, Germany
  * @license MIT
  */
+use IFRS\Models\Balance;
+use IFRS\Models\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use IFRS\Models\Balance;
-use IFRS\Models\Transaction;
 
 class CreateIfrsBalancesTable extends Migration
 {
@@ -21,7 +22,7 @@ class CreateIfrsBalancesTable extends Migration
      */
     public function up()
     {
-        Schema::create(config('ifrs.table_prefix').'balances', function (Blueprint $table) {
+        Schema::create(config('ifrs.table_prefix') . 'balances', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             // relationships
@@ -32,11 +33,11 @@ class CreateIfrsBalancesTable extends Migration
             $table->unsignedBigInteger('reporting_period_id');
 
             // constraints
-            $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix').'entities');
-            $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix').'currencies');
-            $table->foreign('exchange_rate_id')->references('id')->on(config('ifrs.table_prefix').'exchange_rates');
-            $table->foreign('account_id')->references('id')->on(config('ifrs.table_prefix').'accounts');
-            $table->foreign('reporting_period_id')->references('id')->on(config('ifrs.table_prefix').'reporting_periods');
+            $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
+            $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix') . 'currencies');
+            $table->foreign('exchange_rate_id')->references('id')->on(config('ifrs.table_prefix') . 'exchange_rates');
+            $table->foreign('account_id')->references('id')->on(config('ifrs.table_prefix') . 'accounts');
+            $table->foreign('reporting_period_id')->references('id')->on(config('ifrs.table_prefix') . 'reporting_periods');
 
             // attributes
             $table->string('reference', 255)->nullable();
@@ -45,7 +46,7 @@ class CreateIfrsBalancesTable extends Migration
             $table->enum('transaction_type', [
                 Transaction::IN,
                 Transaction::BL,
-                Transaction::JN
+                Transaction::JN,
             ])->default(Transaction::JN);
             $table->enum('balance_type', [Balance::DEBIT, Balance::CREDIT])->default(Balance::DEBIT);
             $table->decimal('amount', 13, 4);
@@ -67,6 +68,6 @@ class CreateIfrsBalancesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix').'balances');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'balances');
     }
 }

@@ -3,19 +3,15 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\Models\Account;
-use IFRS\Models\Balance;
-use IFRS\Models\LineItem;
-use IFRS\Models\Ledger;
-use IFRS\Models\Vat;
-
-use IFRS\Transactions\ClientInvoice;
-
 use IFRS\Exceptions\LineItemAccount;
 use IFRS\Exceptions\MainAccount;
+use IFRS\Models\Account;
+use IFRS\Models\Balance;
+use IFRS\Models\Ledger;
+use IFRS\Models\LineItem;
+use IFRS\Models\Vat;
+use IFRS\Tests\TestCase;
+use IFRS\Transactions\ClientInvoice;
 
 class ClientInvoiceTest extends TestCase
 {
@@ -28,13 +24,13 @@ class ClientInvoiceTest extends TestCase
     {
         $clientAccount = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         $clientInvoice = ClientInvoice::create([
-            "account_id" => $clientAccount->id,
+            "account_id"       => $clientAccount->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "narration"        => $this->faker->word,
         ]);
 
         $this->assertEquals($clientInvoice->account->name, $clientAccount->name);
@@ -52,31 +48,31 @@ class ClientInvoiceTest extends TestCase
         $clientInvoice = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "narration"        => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientInvoice->addLineItem($lineItem);
 
         $clientInvoice->post();
 
-        $debit = Ledger::where("entry_type", Balance::DEBIT)->get()[0];
+        $debit  = Ledger::where("entry_type", Balance::DEBIT)->get()[0];
         $credit = Ledger::where("entry_type", Balance::CREDIT)->get()[0];
 
         $this->assertEquals($debit->post_account, $clientInvoice->account->id);
@@ -86,7 +82,7 @@ class ClientInvoiceTest extends TestCase
         $this->assertEquals($debit->amount, 100);
         $this->assertEquals($credit->amount, 100);
 
-        $vat_debit = Ledger::where("entry_type", Balance::DEBIT)->get()[1];
+        $vat_debit  = Ledger::where("entry_type", Balance::DEBIT)->get()[1];
         $vat_credit = Ledger::where("entry_type", Balance::CREDIT)->get()[1];
 
         $this->assertEquals($vat_debit->post_account, $clientInvoice->account->id);
@@ -109,25 +105,25 @@ class ClientInvoiceTest extends TestCase
         $clientInvoice = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "narration"        => $this->faker->word,
         ]);
         $this->expectException(LineItemAccount::class);
         $this->expectExceptionMessage('Client Invoice LineItem Account must be of type Operating Revenue');
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientInvoice->addLineItem($lineItem);
@@ -145,25 +141,25 @@ class ClientInvoiceTest extends TestCase
         $clientInvoice = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "narration"        => $this->faker->word,
         ]);
         $this->expectException(MainAccount::class);
         $this->expectExceptionMessage('Client Invoice Main Account must be of type Receivable');
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientInvoice->addLineItem($lineItem);
@@ -180,12 +176,12 @@ class ClientInvoiceTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
         $transaction = new ClientInvoice([
-            "account_id" => $account->id,
+            "account_id"       => $account->id,
             "transaction_date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "narration"        => $this->faker->word,
         ]);
         $transaction->save();
 

@@ -22,10 +22,10 @@ class UnclearableTransaction extends IFRSException
      * @param string $message
      * @param int $code
      */
-    public function __construct(string $transactionType, array $transactionTypes, string $message = null, int $code = null)
+    public function __construct(string $transactionType, array $transactionTypes, ?string $message = null, ?int $code = null)
     {
         $transactionTypes = Transaction::getTypes($transactionTypes);
-        $transactionType = Transaction::getType($transactionType);
+        $transactionType  = Transaction::getType($transactionType);
 
         $error = $transactionType . " Transaction cannot be cleared. Transaction to be cleared must be one of: ";
         $error .= implode(", ", $transactionTypes) . ' ';

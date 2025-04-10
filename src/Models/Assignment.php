@@ -11,31 +11,26 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-use IFRS\Reports\AccountSchedule;
-
-use IFRS\Interfaces\Assignable;
-use IFRS\Interfaces\Segregatable;
-
-use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
-
+use IFRS\Exceptions\InsufficientBalance;
+use IFRS\Exceptions\InvalidClearanceAccount;
+use IFRS\Exceptions\InvalidClearanceCurrency;
+use IFRS\Exceptions\InvalidClearanceEntry;
+use IFRS\Exceptions\InvalidTransaction;
+use IFRS\Exceptions\MissingForexAccount;
+use IFRS\Exceptions\MixedAssignment;
+use IFRS\Exceptions\NegativeAmount;
 use IFRS\Exceptions\OverClearance;
 use IFRS\Exceptions\SelfClearance;
-use IFRS\Exceptions\NegativeAmount;
-use IFRS\Exceptions\MixedAssignment;
-use IFRS\Exceptions\UnpostedAssignment;
-use IFRS\Exceptions\InsufficientBalance;
-use IFRS\Exceptions\MissingForexAccount;
-use IFRS\Exceptions\InvalidClearanceEntry;
-use IFRS\Exceptions\UnclearableTransaction;
-use IFRS\Exceptions\InvalidClearanceAccount;
 use IFRS\Exceptions\UnassignableTransaction;
-use IFRS\Exceptions\InvalidClearanceCurrency;
-use IFRS\Exceptions\InvalidTransaction;
+use IFRS\Exceptions\UnclearableTransaction;
+use IFRS\Exceptions\UnpostedAssignment;
+use IFRS\Interfaces\Assignable;
+use IFRS\Interfaces\Segregatable;
+use IFRS\Reports\AccountSchedule;
+use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Segregating;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Assignment
@@ -51,9 +46,9 @@ use IFRS\Exceptions\InvalidTransaction;
  */
 class Assignment extends Model implements Segregatable
 {
+    use ModelTablePrefix;
     use Segregating;
     use SoftDeletes;
-    use ModelTablePrefix;
 
     /**
      * Clearable Transaction Types
@@ -61,10 +56,10 @@ class Assignment extends Model implements Segregatable
      * @var array
      */
 
-    const CLEARABLES = [
+    public const CLEARABLES = [
         Transaction::IN,
         Transaction::BL,
-        Transaction::JN
+        Transaction::JN,
     ];
 
     /**
@@ -73,12 +68,12 @@ class Assignment extends Model implements Segregatable
      * @var array
      */
 
-    const ASSIGNABLES = [
+    public const ASSIGNABLES = [
         Transaction::RC,
         Transaction::PY,
         Transaction::CN,
         Transaction::DN,
-        Transaction::JN
+        Transaction::JN,
     ];
 
     /**
@@ -100,7 +95,7 @@ class Assignment extends Model implements Segregatable
      * Bulk assign a transaction to outstanding Transactions, under FIFO (First in first out) methodology
      *
      * @param Assignable $transaction
-     * 
+     *
      * @return void
      */
 
@@ -115,11 +110,11 @@ class Assignment extends Model implements Segregatable
         foreach ($schedule->transactions as $outstanding) {
             $assignment = new Assignment([
                 'assignment_date' => Carbon::now(),
-                'transaction_id' => $transaction->id,
-                'cleared_id' => $outstanding->id,
-                'cleared_type' => $outstanding->cleared_type,
+                'transaction_id'  => $transaction->id,
+                'cleared_id'      => $outstanding->id,
+                'cleared_type'    => $outstanding->cleared_type,
             ]);
-            
+
             if ($outstanding->unclearedAmount > $balance) {
                 $assignment->amount = $balance;
                 $assignment->save();
@@ -139,15 +134,15 @@ class Assignment extends Model implements Segregatable
     public function save(array $options = []): bool
     {
         $transactionType = $this->transaction->transaction_type;
-        $clearedType = $this->cleared->transaction_type;
+        $clearedType     = $this->cleared->transaction_type;
 
         $transactionRate = $this->transaction->exchangeRate->rate;
-        $clearedRate = $this->cleared->exchangeRate->rate;
+        $clearedRate     = $this->cleared->exchangeRate->rate;
 
         $this->validate($transactionRate, $clearedRate, $transactionType, $clearedType);
 
         // Realize Forex differences
-        if (!bccomp($transactionRate, $clearedRate, config('ifrs.forex_scale')) == 0) {
+        if (0 == !bccomp($transactionRate, $clearedRate, config('ifrs.forex_scale'))) {
             Ledger::postForex($this, $transactionRate, $clearedRate);
         }
         return parent::save();
@@ -160,7 +155,7 @@ class Assignment extends Model implements Segregatable
      * @param float $clearedRate
      * @param string $transactionType
      * @param string $clearedType
-     * 
+     *
      * @return void
      */
     private function validate(float $transactionRate, float $clearedRate, string $transactionType, string $clearedType): void
@@ -178,7 +173,7 @@ class Assignment extends Model implements Segregatable
             throw new NegativeAmount("Assignment");
         }
 
-        if ($this->cleared_id == $this->transaction_id && $this->cleared_type == Transaction::MODELNAME) {
+        if ($this->cleared_id == $this->transaction_id && Transaction::MODELNAME == $this->cleared_type) {
             throw new SelfClearance();
         }
 
@@ -202,15 +197,15 @@ class Assignment extends Model implements Segregatable
             throw new InsufficientBalance($transactionType, $this->amount, $clearedType);
         }
 
-        if (bccomp($this->cleared->amount - $this->cleared->cleared_amount, $this->amount) == -1) {
+        if (-1 == bccomp($this->cleared->amount - $this->cleared->cleared_amount, $this->amount)) {
             throw new OverClearance($clearedType, $this->amount);
         }
 
-        if (!bccomp($transactionRate, $clearedRate, config('ifrs.forex_scale')) == 0 && !isset($this->forex_account_id)) {
+        if (0 == !bccomp($transactionRate, $clearedRate, config('ifrs.forex_scale')) && !isset($this->forex_account_id)) {
             throw new MissingForexAccount();
         }
 
-        if ($this->cleared_type != Balance::MODELNAME && count($this->cleared->assignments) > 0) {
+        if (Balance::MODELNAME != $this->cleared_type && count($this->cleared->assignments) > 0) {
             throw new MixedAssignment("Assigned", "Cleared");
         }
 
@@ -218,7 +213,7 @@ class Assignment extends Model implements Segregatable
             throw new MixedAssignment("Cleared", "Assigned");
         }
 
-        if($this->transaction->compound || $this->cleared->compound) {
+        if ($this->transaction->compound || $this->cleared->compound) {
             throw new InvalidTransaction();
         }
     }
@@ -230,7 +225,7 @@ class Assignment extends Model implements Segregatable
      */
     public function toString($type = false): string
     {
-        $classname = explode('\\', self::class);
+        $classname   = explode('\\', self::class);
         $description = 'Assigning ' . $this->transaction->transaction_no . ' on ' . $this->assignment_date;
         return $type ? array_pop($classname) . ': ' . $description : $description;
     }
@@ -272,6 +267,6 @@ class Assignment extends Model implements Segregatable
      */
     public function attributes(): object
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 }

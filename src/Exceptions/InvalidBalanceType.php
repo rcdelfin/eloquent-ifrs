@@ -14,7 +14,6 @@ use IFRS\Models\Balance;
 
 class InvalidBalanceType extends IFRSException
 {
-
     /**
      * Invalid Balance Type Exception
      *
@@ -22,7 +21,7 @@ class InvalidBalanceType extends IFRSException
      * @param string $message
      * @param int $code
      */
-    public function __construct(array $balanceTypes, string $message = null, int $code = null)
+    public function __construct(array $balanceTypes, ?string $message = null, ?int $code = null)
     {
         $balanceTypes = Balance::getTypes($balanceTypes);
 

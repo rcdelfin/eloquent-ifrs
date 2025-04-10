@@ -3,7 +3,6 @@
 namespace IFRS\Models;
 
 use IFRS\Traits\ModelTablePrefix;
-
 use Illuminate\Database\Eloquent\Model;
 
 class AppliedVat extends Model

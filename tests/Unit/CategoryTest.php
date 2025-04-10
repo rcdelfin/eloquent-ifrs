@@ -3,11 +3,6 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
 use IFRS\Models\Category;
@@ -15,9 +10,9 @@ use IFRS\Models\ExchangeRate;
 use IFRS\Models\LineItem;
 use IFRS\Models\RecycledObject;
 use IFRS\Models\ReportingPeriod;
-use IFRS\Models\Vat;
-
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\ClientInvoice;
+use IFRS\User;
 
 class CategoryTest extends TestCase
 {
@@ -29,27 +24,27 @@ class CategoryTest extends TestCase
     public function testCategoryRelationships()
     {
         $type = $this->faker->randomElement(
-            array_keys(config('ifrs')['accounts'])
+            array_keys(config('ifrs')['accounts']),
         );
         $category = new Category([
-            'name' => $this->faker->word,
+            'name'          => $this->faker->word,
             'category_type' => $type,
         ]);
         $category->save();
 
         $account = factory(Account::class)->create([
             "account_type" => $type,
-            "category_id" => $category->id,
+            "category_id"  => $category->id,
         ]);
 
         $this->assertEquals($category->accounts->first()->name, $account->name);
         $this->assertEquals(
             $category->toString(true),
-            Account::getType($category->category_type) . ' Category: ' . $category->name
+            Account::getType($category->category_type) . ' Category: ' . $category->name,
         );
         $this->assertEquals(
             $category->toString(),
-            $category->name
+            $category->name,
         );
         $this->assertEquals($category->type, Account::getType($type));
     }
@@ -61,16 +56,16 @@ class CategoryTest extends TestCase
      */
     public function testCategoryEntityScope()
     {
-        $user = factory(User::class)->create();
+        $user            = factory(User::class)->create();
         $user->entity_id = 2;
         $user->save();
 
         $this->be($user);
 
         $category = new Category([
-            'name' => $this->faker->word,
+            'name'          => $this->faker->word,
             'category_type' => $this->faker->randomElement(
-                array_keys(config('ifrs')['accounts'])
+                array_keys(config('ifrs')['accounts']),
             ),
         ]);
         $category->save();
@@ -91,9 +86,9 @@ class CategoryTest extends TestCase
     public function testCategoryRecycling()
     {
         $category = Category::create([
-            'name' => $this->faker->word,
+            'name'          => $this->faker->word,
             'category_type' => $this->faker->randomElement(
-                array_keys(config('ifrs')['accounts'])
+                array_keys(config('ifrs')['accounts']),
             ),
         ]);
         $category->delete();
@@ -130,76 +125,76 @@ class CategoryTest extends TestCase
     public function testCategoryAccountsBalances()
     {
         $clientCategory = factory(Category::class)->create([
-            "name" => "Category One",
-            'category_type' => Account::RECEIVABLE
+            "name"          => "Category One",
+            'category_type' => Account::RECEIVABLE,
         ]);
 
         $revenueCategory = factory(Category::class)->create([
-            "name" => "Category Two",
-            'category_type' => Account::OPERATING_REVENUE
+            "name"          => "Category Two",
+            'category_type' => Account::OPERATING_REVENUE,
         ]);
 
         $account1 = new Account([
-            'name' => $this->faker->name,
+            'name'         => $this->faker->name,
             'account_type' => Account::RECEIVABLE,
-            'category_id' => $clientCategory->id
+            'category_id'  => $clientCategory->id,
         ]);
         $account1->save();
 
         $account2 = new Account([
-            'name' => 'test revenue account',
+            'name'         => 'test revenue account',
             'account_type' => Account::OPERATING_REVENUE,
-            'category_id' => $revenueCategory->id
+            'category_id'  => $revenueCategory->id,
         ]);
         $account2->save();
 
         $account3 = new Account([
-            'name' => $this->faker->name,
+            'name'         => $this->faker->name,
             'account_type' => Account::RECEIVABLE,
-            'category_id' => $clientCategory->id
+            'category_id'  => $clientCategory->id,
         ]);
         $account3->save();
 
         $account4 = new Account([
-            'name' => $this->faker->name,
+            'name'         => $this->faker->name,
             'account_type' => Account::OPERATING_REVENUE,
-            'category_id' => $revenueCategory->id
+            'category_id'  => $revenueCategory->id,
         ]);
         $account4->save();
 
         factory(Balance::class, 3)->create([
-            "account_id" => $account1->id,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $account1->id,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 50
+            "balance"             => 50,
         ]);
 
         factory(Balance::class, 2)->create([
-            "account_id" => $account1->id,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $account1->id,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1
+                "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 40
+            "balance"             => 40,
         ]);
 
         //Client Invoice Transaction
         $clientInvoice = new ClientInvoice([
             "account_id" => $account3->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $line = new LineItem([
             'account_id' => $account2->id,
-            'narration' => $this->faker->sentence,
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => 100,
-            'quantity' => 1,
+            'narration'  => $this->faker->sentence,
+            'quantity'   => $this->faker->randomNumber(),
+            'amount'     => 100,
+            'quantity'   => 1,
         ]);
 
         $clientInvoice->addLineItem($line);
@@ -209,7 +204,7 @@ class CategoryTest extends TestCase
 
         $periodStart = ReportingPeriod::periodStart();
 
-        $clientCategoryBalances = $clientCategory->getAccountBalances($periodStart);
+        $clientCategoryBalances  = $clientCategory->getAccountBalances($periodStart);
         $revenueCategoryBalances = $revenueCategory->getAccountBalances($periodStart);
 
         $this->assertEquals($clientCategoryBalances["accounts"][0]->id, $account1->id);

@@ -2,21 +2,17 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
+use IFRS\Exceptions\MissingReportingCurrency;
+use IFRS\Exceptions\UnauthorizedUser;
+use IFRS\Exceptions\UnconfiguredLocale;
+use IFRS\Models\Account;
 use IFRS\Models\Currency;
 use IFRS\Models\Entity;
 use IFRS\Models\RecycledObject;
 use IFRS\Models\ReportingPeriod;
-use IFRS\Models\Account;
-
-use IFRS\Exceptions\UnauthorizedUser;
-use IFRS\Exceptions\UnconfiguredLocale;
-use IFRS\Exceptions\MissingReportingCurrency;
+use IFRS\Tests\TestCase;
+use IFRS\User;
+use Illuminate\Support\Facades\Auth;
 
 class EntityTest extends TestCase
 {
@@ -41,34 +37,34 @@ class EntityTest extends TestCase
         $this->be($user);
 
         $currency = factory(Currency::class)->create([
-            'name' => 'Test Currency'
+            'name' => 'Test Currency',
         ]);
 
         $entity->currency_id = $currency->id; // Reporting Currency must be explicitly set
         $entity->save();
 
         $period = factory(ReportingPeriod::class)->create([
-            'entity_id' => $entity->id,
-            'calendar_year' => date("Y")
+            'entity_id'     => $entity->id,
+            'calendar_year' => date("Y"),
         ]);
 
         $currency2 = factory(Currency::class)->create([
-            'name' => 'Test Currency 2'
+            'name' => 'Test Currency 2',
         ]);
 
         // Daughter entity
         $entity2 = new Entity([
-            'name' => $this->faker->company,
+            'name'        => $this->faker->company,
             'currency_id' => $currency2->id,
-            'parent_id' => $entity->id,
+            'parent_id'   => $entity->id,
         ]);
         $entity2->save();
 
         // Second daughter entity
         $entity3 = new Entity([
-            'name' => $this->faker->company,
+            'name'        => $this->faker->company,
             'currency_id' => $currency2->id,
-            'parent_id' => $entity->id,
+            'parent_id'   => $entity->id,
         ]);
         $entity3->save();
 
@@ -101,7 +97,7 @@ class EntityTest extends TestCase
     public function testEntityRecycling()
     {
         $entity = Entity::create([
-            'name' => $this->faker->company,
+            'name'        => $this->faker->company,
             'currency_id' => factory(Currency::class)->create()->id,
         ]);
 
@@ -161,8 +157,8 @@ class EntityTest extends TestCase
         $this->assertEquals($entity->locale, 'en_GB');
 
         $entity = new Entity([
-            'name' => $this->faker->company,
-            'locale' => 'ar_BH'
+            'name'   => $this->faker->company,
+            'locale' => 'ar_BH',
         ]);
         $entity->save();
 
@@ -177,8 +173,8 @@ class EntityTest extends TestCase
     public function testEntityLocaleException()
     {
         $entity = new Entity([
-            'name' => $this->faker->company,
-            'locale' => 'en_US'
+            'name'   => $this->faker->company,
+            'locale' => 'en_US',
         ]);
         $this->expectException(UnconfiguredLocale::class);
         $this->expectExceptionMessage('Locale en_US is not configured');
@@ -196,9 +192,9 @@ class EntityTest extends TestCase
         $entity = Auth::user()->entity;
 
         $currency = factory(Currency::class)->create([
-            'name' => 'Euros',
+            'name'          => 'Euros',
             'currency_code' => 'EUR',
-            'entity_id' => $entity->id
+            'entity_id'     => $entity->id,
         ]);
 
         $entity->currency()->associate($currency);
@@ -207,8 +203,8 @@ class EntityTest extends TestCase
         $this->assertEquals($entity->localizeAmount(1234567.891, 'EUR', 'de_DE'), "1.234.567,89\xc2\xa0€");
 
         $entity = new Entity([
-            'name' => $this->faker->company,
-            'locale' => 'ar_BH'
+            'name'   => $this->faker->company,
+            'locale' => 'ar_BH',
         ]);
         $entity->save();
 

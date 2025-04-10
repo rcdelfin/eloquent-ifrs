@@ -18,7 +18,8 @@ class AddEntityLocale extends Migration
             config('ifrs.table_prefix') . 'entities',
             function (Blueprint $table) {
                 $table->string('locale', 20)->default(config('ifrs.locales')[0]);
-        });
+            },
+        );
     }
 
     /**
@@ -29,12 +30,13 @@ class AddEntityLocale extends Migration
     public function down()
     {
         Schema::table(
-            config('ifrs.table_prefix') . 'entities', function(BLueprint $table)
-            {
-                if (config('database.default') == 'sqlite') {
+            config('ifrs.table_prefix') . 'entities',
+            function (Blueprint $table) {
+                if ('sqlite' == config('database.default')) {
                     DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
                 }
                 $table->dropColumn('locale');
-            });
+            },
+        );
     }
 }

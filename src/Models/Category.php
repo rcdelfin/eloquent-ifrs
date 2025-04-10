@@ -11,16 +11,13 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
-
+use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Category
@@ -35,10 +32,10 @@ use IFRS\Traits\ModelTablePrefix;
  */
 class Category extends Model implements Segregatable, Recyclable
 {
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use ModelTablePrefix;
 
     /**
      * The attributes that are mass assignable.
@@ -89,7 +86,7 @@ class Category extends Model implements Segregatable, Recyclable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**
@@ -100,7 +97,7 @@ class Category extends Model implements Segregatable, Recyclable
      *
      * @return array
      */
-    public function getAccountBalances(Carbon $startDate = null, Carbon $endDate = null)
+    public function getAccountBalances(?Carbon $startDate = null, ?Carbon $endDate = null)
     {
         $balances = ["total" => 0, "accounts" => []];
 
@@ -109,7 +106,7 @@ class Category extends Model implements Segregatable, Recyclable
         $reportingCurrency = $entity->currency_id;
 
         $periodStart = ReportingPeriod::periodStart($endDate, $entity);
-        $year = ReportingPeriod::year($endDate, $entity);
+        $year        = ReportingPeriod::year($endDate, $entity);
 
         foreach ($this->accounts as $account) {
 
@@ -118,7 +115,7 @@ class Category extends Model implements Segregatable, Recyclable
                 $closingBalance += $account->openingBalance($year)[$reportingCurrency];
             }
 
-            if ($closingBalance != 0) {
+            if (0 != $closingBalance) {
                 $account->closingBalance = $closingBalance;
 
                 $balances["accounts"][] = $account;

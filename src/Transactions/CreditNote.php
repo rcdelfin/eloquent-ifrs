@@ -11,18 +11,15 @@
 namespace IFRS\Transactions;
 
 use IFRS\Interfaces\Assignable;
-
 use IFRS\Interfaces\Sells;
-
+use IFRS\Models\Transaction;
 use IFRS\Traits\Assigning;
 use IFRS\Traits\Selling;
 
-use IFRS\Models\Transaction;
-
 class CreditNote extends Transaction implements Sells, Assignable
 {
-    use Selling;
     use Assigning;
+    use Selling;
 
     /**
      * Transaction Number prefix
@@ -30,7 +27,7 @@ class CreditNote extends Transaction implements Sells, Assignable
      * @var string
      */
 
-    const PREFIX = Transaction::CN;
+    public const PREFIX = Transaction::CN;
 
     /**
      * Construct new ContraEntry
@@ -39,7 +36,7 @@ class CreditNote extends Transaction implements Sells, Assignable
      */
     public function __construct($attributes = [])
     {
-        $attributes['credited'] = true;
+        $attributes['credited']         = true;
         $attributes['transaction_type'] = self::PREFIX;
 
         parent::__construct($attributes);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -9,18 +10,15 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
+use IFRS\Exceptions\InvalidAccountType;
+use IFRS\Exceptions\MissingVatAccount;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
-
+use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
-
-use IFRS\Exceptions\MissingVatAccount;
-use IFRS\Exceptions\InvalidAccountType;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Vat
@@ -37,10 +35,10 @@ use IFRS\Exceptions\InvalidAccountType;
  */
 class Vat extends Model implements Segregatable, Recyclable
 {
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use ModelTablePrefix;
 
     /**
      * The attributes that are mass assignable.
@@ -62,9 +60,9 @@ class Vat extends Model implements Segregatable, Recyclable
      *
      * @return string
      */
-    public function toString($type = false) : string
+    public function toString($type = false): string
     {
-        $classname = explode('\\', self::class);
+        $classname   = explode('\\', self::class);
         $description = $this->name . ' (' . $this->code . ') at ' . number_format($this->rate, 2) . '%';
         return $type ? array_pop($classname) . ': ' . $description : $description;
     }
@@ -74,9 +72,9 @@ class Vat extends Model implements Segregatable, Recyclable
      *
      * @return object
      */
-    public function attributes() : object
+    public function attributes(): object
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**
@@ -98,7 +96,7 @@ class Vat extends Model implements Segregatable, Recyclable
             $this->rate = abs($this->rate);
         }
 
-        if ($this->rate == 0) {
+        if (0 == $this->rate) {
             $this->account_id = null;
         }
 
@@ -106,7 +104,7 @@ class Vat extends Model implements Segregatable, Recyclable
             throw new MissingVatAccount($this->rate);
         }
 
-        if ($this->rate > 0 && $this->account->account_type != Account::CONTROL) {
+        if ($this->rate > 0 && Account::CONTROL != $this->account->account_type) {
             throw new InvalidAccountType('Vat', Account::CONTROL);
         }
 

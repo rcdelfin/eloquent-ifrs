@@ -17,7 +17,8 @@ class AddRateColumn extends Migration
             config('ifrs.table_prefix') . 'ledgers',
             function (Blueprint $table) {
                 $table->decimal('rate', 13, 4)->default(1);
-        });
+            },
+        );
     }
 
     /**
@@ -28,8 +29,10 @@ class AddRateColumn extends Migration
     public function down()
     {
         Schema::table(
-        config('ifrs.table_prefix') . 'ledgers', function(BLueprint $table){
-            $table->dropColumn('rate');
-        });
+            config('ifrs.table_prefix') . 'ledgers',
+            function (Blueprint $table) {
+                $table->dropColumn('rate');
+            },
+        );
     }
 }

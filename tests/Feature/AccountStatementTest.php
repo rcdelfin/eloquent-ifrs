@@ -3,32 +3,26 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
+use IFRS\Exceptions\MissingAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Balance;
+use IFRS\Models\Currency;
 use IFRS\Models\ExchangeRate;
 use IFRS\Models\LineItem;
-use IFRS\Models\Currency;
 use IFRS\Models\Vat;
-
 use IFRS\Reports\AccountStatement;
-
-use IFRS\Transactions\CashSale;
-use IFRS\Transactions\ContraEntry;
-use IFRS\Transactions\ClientReceipt;
+use IFRS\Tests\TestCase;
 use IFRS\Transactions\CashPurchase;
-use IFRS\Transactions\SupplierPayment;
-use IFRS\Transactions\JournalEntry;
+use IFRS\Transactions\CashSale;
 use IFRS\Transactions\ClientInvoice;
+use IFRS\Transactions\ClientReceipt;
+use IFRS\Transactions\ContraEntry;
 use IFRS\Transactions\CreditNote;
-use IFRS\Transactions\SupplierBill;
 use IFRS\Transactions\DebitNote;
-
-use IFRS\Exceptions\MissingAccount;
+use IFRS\Transactions\JournalEntry;
+use IFRS\Transactions\SupplierBill;
+use IFRS\Transactions\SupplierPayment;
+use Illuminate\Support\Facades\Auth;
 
 class AccountStatementTest extends TestCase
 {
@@ -56,53 +50,53 @@ class AccountStatementTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::BANK,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //opening balances
         factory(Balance::class, 3)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "currency_id" => $account->currency_id,
-            "balance" => 50
+            "currency_id"         => $account->currency_id,
+            "balance"             => 50,
         ]);
 
         factory(Balance::class, 2)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "currency_id" => $account->currency_id,
-            "balance" => 40
+            "currency_id"         => $account->currency_id,
+            "balance"             => 40,
         ]);
 
         //Cash Sale Transaction
         $cashSale = new CashSale([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "account_id"  => $account->id,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $account->currency_id,
         ]);
         $cashSale->save();
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $cashSale->addLineItem($lineItem);
@@ -113,18 +107,18 @@ class AccountStatementTest extends TestCase
         $creditContraEntry = new ContraEntry([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $account->currency_id,
+                'category_id'  => null,
+                'currency_id'  => $account->currency_id,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $account->currency_id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"     => 50,
             "account_id" => $account->id,
-            "quantity" => 1,
+            "quantity"   => 1,
         ]);
         $creditContraEntry->addLineItem($lineItem);
 
@@ -132,18 +126,18 @@ class AccountStatementTest extends TestCase
 
         //Debit Contra Entry Transaction
         $debitContraEntry = new ContraEntry([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "account_id"  => $account->id,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $account->currency_id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"     => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $account->currency_id,
+                'category_id'  => null,
+                'currency_id'  => $account->currency_id,
             ])->id,
             "quantity" => 1,
         ]);
@@ -155,17 +149,17 @@ class AccountStatementTest extends TestCase
         $clientReceipt = new ClientReceipt([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $account->currency_id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => $account->id,
-            "quantity" => 1,
+            "quantity"   => 1,
         ]);
         $clientReceipt->addLineItem($lineItem);
 
@@ -173,24 +167,24 @@ class AccountStatementTest extends TestCase
 
         //Cash Purchase Transaction
         $cashPurchase = new CashPurchase([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "account_id"  => $account->id,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $account->currency_id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 75,
+            "amount"     => 75,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OTHER_EXPENSE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $cashPurchase->addLineItem($lineItem);
@@ -201,17 +195,17 @@ class AccountStatementTest extends TestCase
         $supplierPayment = new SupplierPayment([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             'currency_id' => $account->currency_id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"     => 50,
             "account_id" => $account->id,
-            "quantity" => 1,
+            "quantity"   => 1,
         ]);
         $supplierPayment->addLineItem($lineItem);
 
@@ -219,14 +213,14 @@ class AccountStatementTest extends TestCase
 
         //Credit Journal Entry Transaction
         $creditJournalEntry = new JournalEntry([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "account_id"  => $account->id,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $account->currency_id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"   => 50,
             "quantity" => 1,
         ]);
         $creditJournalEntry->addLineItem($lineItem);
@@ -236,23 +230,23 @@ class AccountStatementTest extends TestCase
         //Debit Joutnal Entry Transaction
         $debitJournalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $account->currency_id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"     => 50,
             "account_id" => $account->id,
-            "quantity" => 1,
+            "quantity"   => 1,
         ]);
         $debitJournalEntry->addLineItem($lineItem);
 
         $debitJournalEntry->post();
 
-        $statement = new AccountStatement($account->id);
+        $statement    = new AccountStatement($account->id);
         $transactions = $statement->getTransactions();
 
         $this->assertEquals($statement->balances['opening'], 70);
@@ -301,49 +295,49 @@ class AccountStatementTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //opening balances
         factory(Balance::class, 3)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 50
+            "balance"             => 50,
         ]);
 
         factory(Balance::class, 2)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 40,
+            "balance"             => 40,
         ]);
 
         //Client Invoice Transaction
         $clientInvoice = new ClientInvoice([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientInvoice->addLineItem($lineItem);
@@ -353,22 +347,22 @@ class AccountStatementTest extends TestCase
         //Credit Note Transaction
         $creditNote = new CreditNote([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"     => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $creditNote->addLineItem($lineItem);
@@ -376,24 +370,24 @@ class AccountStatementTest extends TestCase
         $creditNote->post();
 
         //Client Receipt Transaction
-        $currency = factory(Currency::class)->create();
+        $currency      = factory(Currency::class)->create();
         $clientReceipt = new ClientReceipt([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "account_id"  => $account->id,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $currency->id,
         ]);
 
         $lineItem = factory(LineItem::class)->create(
             [
-                "amount" => 100,
+                "amount"     => 100,
                 "account_id" => factory(Account::class)->create([
                     "account_type" => Account::BANK,
-                    'category_id' => null,
-                    'currency_id' => $currency->id,
+                    'category_id'  => null,
+                    'currency_id'  => $currency->id,
                 ])->id,
                 "quantity" => 1,
-            ]
+            ],
         );
         $clientReceipt->addLineItem($lineItem);
 
@@ -402,12 +396,12 @@ class AccountStatementTest extends TestCase
         //Credit Journal Entry Transaction
         $creditJournalEntry = new JournalEntry([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"   => 50,
             "quantity" => 1,
         ]);
         $creditJournalEntry->addLineItem($lineItem);
@@ -417,24 +411,24 @@ class AccountStatementTest extends TestCase
         //Debit Journal Entry Transaction
         $debitJournalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
-            "date" => Carbon::now(),
+            "date"      => Carbon::now(),
             "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create(
             [
-                "amount" => 50,
+                "amount"     => 50,
                 "account_id" => $account->id,
-                "quantity" => 1,
-            ]
+                "quantity"   => 1,
+            ],
         );
         $debitJournalEntry->addLineItem($lineItem);
 
         $debitJournalEntry->post();
 
-        $statement = new AccountStatement($account->id);
+        $statement    = new AccountStatement($account->id);
         $transactions = $statement->getTransactions();
 
         $this->assertEquals($statement->balances['opening'], 70);
@@ -471,49 +465,49 @@ class AccountStatementTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         //opening balances
         factory(Balance::class, 3)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 50
+            "balance"             => 50,
         ]);
 
         factory(Balance::class, 2)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 "rate" => 1,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 40
+            "balance"             => 40,
         ]);
 
         //Supplier Bill Transaction
         $supplierBill = new SupplierBill([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_EXPENSE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $supplierBill->addLineItem($lineItem);
@@ -523,22 +517,22 @@ class AccountStatementTest extends TestCase
         //Debit Note Transaction
         $debitNote = new DebitNote([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"     => 50,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OVERHEAD_EXPENSE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $debitNote->addLineItem($lineItem);
@@ -546,20 +540,20 @@ class AccountStatementTest extends TestCase
         $debitNote->post();
 
         //Supplier Payment Transaction
-        $currency = factory(Currency::class)->create();
+        $currency        = factory(Currency::class)->create();
         $supplierPayment = new SupplierPayment([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "account_id"  => $account->id,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             'currency_id' => $currency->id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::BANK,
-                'category_id' => null,
-                'currency_id' => $currency->id,
+                'category_id'  => null,
+                'currency_id'  => $currency->id,
             ])->id,
             "quantity" => 1,
         ]);
@@ -570,12 +564,12 @@ class AccountStatementTest extends TestCase
         //Credit Journal Entry Transaction
         $creditJournalEntry = new JournalEntry([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"   => 50,
             "quantity" => 1,
         ]);
         $creditJournalEntry->addLineItem($lineItem);
@@ -585,22 +579,22 @@ class AccountStatementTest extends TestCase
         //Debit Journal Entry Transaction
         $debitJournalEntry = new JournalEntry([
             "account_id" => factory(Account::class)->create([
-                'category_id' => null
+                'category_id' => null,
             ])->id,
-            "date" => Carbon::now(),
+            "date"      => Carbon::now(),
             "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 50,
+            "amount"     => 50,
             "account_id" => $account->id,
-            "quantity" => 1,
+            "quantity"   => 1,
         ]);
         $debitJournalEntry->addLineItem($lineItem);
 
         $debitJournalEntry->post();
 
-        $statement = new AccountStatement($account->id);
+        $statement    = new AccountStatement($account->id);
         $transactions = $statement->getTransactions();
 
         $this->assertEquals($statement->balances['opening'], -70);
@@ -637,105 +631,105 @@ class AccountStatementTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id' => null
+            'category_id'  => null,
         ]);
 
         $rate = factory(ExchangeRate::class)->create([
-            'rate' => 105
+            'rate' => 105,
         ]);
 
         $baseCurrency = Auth::user()->entity->currency_id;
 
         // base currency opening balances
         factory(Balance::class)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::DEBIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1,
+                "rate"        => 1,
                 "currency_id" => $baseCurrency,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "currency_id" => $baseCurrency,
-            "balance" => 50
+            "currency_id"         => $baseCurrency,
+            "balance"             => 50,
         ]);
 
         factory(Balance::class)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::CREDIT,
+            "account_id"       => $account->id,
+            "balance_type"     => Balance::CREDIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate" => 1,
+                "rate"        => 1,
                 "currency_id" => $baseCurrency,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            "currency_id" => $baseCurrency,
-            "balance" => 40,
+            "currency_id"         => $baseCurrency,
+            "balance"             => 40,
         ]);
 
         // Foreign currency opening balances
         factory(Balance::class)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::DEBIT,
-            "exchange_rate_id" => $rate->id,
-            "currency_id" => $rate->currency_id,
+            "account_id"          => $account->id,
+            "balance_type"        => Balance::DEBIT,
+            "exchange_rate_id"    => $rate->id,
+            "currency_id"         => $rate->currency_id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 40
+            "balance"             => 40,
         ]);
 
         factory(Balance::class)->create([
-            "account_id" => $account->id,
-            "balance_type" => Balance::CREDIT,
-            "exchange_rate_id" => $rate->id,
-            "currency_id" => $rate->currency_id,
+            "account_id"          => $account->id,
+            "balance_type"        => Balance::CREDIT,
+            "exchange_rate_id"    => $rate->id,
+            "currency_id"         => $rate->currency_id,
             'reporting_period_id' => $this->period->id,
-            "balance" => 50,
+            "balance"             => 50,
         ]);
 
         // Base currency debit transaction
         $clientInvoice1 = new ClientInvoice([
             "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "date"       => Carbon::now(),
+            "narration"  => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientInvoice1->addLineItem($lineItem);
 
-        $clientInvoice1->post();     
+        $clientInvoice1->post();
 
         // Foreign currency debit transaction
         $clientInvoice2 = new ClientInvoice([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "currency_id" => $rate->currency_id,
+            "account_id"       => $account->id,
+            "date"             => Carbon::now(),
+            "narration"        => $this->faker->word,
+            "currency_id"      => $rate->currency_id,
             "exchange_rate_id" => $rate->id,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount" => 100,
+            "amount"     => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id' => null
+                'category_id'  => null,
             ])->id,
             "quantity" => 1,
         ]);
         $lineItem->addVat(
             factory(Vat::class)->create([
-                "rate" => 16
-            ])
+                "rate" => 16,
+            ]),
         );
         $lineItem->save();
         $clientInvoice2->addLineItem($lineItem);
@@ -744,22 +738,22 @@ class AccountStatementTest extends TestCase
 
         // Base currency credit transaction
         $clientReceipt1 = new ClientReceipt([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
+            "account_id"  => $account->id,
+            "date"        => Carbon::now(),
+            "narration"   => $this->faker->word,
             "currency_id" => $baseCurrency,
         ]);
 
         $lineItem = factory(LineItem::class)->create(
             [
-                "amount" => 100,
+                "amount"     => 100,
                 "account_id" => factory(Account::class)->create([
                     "account_type" => Account::BANK,
-                    'category_id' => null,
-                    "currency_id" => $baseCurrency,
+                    'category_id'  => null,
+                    "currency_id"  => $baseCurrency,
                 ])->id,
                 "quantity" => 1,
-            ]
+            ],
         );
         $clientReceipt1->addLineItem($lineItem);
 
@@ -767,30 +761,30 @@ class AccountStatementTest extends TestCase
 
         // Foreign currency credit transaction
         $clientReceipt2 = new ClientReceipt([
-            "account_id" => $account->id,
-            "date" => Carbon::now(),
-            "narration" => $this->faker->word,
-            "currency_id" => $rate->currency_id,
+            "account_id"       => $account->id,
+            "date"             => Carbon::now(),
+            "narration"        => $this->faker->word,
+            "currency_id"      => $rate->currency_id,
             "exchange_rate_id" => $rate->id,
         ]);
 
         $lineItem = factory(LineItem::class)->create(
             [
-                "amount" => 100,
+                "amount"     => 100,
                 "account_id" => factory(Account::class)->create([
                     "account_type" => Account::BANK,
-                    'category_id' => null,
-                    "currency_id" => $rate->currency_id,
+                    'category_id'  => null,
+                    "currency_id"  => $rate->currency_id,
                 ])->id,
                 "quantity" => 1,
-            ]
+            ],
         );
         $clientReceipt2->addLineItem($lineItem);
 
         $clientReceipt2->post();
 
         // All transactions
-        $statement = new AccountStatement($account->id);
+        $statement    = new AccountStatement($account->id);
         $transactions = $statement->getTransactions();
 
         $this->assertEquals($statement->balances['opening'], -1040);
@@ -814,7 +808,7 @@ class AccountStatementTest extends TestCase
         $this->assertEquals($statement->balances['closing'], 656.0);
 
         // Base Currency transactions
-        $statement = new AccountStatement($account->id, $baseCurrency);
+        $statement    = new AccountStatement($account->id, $baseCurrency);
         $transactions = $statement->getTransactions();
 
         $this->assertEquals($statement->balances['opening'], 10);
@@ -830,7 +824,7 @@ class AccountStatementTest extends TestCase
         $this->assertEquals($statement->balances['closing'], 26);
 
         // Foreign Currency transactions
-        $statement = new AccountStatement($account->id, $rate->currency_id);
+        $statement    = new AccountStatement($account->id, $rate->currency_id);
         $transactions = $statement->getTransactions();
 
         $this->assertEquals($statement->balances['opening'], -10);

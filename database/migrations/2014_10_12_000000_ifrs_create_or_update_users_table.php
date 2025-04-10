@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -8,7 +9,6 @@
  */
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
 
 class IfrsCreateOrUpdateUsersTable extends Migration
@@ -28,8 +28,9 @@ class IfrsCreateOrUpdateUsersTable extends Migration
                     $table->unsignedBigInteger('entity_id')->nullable();
                     // *permanent* deletion
                     $table->dateTime('destroyed_at')->nullable();
-            });
-        }else{
+                },
+            );
+        } else {
             Schema::create(
                 config('ifrs.table_prefix') . 'users',
                 function (Blueprint $table) {
@@ -55,7 +56,8 @@ class IfrsCreateOrUpdateUsersTable extends Migration
 
                     // flag for created table
                     $table->boolean('created')->nullable();
-            });
+                },
+            );
         }
     }
 
@@ -66,16 +68,15 @@ class IfrsCreateOrUpdateUsersTable extends Migration
      */
     public function down()
     {
-        if (Schema::hasColumn(config('ifrs.table_prefix') . 'users', 'created'))
-        {
+        if (Schema::hasColumn(config('ifrs.table_prefix') . 'users', 'created')) {
             Schema::dropIfExists(config('ifrs.table_prefix') . 'users');
-        }else{
+        } else {
             Schema::table(
                 config('ifrs.table_prefix') . 'users',
                 function (Blueprint $table) {
                     $table->dropColumn('entity_id');
                     $table->dropColumn('destroyed_at');
-                }
+                },
             );
         }
     }

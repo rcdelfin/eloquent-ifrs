@@ -11,29 +11,26 @@
 namespace IFRS\Reports;
 
 use Carbon\Carbon;
-
-use IFRS\Models\Balance;
+use IFRS\Exceptions\InvalidAccountType;
+use IFRS\Exceptions\MissingAccount;
 use IFRS\Models\Account;
 use IFRS\Models\Assignment;
-use IFRS\Models\Transaction;
+use IFRS\Models\Balance;
 use IFRS\Models\ReportingPeriod;
-
-use IFRS\Exceptions\MissingAccount;
-use IFRS\Exceptions\InvalidAccountType;
+use IFRS\Models\Transaction;
 
 class AccountSchedule extends AccountStatement
 {
-
     /**
      * Account Schedule balances.
      *
      * @var array
      */
     public $balances = [
-        "originalAmount" => 0,
-        "amountCleared" => 0,
+        "originalAmount"  => 0,
+        "amountCleared"   => 0,
         "unclearedAmount" => 0,
-        "totalAge" => 0,
+        "totalAge"        => 0,
     ];
 
     /**
@@ -43,7 +40,7 @@ class AccountSchedule extends AccountStatement
      * @param int $currencyId
      * @param string $endDate
      */
-    public function __construct(int $accountId = null, int $currencyId = null, string $endDate = null)
+    public function __construct(?int $accountId = null, ?int $currencyId = null, ?string $endDate = null)
     {
         if (is_null($accountId)) {
             throw new MissingAccount("Account Schedule");
@@ -64,7 +61,7 @@ class AccountSchedule extends AccountStatement
     {
         $entity = $this->account->entity;
 
-        $periodId = ReportingPeriod::getPeriod($this->period['endDate'], $entity)->id;
+        $periodId   = ReportingPeriod::getPeriod($this->period['endDate'], $entity)->id;
         $currencyId = $this->currencyId;
 
         // Opening Balances
@@ -86,19 +83,19 @@ class AccountSchedule extends AccountStatement
         $transactions = $this->account->transactionsQuery(
             $this->period['startDate'],
             $this->period['endDate'],
-            $this->currencyId
+            $this->currencyId,
         )->whereIn(
             'transaction_type',
-            Assignment::CLEARABLES
+            Assignment::CLEARABLES,
         )->select(config('ifrs.table_prefix') . 'transactions.id');
 
         foreach ($transactions->get() as $transaction) {
             $transaction = Transaction::find($transaction->id);
 
             if (
-                $transaction->transaction_type == Transaction::JN
-                && (($this->account->account_type == Account::RECEIVABLE && $transaction->is_credited)
-                    || ($this->account->account_type == Account::PAYABLE && !$transaction->is_credited))
+                Transaction::JN == $transaction->transaction_type
+                && ((Account::RECEIVABLE == $this->account->account_type && $transaction->is_credited)
+                    || (Account::PAYABLE == $this->account->account_type && !$transaction->is_credited))
             ) {
                 continue;
             }
@@ -123,8 +120,8 @@ class AccountSchedule extends AccountStatement
         $rate = is_null($this->currencyId) ? $transaction->exchangeRate->rate : 1;
 
         $transaction->originalAmount = $transaction->amount * $rate;
-        $transaction->amountCleared = $transaction->clearedAmount * $rate;
-        $unclearedAmount = $transaction->originalAmount - $transaction->clearedAmount * $rate;
+        $transaction->amountCleared  = $transaction->clearedAmount * $rate;
+        $unclearedAmount             = $transaction->originalAmount - $transaction->clearedAmount * $rate;
 
         if ($unclearedAmount > 0) {
 
@@ -134,8 +131,8 @@ class AccountSchedule extends AccountStatement
                 $transaction->transactionType = $transaction->type;
             }
 
-            $date = Carbon::parse($transaction->transaction_date);
-            $transaction->age = $date->diffInDays($this->period['endDate']);
+            $date                         = Carbon::parse($transaction->transaction_date);
+            $transaction->age             = $date->diffInDays($this->period['endDate']);
             $transaction->transactionDate = Carbon::parse($transaction->transaction_date)->toFormattedDateString();
 
             $this->balances["originalAmount"] += $transaction->originalAmount;

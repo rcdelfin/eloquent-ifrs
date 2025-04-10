@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eloquent IFRS Accounting
  *
@@ -6,10 +7,10 @@
  * @copyright Edward Mungai, 2020, Germany
  * @license MIT
  */
+use IFRS\Models\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use IFRS\Models\Transaction;
 
 class CreateIfrsTransactionsTable extends Migration
 {
@@ -20,7 +21,7 @@ class CreateIfrsTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create(config('ifrs.table_prefix').'transactions', function (Blueprint $table) {
+        Schema::create(config('ifrs.table_prefix') . 'transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             // relationships
@@ -30,10 +31,10 @@ class CreateIfrsTransactionsTable extends Migration
             $table->unsignedBigInteger('exchange_rate_id');
 
             // constraints
-            $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix').'entities');
-            $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix').'currencies');
-            $table->foreign('exchange_rate_id')->references('id')->on(config('ifrs.table_prefix').'exchange_rates');
-            $table->foreign('account_id')->references('id')->on(config('ifrs.table_prefix').'accounts');
+            $table->foreign('entity_id')->references('id')->on(config('ifrs.table_prefix') . 'entities');
+            $table->foreign('currency_id')->references('id')->on(config('ifrs.table_prefix') . 'currencies');
+            $table->foreign('exchange_rate_id')->references('id')->on(config('ifrs.table_prefix') . 'exchange_rates');
+            $table->foreign('account_id')->references('id')->on(config('ifrs.table_prefix') . 'accounts');
 
             // attributes
             $table->dateTime('transaction_date', 0);
@@ -71,6 +72,6 @@ class CreateIfrsTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('ifrs.table_prefix').'transactions');
+        Schema::dropIfExists(config('ifrs.table_prefix') . 'transactions');
     }
 }

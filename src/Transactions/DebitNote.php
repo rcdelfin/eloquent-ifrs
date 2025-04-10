@@ -12,16 +12,14 @@ namespace IFRS\Transactions;
 
 use IFRS\Interfaces\Assignable;
 use IFRS\Interfaces\Buys;
-
+use IFRS\Models\Transaction;
 use IFRS\Traits\Assigning;
 use IFRS\Traits\Buying;
 
-use IFRS\Models\Transaction;
-
 class DebitNote extends Transaction implements Buys, Assignable
 {
-    use Buying;
     use Assigning;
+    use Buying;
 
     /**
      * Transaction Number prefix
@@ -29,7 +27,7 @@ class DebitNote extends Transaction implements Buys, Assignable
      * @var string
      */
 
-    const PREFIX = Transaction::DN;
+    public const PREFIX = Transaction::DN;
 
     /**
      * Construct new ContraEntry
@@ -38,7 +36,7 @@ class DebitNote extends Transaction implements Buys, Assignable
      */
     public function __construct($attributes = [])
     {
-        $attributes['credited'] = false;
+        $attributes['credited']         = false;
         $attributes['transaction_type'] = self::PREFIX;
 
         parent::__construct($attributes);

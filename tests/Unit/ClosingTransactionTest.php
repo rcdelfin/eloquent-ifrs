@@ -2,16 +2,14 @@
 
 namespace Tests\Unit;
 
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
 use IFRS\Models\ClosingTransaction;
 use IFRS\Models\Currency;
 use IFRS\Models\Entity;
 use IFRS\Models\RecycledObject;
 use IFRS\Models\ReportingPeriod;
 use IFRS\Models\Transaction;
+use IFRS\Tests\TestCase;
+use IFRS\User;
 
 class ClosingTransactionTest extends TestCase
 {
@@ -23,15 +21,15 @@ class ClosingTransactionTest extends TestCase
     public function testclosingTransactionRelationships()
     {
         $transaction = factory(Transaction::class)->create([
-            'transaction_type' => Transaction::JN
+            'transaction_type' => Transaction::JN,
         ]);
         $reportingPeriod = factory(ReportingPeriod::class)->create();
-        $currency = factory(Currency::class)->create();
+        $currency        = factory(Currency::class)->create();
 
         $closingTransaction = ClosingTransaction::create([
-            'transaction_id' => $transaction->id,
+            'transaction_id'      => $transaction->id,
             'reporting_period_id' => $reportingPeriod->id,
-            'currency_id' => $currency->id,
+            'currency_id'         => $currency->id,
         ]);
 
         $closingTransaction->attributes();
@@ -40,14 +38,14 @@ class ClosingTransactionTest extends TestCase
         $this->assertEquals($closingTransaction->transaction->account_id, $transaction->account_id);
         $this->assertEquals($closingTransaction->reportingPeriod->calendar_year, $reportingPeriod->calendar_year);
         $this->assertEquals($closingTransaction->currency->currency_code, $currency->currency_code);
-        
+
         $this->assertEquals(
             $closingTransaction->toString(true),
-            'ClosingTransaction: ' . $reportingPeriod->calendar_year . ' Forex Translation Transaction ' . $transaction->toString() 
+            'ClosingTransaction: ' . $reportingPeriod->calendar_year . ' Forex Translation Transaction ' . $transaction->toString(),
         );
         $this->assertEquals(
             $closingTransaction->toString(),
-            $reportingPeriod->calendar_year . ' Forex Translation Transaction ' . $transaction->toString() 
+            $reportingPeriod->calendar_year . ' Forex Translation Transaction ' . $transaction->toString(),
         );
     }
 
@@ -75,10 +73,10 @@ class ClosingTransactionTest extends TestCase
 
         ClosingTransaction::create([
             'transaction_id' => factory(Transaction::class)->create([
-                'transaction_type' => Transaction::JN
+                'transaction_type' => Transaction::JN,
             ])->id,
             'reporting_period_id' => factory(ReportingPeriod::class)->create()->id,
-            'currency_id' => factory(Currency::class)->create()->id,
+            'currency_id'         => factory(Currency::class)->create()->id,
         ]);
 
         $this->assertEquals(count(ClosingTransaction::all()), 1);
@@ -96,12 +94,12 @@ class ClosingTransactionTest extends TestCase
     {
         $transaction = ClosingTransaction::create([
             'transaction_id' => factory(Transaction::class)->create([
-                'transaction_type' => Transaction::JN
+                'transaction_type' => Transaction::JN,
             ])->id,
             'reporting_period_id' => factory(ReportingPeriod::class)->create()->id,
-            'currency_id' => factory(Currency::class)->create()->id,
+            'currency_id'         => factory(Currency::class)->create()->id,
         ]);
-        
+
         $transaction->delete();
 
         $recycled = RecycledObject::all()->first();

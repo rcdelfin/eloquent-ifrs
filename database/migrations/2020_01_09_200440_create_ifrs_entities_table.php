@@ -46,7 +46,7 @@ class CreateIfrsEntitiesTable extends Migration
                 $table->softDeletes();
 
                 $table->timestamps();
-            }
+            },
         );
     }
 

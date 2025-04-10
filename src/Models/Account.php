@@ -11,22 +11,18 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\DB;
+use IFRS\Exceptions\HangingTransactions;
+use IFRS\Exceptions\InvalidCategoryType;
+use IFRS\Exceptions\MissingAccountType;
+use IFRS\Interfaces\Recyclable;
+use IFRS\Interfaces\Segregatable;
+use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Recycling;
+use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
-
-use IFRS\Interfaces\Recyclable;
-use IFRS\Interfaces\Segregatable;
-
-use IFRS\Traits\Recycling;
-use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
-
-use IFRS\Exceptions\MissingAccountType;
-use IFRS\Exceptions\HangingTransactions;
-use IFRS\Exceptions\InvalidCategoryType;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Account
@@ -45,10 +41,10 @@ use IFRS\Exceptions\InvalidCategoryType;
  */
 class Account extends Model implements Recyclable, Segregatable
 {
+    use ModelTablePrefix;
+    use Recycling;
     use Segregating;
     use SoftDeletes;
-    use Recycling;
-    use ModelTablePrefix;
 
     /**
      * Account Type.
@@ -56,24 +52,24 @@ class Account extends Model implements Recyclable, Segregatable
      * @var string
      */
 
-    const NON_CURRENT_ASSET = 'NON_CURRENT_ASSET';
-    const CONTRA_ASSET = 'CONTRA_ASSET';
-    const INVENTORY = 'INVENTORY';
-    const BANK = 'BANK';
-    const CURRENT_ASSET = 'CURRENT_ASSET';
-    const RECEIVABLE = 'RECEIVABLE';
-    const NON_CURRENT_LIABILITY = 'NON_CURRENT_LIABILITY';
-    const CONTROL = 'CONTROL';
-    const CURRENT_LIABILITY = 'CURRENT_LIABILITY';
-    const PAYABLE = 'PAYABLE';
-    const EQUITY = 'EQUITY';
-    const OPERATING_REVENUE = 'OPERATING_REVENUE';
-    const OPERATING_EXPENSE = 'OPERATING_EXPENSE';
-    const NON_OPERATING_REVENUE = 'NON_OPERATING_REVENUE';
-    const DIRECT_EXPENSE = 'DIRECT_EXPENSE';
-    const OVERHEAD_EXPENSE = 'OVERHEAD_EXPENSE';
-    const OTHER_EXPENSE = 'OTHER_EXPENSE';
-    const RECONCILIATION = 'RECONCILIATION';
+    public const NON_CURRENT_ASSET     = 'NON_CURRENT_ASSET';
+    public const CONTRA_ASSET          = 'CONTRA_ASSET';
+    public const INVENTORY             = 'INVENTORY';
+    public const BANK                  = 'BANK';
+    public const CURRENT_ASSET         = 'CURRENT_ASSET';
+    public const RECEIVABLE            = 'RECEIVABLE';
+    public const NON_CURRENT_LIABILITY = 'NON_CURRENT_LIABILITY';
+    public const CONTROL               = 'CONTROL';
+    public const CURRENT_LIABILITY     = 'CURRENT_LIABILITY';
+    public const PAYABLE               = 'PAYABLE';
+    public const EQUITY                = 'EQUITY';
+    public const OPERATING_REVENUE     = 'OPERATING_REVENUE';
+    public const OPERATING_EXPENSE     = 'OPERATING_EXPENSE';
+    public const NON_OPERATING_REVENUE = 'NON_OPERATING_REVENUE';
+    public const DIRECT_EXPENSE        = 'DIRECT_EXPENSE';
+    public const OVERHEAD_EXPENSE      = 'OVERHEAD_EXPENSE';
+    public const OTHER_EXPENSE         = 'OTHER_EXPENSE';
+    public const RECONCILIATION        = 'RECONCILIATION';
 
     /**
      * Purchaseable Account Types
@@ -81,14 +77,14 @@ class Account extends Model implements Recyclable, Segregatable
      * @var array
      */
 
-    const PURCHASABLES = [
+    public const PURCHASABLES = [
         Account::OPERATING_EXPENSE,
         Account::DIRECT_EXPENSE,
         Account::OVERHEAD_EXPENSE,
         Account::OTHER_EXPENSE,
         Account::NON_CURRENT_ASSET,
         Account::CURRENT_ASSET,
-        Account::INVENTORY
+        Account::INVENTORY,
     ];
 
     /**
@@ -144,7 +140,7 @@ class Account extends Model implements Recyclable, Segregatable
      *
      * @return array
      */
-    public static function openingBalances(int $year, Entity $entity = null)
+    public static function openingBalances(int $year, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             $entity = Auth::user()->entity;
@@ -155,7 +151,7 @@ class Account extends Model implements Recyclable, Segregatable
 
         foreach (Account::where('entity_id', '=', $entity->id)->get() as $account) {
             $account->openingBalance = $account->openingBalance($year, null, $entity)[$account->entity->currency_id];
-            if ($account->openingBalance != 0) {
+            if (0 != $account->openingBalance) {
                 $accounts->push($account);
             }
             if ($account->openingBalance > 0) {
@@ -182,9 +178,8 @@ class Account extends Model implements Recyclable, Segregatable
         $startDate = null,
         $endDate = null,
         $fullBalance = true,
-        Entity $entity = null
-    ): array
-    {
+        ?Entity $entity = null,
+    ): array {
 
         if (is_null($entity)) {
             $entity = Auth::user()->entity;
@@ -192,8 +187,8 @@ class Account extends Model implements Recyclable, Segregatable
 
         $balances = ['sectionOpeningBalance' => 0, 'sectionClosingBalance' => 0, 'sectionMovement' => 0, 'sectionCategories' => []];
 
-        $startDate = is_null($startDate) ? ReportingPeriod::periodStart($endDate, $entity) : Carbon::parse($startDate);
-        $endDate = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
+        $startDate   = is_null($startDate) ? ReportingPeriod::periodStart($endDate, $entity) : Carbon::parse($startDate);
+        $endDate     = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
         $periodStart = ReportingPeriod::periodStart($endDate, $entity);
 
         $year = ReportingPeriod::year($endDate, $entity);
@@ -202,31 +197,31 @@ class Account extends Model implements Recyclable, Segregatable
 
             $reportingCurrencyId = $account->entity->currency_id;
 
-            $account->openingBalance = $account->openingBalance($year)[$reportingCurrencyId] + $account->currentBalance($periodStart, $startDate)[$reportingCurrencyId];
+            $account->openingBalance  = $account->openingBalance($year)[$reportingCurrencyId] + $account->currentBalance($periodStart, $startDate)[$reportingCurrencyId];
             $account->balanceMovement = $account->currentBalance($startDate, $endDate)[$reportingCurrencyId];
 
             $account->closingBalance = $fullBalance ? $account->openingBalance + $account->balanceMovement : $account->balanceMovement;
 
             $account->balanceMovement *= -1;
 
-            if ($account->closingBalance <> 0 || $account->balanceMovement <> 0) {
+            if (0 <> $account->closingBalance || 0 <> $account->balanceMovement) {
 
                 if (is_null($account->category)) {
                     $categoryName = config('ifrs')['accounts'][$account->account_type];
-                    $categoryId = 0;
+                    $categoryId   = 0;
                 } else {
-                    $category = $account->category;
+                    $category     = $account->category;
                     $categoryName = $category->name;
-                    $categoryId = $category->id;
+                    $categoryId   = $category->id;
                 }
 
                 if (array_key_exists($categoryName, $balances['sectionCategories'])) {
-                    $balances['sectionCategories'][$categoryName]['accounts']->push((object)$account->attributes);
+                    $balances['sectionCategories'][$categoryName]['accounts']->push((object) $account->attributes);
                     $balances['sectionCategories'][$categoryName]['total'] += $account->closingBalance;
                 } else {
-                    $balances['sectionCategories'][$categoryName]['accounts'] = collect([(object)$account->attributes]);
-                    $balances['sectionCategories'][$categoryName]['total'] = $account->closingBalance;
-                    $balances['sectionCategories'][$categoryName]['id'] = $categoryId;
+                    $balances['sectionCategories'][$categoryName]['accounts'] = collect([(object) $account->attributes]);
+                    $balances['sectionCategories'][$categoryName]['total']    = $account->closingBalance;
+                    $balances['sectionCategories'][$categoryName]['id']       = $categoryId;
                 }
                 $balances['sectionOpeningBalance'] += $account->openingBalance;
                 $balances['sectionMovement'] += $account->balanceMovement;
@@ -295,7 +290,7 @@ class Account extends Model implements Recyclable, Segregatable
     public function attributes()
     {
         $this->attributes['closingBalance'] = $this->closingBalance();
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**
@@ -306,14 +301,14 @@ class Account extends Model implements Recyclable, Segregatable
      *
      * @return array
      */
-    public function closingBalance(string $endDate = null, int $currencyId = null): array
+    public function closingBalance(?string $endDate = null, ?int $currencyId = null): array
     {
         $entity = $this->entity;
 
-        $endDate = is_null($endDate) ? ReportingPeriod::periodEnd(null, $entity) : Carbon::parse($endDate);
-        $startDate = ReportingPeriod::periodStart($endDate, $entity);
-        $year = ReportingPeriod::year($endDate, $entity);
-        $balances = $this->openingBalance($year, $currencyId);
+        $endDate      = is_null($endDate) ? ReportingPeriod::periodEnd(null, $entity) : Carbon::parse($endDate);
+        $startDate    = ReportingPeriod::periodStart($endDate, $entity);
+        $year         = ReportingPeriod::year($endDate, $entity);
+        $balances     = $this->openingBalance($year, $currencyId);
         $transactions = $this->currentBalance($startDate, $endDate, $currencyId);
         foreach (array_keys($balances) as $currency) {
             $balances[$currency] += $transactions[$currency];
@@ -329,7 +324,7 @@ class Account extends Model implements Recyclable, Segregatable
      *
      * @return array
      */
-    public function openingBalance(int $year = null, int $currencyId = null): array
+    public function openingBalance(?int $year = null, ?int $currencyId = null): array
     {
         $entity = $this->entity;
 
@@ -355,11 +350,11 @@ class Account extends Model implements Recyclable, Segregatable
         foreach ($openingBalances as $each) {
 
             if (!is_null($currencyId) && $entity->currency_id != $currencyId) {
-                $each->balance_type == Balance::DEBIT ?
+                Balance::DEBIT == $each->balance_type ?
                     $balances[$currencyId] += $each->balance / $each->exchangeRate->rate :
                     $balances[$currencyId] -= $each->balance / $each->exchangeRate->rate;
             }
-            $each->balance_type == Balance::DEBIT ?
+            Balance::DEBIT == $each->balance_type ?
                 $balances[$entity->currency_id] += $each->balance :
                 $balances[$entity->currency_id] -= $each->balance;
         }
@@ -375,12 +370,12 @@ class Account extends Model implements Recyclable, Segregatable
      *
      * @return array
      */
-    public function currentBalance(Carbon $startDate = null, Carbon $endDate = null, int $currencyId = null): array
+    public function currentBalance(?Carbon $startDate = null, ?Carbon $endDate = null, ?int $currencyId = null): array
     {
         $entity = $this->entity;
 
         $startDate = is_null($startDate) ? ReportingPeriod::periodStart($endDate, $entity) : $startDate;
-        $endDate = is_null($endDate) ? Carbon::now() : $endDate;
+        $endDate   = is_null($endDate) ? Carbon::now() : $endDate;
         return Ledger::balance($this, $startDate, $endDate, $currencyId);
     }
 
@@ -390,7 +385,7 @@ class Account extends Model implements Recyclable, Segregatable
      * @param int $year
      *
      */
-    public function isClosed(int $year = null): bool
+    public function isClosed(?int $year = null): bool
     {
         if (is_null($year)) {
             $year = $this->entity->current_reporting_period->calendar_year;
@@ -407,7 +402,7 @@ class Account extends Model implements Recyclable, Segregatable
      */
     private function closingTransactionsQuery(int $year)
     {
-        $transactionsTable = config('ifrs.table_prefix') . 'transactions';
+        $transactionsTable        = config('ifrs.table_prefix') . 'transactions';
         $closingTransactionsTable = config('ifrs.table_prefix') . 'closing_transactions';
 
         return DB::table($transactionsTable)
@@ -423,7 +418,7 @@ class Account extends Model implements Recyclable, Segregatable
      * @param int $year
      *
      */
-    public function closingTransactions(int $year = null): array
+    public function closingTransactions(?int $year = null): array
     {
         if (is_null($year)) {
             $year = $this->entity->current_reporting_period->calendar_year;
@@ -443,10 +438,10 @@ class Account extends Model implements Recyclable, Segregatable
         $transactions = ['total' => 0, 'transactions' => []];
 
         foreach ($query->get() as $transaction) {
-            $transaction->amount = abs(Ledger::contribution($this, $transaction->id));
-            $transaction->contribution = $transaction->credited ? $transaction->amount * -1 : $transaction->amount;
-            $transaction->type = Transaction::getType($transaction->transaction_type);
-            $transaction->date = Carbon::parse($transaction->transaction_date)->toFormattedDateString();
+            $transaction->amount            = abs(Ledger::contribution($this, $transaction->id));
+            $transaction->contribution      = $transaction->credited ? $transaction->amount * -1 : $transaction->amount;
+            $transaction->type              = Transaction::getType($transaction->transaction_type);
+            $transaction->date              = Carbon::parse($transaction->transaction_date)->toFormattedDateString();
             $transactions['transactions'][] = $transaction;
             $transactions['total'] += $transaction->contribution;
         }
@@ -461,11 +456,11 @@ class Account extends Model implements Recyclable, Segregatable
      *
      * @return array
      */
-    public function getTransactions(string $startDate = null, string $endDate = null): array
+    public function getTransactions(?string $startDate = null, ?string $endDate = null): array
     {
 
         $startDate = is_null($startDate) ? ReportingPeriod::periodStart($endDate, $this->entity) : Carbon::parse($startDate);
-        $endDate = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
+        $endDate   = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
 
         return $this->processTransactions($this->transactionsQuery($startDate, $endDate));
     }
@@ -479,13 +474,13 @@ class Account extends Model implements Recyclable, Segregatable
      *
      * @return Builder
      */
-    public function transactionsQuery(Carbon $startDate, Carbon $endDate, int $currencyId = null)
+    public function transactionsQuery(Carbon $startDate, Carbon $endDate, ?int $currencyId = null)
     {
         $transactionsTable = config('ifrs.table_prefix') . 'transactions';
-        $ledgerTable = config('ifrs.table_prefix') . 'ledgers';
+        $ledgerTable       = config('ifrs.table_prefix') . 'ledgers';
 
         $query = DB::table(
-            $transactionsTable
+            $transactionsTable,
         )
             ->leftJoin($ledgerTable, $transactionsTable . '.id', '=', $ledgerTable . '.transaction_id')
             ->where($transactionsTable . '.deleted_at', null)
@@ -500,7 +495,7 @@ class Account extends Model implements Recyclable, Segregatable
                 $transactionsTable . '.transaction_type',
                 $transactionsTable . '.credited',
                 $transactionsTable . '.narration',
-                $ledgerTable . '.rate'
+                $ledgerTable . '.rate',
             )->distinct();
 
         if (!is_null($currencyId)) {
@@ -510,7 +505,7 @@ class Account extends Model implements Recyclable, Segregatable
             function ($query) use ($ledgerTable) {
                 $query->where($ledgerTable . '.post_account', $this->id)
                     ->orwhere($ledgerTable . '.folio_account', $this->id);
-            }
+            },
         );
 
         return $query;
@@ -575,7 +570,7 @@ class Account extends Model implements Recyclable, Segregatable
      */
     public function delete(): bool
     {
-        if ($this->closingBalance()[$this->entity->currency_id] != 0) {
+        if (0 != $this->closingBalance()[$this->entity->currency_id]) {
             throw new HangingTransactions();
         }
 

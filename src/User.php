@@ -2,17 +2,16 @@
 
 namespace IFRS;
 
+use IFRS\Traits\IFRSUser;
+use IFRS\Traits\ModelTablePrefix;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-use IFRS\Traits\IFRSUser;
-use IFRS\Traits\ModelTablePrefix;
-
 class User extends Authenticatable
 {
-    use Notifiable;
     use IFRSUser;
     use ModelTablePrefix;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.

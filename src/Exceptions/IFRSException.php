@@ -13,9 +13,8 @@ namespace IFRS\Exceptions;
 namespace IFRS\Exceptions;
 
 use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 abstract class IFRSException extends \Exception
 {
@@ -40,14 +39,14 @@ abstract class IFRSException extends \Exception
      * @param int $code
      */
 
-    public function __construct(string $message = null, int $code = null)
+    public function __construct(?string $message = null, ?int $code = null)
     {
         Log::notice(
             $message,
             [
                 'user_id' => Auth::check() ? Auth::user()->id : null,
-                'time' => Carbon::now(),
-            ]
+                'time'    => Carbon::now(),
+            ],
         );
         parent::__construct($message ?: $this->message, $code, null);
     }

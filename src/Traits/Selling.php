@@ -10,11 +10,10 @@
 
 namespace IFRS\Traits;
 
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
 use IFRS\Models\Account;
 use IFRS\Models\LineItem;
-
-use IFRS\Exceptions\MainAccount;
-use IFRS\Exceptions\LineItemAccount;
 
 trait Selling
 {
@@ -23,7 +22,7 @@ trait Selling
      */
     public function save(array $options = []): bool
     {
-        if (is_null($this->account) or $this->account->account_type != Account::RECEIVABLE) {
+        if (is_null($this->account) or Account::RECEIVABLE != $this->account->account_type) {
             throw new MainAccount(self::PREFIX, Account::RECEIVABLE);
         }
 
@@ -35,7 +34,7 @@ trait Selling
      */
     public function addLineItem(LineItem $lineItem): bool
     {
-        if ($lineItem->account->account_type != Account::OPERATING_REVENUE) {
+        if (Account::OPERATING_REVENUE != $lineItem->account->account_type) {
             throw new LineItemAccount(self::PREFIX, [Account::OPERATING_REVENUE]);
         }
 

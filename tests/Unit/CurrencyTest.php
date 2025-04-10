@@ -2,16 +2,13 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Tests\TestCase;
-
-use IFRS\User;
-
 use IFRS\Models\Currency;
 use IFRS\Models\Entity;
 use IFRS\Models\ExchangeRate;
 use IFRS\Models\RecycledObject;
+use IFRS\Tests\TestCase;
+use IFRS\User;
+use Illuminate\Support\Facades\Auth;
 
 class CurrencyTest extends TestCase
 {
@@ -23,7 +20,7 @@ class CurrencyTest extends TestCase
     public function testCurrencyRelationships()
     {
         $currency = new Currency([
-            'name' => $this->faker->word,
+            'name'          => $this->faker->word,
             'currency_code' => $this->faker->currencyCode,
         ]);
         $currency->attributes();
@@ -37,20 +34,20 @@ class CurrencyTest extends TestCase
 
         $this->assertEquals(
             $currency->exchangeRates->first()->rate,
-            $exchangeRate->rate
+            $exchangeRate->rate,
         );
 
         $this->assertEquals(
             $currency->entity->name,
-            $entity->name
+            $entity->name,
         );
         $this->assertEquals(
             $currency->toString(true),
-            'Currency: ' . $currency->name . ' (' . $currency->currency_code . ')'
+            'Currency: ' . $currency->name . ' (' . $currency->currency_code . ')',
         );
         $this->assertEquals(
             $currency->toString(),
-            $currency->name . ' (' . $currency->currency_code . ')'
+            $currency->name . ' (' . $currency->currency_code . ')',
         );
     }
 
@@ -85,7 +82,7 @@ class CurrencyTest extends TestCase
     public function testCurrencyRecycling()
     {
         $currency = Currency::create([
-            'name' => $this->faker->word,
+            'name'          => $this->faker->word,
             'currency_code' => $this->faker->currencyCode,
         ]);
         $currency->delete();

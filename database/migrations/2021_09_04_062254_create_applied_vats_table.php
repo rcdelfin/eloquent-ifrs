@@ -21,12 +21,12 @@ class CreateAppliedVatsTable extends Migration
             $table->unsignedBigInteger('line_item_id');
 
             // constraints
-            $table->foreign('vat_id')->references('id')->on(config('ifrs.table_prefix').'vats');
-            $table->foreign('line_item_id')->references('id')->on(config('ifrs.table_prefix').'line_items');
+            $table->foreign('vat_id')->references('id')->on(config('ifrs.table_prefix') . 'vats');
+            $table->foreign('line_item_id')->references('id')->on(config('ifrs.table_prefix') . 'line_items');
 
-            // attributes 
+            // attributes
             $table->decimal('amount', 13, 4);
-            
+
             //soft deletion
             $table->softDeletes();
 

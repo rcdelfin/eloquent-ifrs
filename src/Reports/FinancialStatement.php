@@ -10,11 +10,10 @@
 
 namespace IFRS\Reports;
 
-use Illuminate\Support\Facades\Auth;
-
-use IFRS\Models\Entity;
 use IFRS\Models\Account;
+use IFRS\Models\Entity;
 use IFRS\Models\ReportingPeriod;
+use Illuminate\Support\Facades\Auth;
 
 /**
  *
@@ -22,7 +21,6 @@ use IFRS\Models\ReportingPeriod;
  */
 abstract class FinancialStatement
 {
-
     /**
      * Financial Statement Reporting Period.
      *
@@ -35,7 +33,7 @@ abstract class FinancialStatement
      * @var array
      */
     public $balances = [
-        "debit" => 0,
+        "debit"  => 0,
         "credit" => 0,
     ];
     /**
@@ -68,19 +66,19 @@ abstract class FinancialStatement
      *
      * @param ReportingPeriod $period
      */
-    public function __construct(ReportingPeriod $period = null, Entity $entity = null)
+    public function __construct(?ReportingPeriod $period = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
             $this->entity = Auth::user()->entity;
-        }else{
+        } else {
             $this->entity = $entity;
         }
         $this->reportingPeriod = is_null($period) ? $this->entity->currentReportingPeriod : $period;
 
-        $this->statement = "";
-        $this->indent = "    ";
-        $this->separator = "                        ---------------";
-        $this->grand_total = "                        ===============";
+        $this->statement      = "";
+        $this->indent         = "    ";
+        $this->separator      = "                        ---------------";
+        $this->grand_total    = "                        ===============";
         $this->result_indents = 4;
     }
 
@@ -92,9 +90,9 @@ abstract class FinancialStatement
     public function attributes()
     {
         return [
-            "Entity" => $this->entity->name,
+            "Entity"          => $this->entity->name,
             "ReportingPeriod" => $this->reportingPeriod,
-            "Balances" => $this->balances
+            "Balances"        => $this->balances,
         ];
     }
 
@@ -109,7 +107,7 @@ abstract class FinancialStatement
             foreach (config('ifrs')[$section] as $accountType) {
                 $sectionBalances = Account::sectionBalances([$accountType], $startDate, $endDate, $fullbalance, $this->entity);
 
-                if ($sectionBalances["sectionClosingBalance"] <> 0) {
+                if (0 <> $sectionBalances["sectionClosingBalance"]) {
 
                     $this->accounts[$section][$accountType] = $sectionBalances["sectionCategories"];
                     $this->balances[$section][$accountType] = $sectionBalances["sectionClosingBalance"];
@@ -146,14 +144,14 @@ abstract class FinancialStatement
 
         $period = in_array(
             'startDate',
-            array_keys($this->period)
+            array_keys($this->period),
         ) ? "For the Period: " . $this->period['startDate']->format(
-                $dateFormat
-            ) . " to " . $this->period['endDate']->format(
-                $dateFormat
-            ) . PHP_EOL : "As at: " . $this->period['endDate']->format(
-                $dateFormat
-            ) . PHP_EOL;
+            $dateFormat,
+        ) . " to " . $this->period['endDate']->format(
+            $dateFormat,
+        ) . PHP_EOL : "As at: " . $this->period['endDate']->format(
+            $dateFormat,
+        ) . PHP_EOL;
 
         return $statement .= $period;
     }

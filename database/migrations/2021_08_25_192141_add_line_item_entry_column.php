@@ -18,7 +18,8 @@ class AddLineItemEntryColumn extends Migration
             config('ifrs.table_prefix') . 'line_items',
             function (Blueprint $table) {
                 $table->boolean('credited')->default(false);
-        });
+            },
+        );
     }
 
     /**
@@ -28,12 +29,14 @@ class AddLineItemEntryColumn extends Migration
      */
     public function down()
     {
-        Schema::table( config('ifrs.table_prefix') . 'line_items',
-        function (Blueprint $table) {
-            if (config('database.default') == 'sqlite') {
-                DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
-            }
-            $table->dropColumn('credited');
-        });
+        Schema::table(
+            config('ifrs.table_prefix') . 'line_items',
+            function (Blueprint $table) {
+                if ('sqlite' == config('database.default')) {
+                    DB::statement('PRAGMA foreign_keys = OFF;'); // sqlite needs to drop the entire table to remove a column, which fails because the table is already referenced
+                }
+                $table->dropColumn('credited');
+            },
+        );
     }
 }

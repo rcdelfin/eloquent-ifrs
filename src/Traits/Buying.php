@@ -10,11 +10,10 @@
 
 namespace IFRS\Traits;
 
+use IFRS\Exceptions\LineItemAccount;
+use IFRS\Exceptions\MainAccount;
 use IFRS\Models\Account;
 use IFRS\Models\LineItem;
-
-use IFRS\Exceptions\MainAccount;
-use IFRS\Exceptions\LineItemAccount;
 
 trait Buying
 {
@@ -23,7 +22,7 @@ trait Buying
      */
     public function save(array $options = []): bool
     {
-        if (is_null($this->account) or $this->account->account_type != Account::PAYABLE) {
+        if (is_null($this->account) or Account::PAYABLE != $this->account->account_type) {
             throw new MainAccount(self::PREFIX, Account::PAYABLE);
         }
 

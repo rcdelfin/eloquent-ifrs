@@ -11,14 +11,11 @@
 namespace IFRS\Models;
 
 use Carbon\Carbon;
-
+use IFRS\Interfaces\Segregatable;
+use IFRS\Traits\ModelTablePrefix;
+use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
-use IFRS\Interfaces\Segregatable;
-
-use IFRS\Traits\Segregating;
-use IFRS\Traits\ModelTablePrefix;
 
 /**
  * Class Ledger
@@ -40,9 +37,9 @@ use IFRS\Traits\ModelTablePrefix;
  */
 class Ledger extends Model implements Segregatable
 {
+    use ModelTablePrefix;
     use Segregating;
     use SoftDeletes;
-    use ModelTablePrefix;
 
     /**
      * The attributes that are mass assignable.
@@ -60,18 +57,18 @@ class Ledger extends Model implements Segregatable
      */
     private static function getLedgers(Transaction $transaction): array
     {
-        $post = new Ledger();
+        $post  = new Ledger();
         $folio = new Ledger();
 
         if ($transaction->is_credited) {
-            $post->entry_type = Balance::CREDIT;
+            $post->entry_type  = Balance::CREDIT;
             $folio->entry_type = Balance::DEBIT;
         } else {
-            $post->entry_type = Balance::DEBIT;
+            $post->entry_type  = Balance::DEBIT;
             $folio->entry_type = Balance::CREDIT;
         }
 
-        $post->entity_id = $transaction->entity_id;
+        $post->entity_id  = $transaction->entity_id;
         $folio->entity_id = $transaction->entity_id;
 
         return [$post, $folio];
@@ -94,15 +91,16 @@ class Ledger extends Model implements Segregatable
 
             // identical double entry data
             $post->transaction_id = $folio->transaction_id = $transaction->id;
-            $post->currency_id = $folio->currency_id = $transaction->currency_id;
-            $post->posting_date = $folio->posting_date = $transaction->transaction_date;
-            $post->line_item_id = $folio->line_item_id = $appliedVat->line_item_id;
-            $post->vat_id = $folio->vat_id = $appliedVat->vat_id;
-            $post->amount = $folio->amount = $appliedVat->amount * $rate;
-            $post->rate = $folio->rate = $rate;;
+            $post->currency_id    = $folio->currency_id = $transaction->currency_id;
+            $post->posting_date   = $folio->posting_date = $transaction->transaction_date;
+            $post->line_item_id   = $folio->line_item_id = $appliedVat->line_item_id;
+            $post->vat_id         = $folio->vat_id = $appliedVat->vat_id;
+            $post->amount         = $folio->amount = $appliedVat->amount * $rate;
+            $post->rate           = $folio->rate = $rate;
+            ;
 
             // different double entry data
-            $post->post_account = $folio->folio_account = $lineItem->vat_inclusive ? $lineItem->account_id : $transaction->account_id;
+            $post->post_account  = $folio->folio_account = $lineItem->vat_inclusive ? $lineItem->account_id : $transaction->account_id;
             $post->folio_account = $folio->post_account = $appliedVat->vat->account_id;
 
             $post->save();
@@ -126,15 +124,15 @@ class Ledger extends Model implements Segregatable
 
             // identical double entry data
             $post->transaction_id = $folio->transaction_id = $transaction->id;
-            $post->currency_id = $folio->currency_id = $transaction->currency_id;
-            $post->posting_date = $folio->posting_date = $transaction->transaction_date;
-            $post->line_item_id = $folio->line_item_id = $lineItem->id;
-            $post->vat_id = $folio->vat_id = $lineItem->vat_id;
-            $post->amount = $folio->amount = $lineItem->amount * $rate * $lineItem->quantity;
-            $post->rate = $folio->rate = $rate;
+            $post->currency_id    = $folio->currency_id = $transaction->currency_id;
+            $post->posting_date   = $folio->posting_date = $transaction->transaction_date;
+            $post->line_item_id   = $folio->line_item_id = $lineItem->id;
+            $post->vat_id         = $folio->vat_id = $lineItem->vat_id;
+            $post->amount         = $folio->amount = $lineItem->amount * $rate * $lineItem->quantity;
+            $post->rate           = $folio->rate = $rate;
 
             // different double entry data
-            $post->post_account = $folio->folio_account = $transaction->account_id;
+            $post->post_account  = $folio->folio_account = $transaction->account_id;
             $post->folio_account = $folio->post_account = $lineItem->account_id;
 
             $post->save();
@@ -161,7 +159,7 @@ class Ledger extends Model implements Segregatable
      */
     private static function makeCompountEntryLedgers(array $posts, array $folios, Transaction $transaction, $entryType): bool
     {
-        if (count($posts) == 0) {
+        if (0 == count($posts)) {
             return true;
         } else {
             $key = array_key_first($posts);
@@ -170,7 +168,7 @@ class Ledger extends Model implements Segregatable
     }
 
     /**
-     * Allocate available folio accounts and amounts to the post ledger 
+     * Allocate available folio accounts and amounts to the post ledger
      *
      * @param int $postAccount
      * @param float $amount
@@ -183,24 +181,24 @@ class Ledger extends Model implements Segregatable
      */
     private static function allocateAmount($postAccount, $amount, $posts, $folios, $transaction, $entryType): bool
     {
-        if ($amount == 0) {
+        if (0 == $amount) {
             $key = array_key_first($posts);
             unset($posts[$key]);
             return Ledger::makeCompountEntryLedgers($posts, $folios, $transaction, $entryType);
         } else {
 
-            $key = array_key_first($folios);
+            $key          = array_key_first($folios);
             $folioAccount = $folios[$key]['id'];
 
             $ledger = new Ledger();
 
             $ledger->transaction_id = $transaction->id;
-            $ledger->currency_id = $transaction->currency_id;
-            $ledger->posting_date = $transaction->transaction_date;
-            $ledger->rate = $transaction->exchangeRate->rate;
-            $ledger->entry_type = $entryType;
-            $ledger->post_account = $postAccount;
-            $ledger->folio_account = $folioAccount;
+            $ledger->currency_id    = $transaction->currency_id;
+            $ledger->posting_date   = $transaction->transaction_date;
+            $ledger->rate           = $transaction->exchangeRate->rate;
+            $ledger->entry_type     = $entryType;
+            $ledger->post_account   = $postAccount;
+            $ledger->folio_account  = $folioAccount;
 
             if ($folios[$key]['amount'] > $amount) {
                 $ledger->amount =  $amount;
@@ -209,7 +207,7 @@ class Ledger extends Model implements Segregatable
                 $folios[$key]['amount'] -= $ledger->amount;
                 $amount = 0;
             } else {
-                $debitAmount = $folios[$key]['amount'];
+                $debitAmount    = $folios[$key]['amount'];
                 $ledger->amount = $debitAmount;
                 $ledger->save();
 
@@ -232,10 +230,10 @@ class Ledger extends Model implements Segregatable
     {
         extract($transaction->getCompoundEntries());
 
-        // Credit Entry Ledgers 
+        // Credit Entry Ledgers
         Ledger::makeCompountEntryLedgers($C, $D, $transaction, Balance::CREDIT);
 
-        // Debit Entry Ledgers 
+        // Debit Entry Ledgers
         Ledger::makeCompountEntryLedgers($D, $C, $transaction, Balance::DEBIT);
 
         // reload ledgers to reflect changes
@@ -293,9 +291,9 @@ class Ledger extends Model implements Segregatable
         $ledger[] = $this->created_at;
 
         $previousLedgerId = $this->id - 1;
-        $previousLedger = Ledger::find($previousLedgerId);
-        $previousHash = is_null($previousLedger) ? env('APP_KEY', 'test application key') : $previousLedger->hash;
-        $ledger[] = $previousHash;
+        $previousLedger   = Ledger::find($previousLedgerId);
+        $previousHash     = is_null($previousLedger) ? env('APP_KEY', 'test application key') : $previousLedger->hash;
+        $ledger[]         = $previousHash;
         return utf8_encode(implode($ledger));
     }
 
@@ -309,33 +307,33 @@ class Ledger extends Model implements Segregatable
     public static function postForex(Assignment $assignment, $transactionRate, $clearedRate): void
     {
         $rateDifference = round($transactionRate - $clearedRate, config('ifrs.forex_scale'));
-        $transaction = $assignment->transaction;
+        $transaction    = $assignment->transaction;
 
         //get entity from transaction object
         $entity = $transaction->entity;
 
-        $post = new Ledger();
+        $post  = new Ledger();
         $folio = new Ledger();
 
-        $post->entity_id = $entity->id;
+        $post->entity_id  = $entity->id;
         $folio->entity_id = $entity->id;
 
         if ($transaction->is_credited && $rateDifference < 0 || !$transaction->is_credited && $rateDifference > 0) {
-            $post->entry_type = Balance::CREDIT;
+            $post->entry_type  = Balance::CREDIT;
             $folio->entry_type = Balance::DEBIT;
         } elseif ($transaction->is_credited && $rateDifference > 0 || !$transaction->is_credited && $rateDifference < 0) {
-            $post->entry_type = Balance::DEBIT;
+            $post->entry_type  = Balance::DEBIT;
             $folio->entry_type = Balance::CREDIT;
         }
 
         // identical double entry data
         $post->transaction_id = $folio->transaction_id = $transaction->id;
-        $post->currency_id = $folio->currency_id = $assignment->transaction->entity->reporting_currency->id;
-        $post->posting_date = $folio->posting_date = $assignment->assignment_date;
-        $post->amount = $folio->amount = abs($rateDifference) * $assignment->amount;
+        $post->currency_id    = $folio->currency_id = $assignment->transaction->entity->reporting_currency->id;
+        $post->posting_date   = $folio->posting_date = $assignment->assignment_date;
+        $post->amount         = $folio->amount = abs($rateDifference) * $assignment->amount;
 
         // different double entry data
-        $post->post_account = $folio->folio_account = $transaction->account_id;
+        $post->post_account  = $folio->folio_account = $transaction->account_id;
         $post->folio_account = $folio->post_account = $assignment->forex_account_id;
 
         $post->save();
@@ -351,7 +349,7 @@ class Ledger extends Model implements Segregatable
      *
      * @return float
      */
-    public static function contribution(Account $account, int $transactionId, int $currencyId = null): float
+    public static function contribution(Account $account, int $transactionId, ?int $currencyId = null): float
     {
         $ledger = new Ledger();
 
@@ -359,13 +357,13 @@ class Ledger extends Model implements Segregatable
             : $ledger->newQuery()->selectRaw("SUM(amount/rate) AS amount");
 
         $baseQuery->from($ledger->getTable())->where([
-            "post_account" => $account->id,
+            "post_account"   => $account->id,
             "transaction_id" => $transactionId,
         ]);
 
         $cloneQuery = clone $baseQuery;
 
-        $debits = $baseQuery->where("entry_type", Balance::DEBIT);
+        $debits  = $baseQuery->where("entry_type", Balance::DEBIT);
         $credits = $cloneQuery->where("entry_type", Balance::CREDIT);
 
         return $debits->get()[0]->amount - $credits->get()[0]->amount;
@@ -381,7 +379,7 @@ class Ledger extends Model implements Segregatable
      *
      * @return array
      */
-    public static function balance(Account $account, Carbon $startDate, Carbon $endDate, int $currencyId = null): array
+    public static function balance(Account $account, Carbon $startDate, Carbon $endDate, ?int $currencyId = null): array
     {
         $ledger = new Ledger();
         $entity = $account->entity;
@@ -401,7 +399,7 @@ class Ledger extends Model implements Segregatable
 
         $cloneQuery = clone $baseQuery;
 
-        $debits = $baseQuery->where("entry_type", Balance::DEBIT);
+        $debits  = $baseQuery->where("entry_type", Balance::DEBIT);
         $credits = $cloneQuery->where("entry_type", Balance::CREDIT);
 
         $balances[$entity->currency_id] = $debits->get()[0]->local_amount - $credits->get()[0]->local_amount;
@@ -419,7 +417,7 @@ class Ledger extends Model implements Segregatable
      */
     public function attributes()
     {
-        return (object)$this->attributes;
+        return (object) $this->attributes;
     }
 
     /**
