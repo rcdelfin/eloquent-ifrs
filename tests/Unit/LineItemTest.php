@@ -26,12 +26,12 @@ class LineItemTest extends TestCase
     public function testLineItemRelationships()
     {
         $transaction = factory(Transaction::class)->create();
-        $account     = factory(Account::class)->create([
+        $account = factory(Account::class)->create([
             'category_id' => null,
         ]);
         $vatAccount = factory(Account::class)->create([
             'account_type' => Account::CONTROL,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $vat = factory(Vat::class)->create([
             'account_id' => $vatAccount->id,
@@ -39,9 +39,9 @@ class LineItemTest extends TestCase
 
         $lineItem = new LineItem([
             'account_id' => $account->id,
-            'narration'  => $this->faker->sentence,
-            'quantity'   => 1,
-            'amount'     => 50,
+            'narration' => $this->faker->sentence,
+            'quantity' => 1,
+            'amount' => 50,
         ]);
 
         $lineItem->addVat($vat);
@@ -131,7 +131,7 @@ class LineItemTest extends TestCase
             'account_id' => factory(Account::class)->create([
                 'category_id' => null,
             ])->id,
-            'amount'   => 100,
+            'amount' => 100,
             'quantity' => -1,
         ]);
         $this->expectException(NegativeQuantity::class);
@@ -149,7 +149,7 @@ class LineItemTest extends TestCase
     {
         $revenueAccount = factory(Account::class)->create([
             "account_type" => Account::OPERATING_REVENUE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $vat = factory(Vat::class)->create([
             "rate" => 16,
@@ -158,16 +158,16 @@ class LineItemTest extends TestCase
         $clientInvoice = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => $revenueAccount->id,
-            "quantity"   => 1,
+            "quantity" => 1,
         ]);
         $lineItem->addVat($vat);
         $lineItem->save();
@@ -182,7 +182,7 @@ class LineItemTest extends TestCase
 
         $revenueAccount2 = factory(Account::class)->create([
             "account_type" => Account::OPERATING_REVENUE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $vat2 = factory(Vat::class)->create([
             "rate" => 16,
@@ -191,17 +191,17 @@ class LineItemTest extends TestCase
         $clientInvoice2 = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem2 = factory(LineItem::class)->create([
-            "amount"        => 100,
-            "account_id"    => $revenueAccount2->id,
+            "amount" => 100,
+            "account_id" => $revenueAccount2->id,
             "vat_inclusive" => true,
-            "quantity"      => 1,
+            "quantity" => 1,
         ]);
         $lineItem2->addVat($vat2);
         $lineItem2->save();
@@ -224,7 +224,7 @@ class LineItemTest extends TestCase
     {
         $revenueAccount = factory(Account::class)->create([
             "account_type" => Account::OPERATING_REVENUE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $vat = factory(Vat::class)->create([
             "rate" => 5,
@@ -236,16 +236,16 @@ class LineItemTest extends TestCase
         $clientInvoice = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => $revenueAccount->id,
-            "quantity"   => 1,
+            "quantity" => 1,
         ]);
         $lineItem->addVat($vat);
         $lineItem->addVat($vat2);
@@ -271,7 +271,7 @@ class LineItemTest extends TestCase
     {
         $revenueAccount = factory(Account::class)->create([
             "account_type" => Account::OPERATING_REVENUE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $vat = factory(Vat::class)->create([
             "rate" => 5,
@@ -283,16 +283,16 @@ class LineItemTest extends TestCase
         $clientInvoice = new ClientInvoice([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"       => 100,
-            "account_id"   => $revenueAccount->id,
-            "quantity"     => 1,
+            "amount" => 100,
+            "account_id" => $revenueAccount->id,
+            "quantity" => 1,
             "compound_vat" => true,
         ]);
         $lineItem->addVat($vat);
@@ -322,8 +322,8 @@ class LineItemTest extends TestCase
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"       => 100,
-            "quantity"     => 1,
+            "amount" => 100,
+            "quantity" => 1,
             "compound_vat" => true,
         ]);
         $this->expectException(MultipleVatError::class);
@@ -344,9 +344,9 @@ class LineItemTest extends TestCase
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"        => 100,
-            "quantity"      => 1,
-            "compound_vat"  => true,
+            "amount" => 100,
+            "quantity" => 1,
+            "compound_vat" => true,
             "vat_inclusive" => true,
         ]);
         $this->expectException(MultipleVatError::class);
@@ -367,8 +367,8 @@ class LineItemTest extends TestCase
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"        => 100,
-            "quantity"      => 1,
+            "amount" => 100,
+            "quantity" => 1,
             "vat_inclusive" => true,
         ]);
 

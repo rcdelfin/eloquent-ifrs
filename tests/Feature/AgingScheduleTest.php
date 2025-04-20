@@ -26,37 +26,37 @@ class AgingScheduleTest extends TestCase
     {
         $account1 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $account2 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         # 365+ transaction
         factory(Balance::class)->create([
-            "account_id"       => $account1->id,
-            "balance_type"     => Balance::DEBIT,
+            "account_id" => $account1->id,
+            "balance_type" => Balance::DEBIT,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 "rate" => 1,
             ])->id,
-            "balance"             => 25,
+            "balance" => 25,
             'reporting_period_id' => $this->period->id,
         ]);
 
         # current transaction
-        $date          = Carbon::now()->endOfYear()->sub('days', 20);
+        $date = Carbon::now()->endOfYear()->sub('days', 20);
         $clientInvoice = new ClientInvoice([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => $date,
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = new LineItem([
-            'vat_id'     => factory(Vat::class)->create(["rate" => 0])->id,
+            'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 100,
         ]);
@@ -66,16 +66,16 @@ class AgingScheduleTest extends TestCase
 
         //Partially clear Transaction
         $creditNote = new CreditNote([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => $date,
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = new LineItem([
-            'vat_id'     => factory(Vat::class)->create(["rate" => 0])->id,
+            'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 50,
         ]);
@@ -85,23 +85,23 @@ class AgingScheduleTest extends TestCase
 
         factory(Assignment::class)->create([
             'transaction_id' => $creditNote->id,
-            'cleared_id'     => $clientInvoice->id,
-            "amount"         => 50,
+            'cleared_id' => $clientInvoice->id,
+            "amount" => 50,
         ]);
 
         //Journal Entry Transaction (91 - 180 days)
         $journalEntry = new JournalEntry([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => Carbon::now()->endOfYear()->sub('months', 5),
-            "narration"        => $this->faker->word,
-            "credited"         => false,
+            "narration" => $this->faker->word,
+            "credited" => false,
         ]);
 
         $lineItem = new LineItem([
-            'vat_id'     => factory(Vat::class)->create(["rate" => 0])->id,
+            'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 75,
         ]);
@@ -111,16 +111,16 @@ class AgingScheduleTest extends TestCase
 
         # 31 - 90 days transaction
         $clientInvoice = new ClientInvoice([
-            "account_id"       => $account2->id,
-            "narration"        => $this->faker->word,
+            "account_id" => $account2->id,
+            "narration" => $this->faker->word,
             'transaction_date' => Carbon::now()->endOfYear()->sub('months', 2),
         ]);
 
         $lineItem = new LineItem([
-            'vat_id'     => factory(Vat::class)->create(["rate" => 0])->id,
+            'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 100,
         ]);
@@ -130,16 +130,16 @@ class AgingScheduleTest extends TestCase
 
         # 181 - 270 days transaction
         $clientInvoice = new ClientInvoice([
-            "account_id"       => $account2->id,
-            "narration"        => $this->faker->word,
+            "account_id" => $account2->id,
+            "narration" => $this->faker->word,
             'transaction_date' => Carbon::now()->endOfYear()->sub('months', 8),
         ]);
 
         $lineItem = new LineItem([
-            'vat_id'     => factory(Vat::class)->create(["rate" => 0])->id,
+            'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 150,
         ]);
@@ -149,16 +149,16 @@ class AgingScheduleTest extends TestCase
 
         # 271 - 365 days transaction
         $clientInvoice = new ClientInvoice([
-            "account_id"       => $account2->id,
-            "narration"        => $this->faker->word,
+            "account_id" => $account2->id,
+            "narration" => $this->faker->word,
             'transaction_date' => Carbon::now()->endOfYear()->sub('months', 10),
         ]);
 
         $lineItem = new LineItem([
-            'vat_id'     => factory(Vat::class)->create(["rate" => 0])->id,
+            'vat_id' => factory(Vat::class)->create(["rate" => 0])->id,
             'account_id' => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 175,
         ]);

@@ -27,10 +27,10 @@ class AccountSchedule extends AccountStatement
      * @var array
      */
     public $balances = [
-        "originalAmount"  => 0,
-        "amountCleared"   => 0,
+        "originalAmount" => 0,
+        "amountCleared" => 0,
         "unclearedAmount" => 0,
-        "totalAge"        => 0,
+        "totalAge" => 0,
     ];
 
     /**
@@ -61,7 +61,7 @@ class AccountSchedule extends AccountStatement
     {
         $entity = $this->account->entity;
 
-        $periodId   = ReportingPeriod::getPeriod($this->period['endDate'], $entity)->id;
+        $periodId = ReportingPeriod::getPeriod($this->period['endDate'], $entity)->id;
         $currencyId = $this->currencyId;
 
         // Opening Balances
@@ -120,8 +120,8 @@ class AccountSchedule extends AccountStatement
         $rate = is_null($this->currencyId) ? $transaction->exchangeRate->rate : 1;
 
         $transaction->originalAmount = $transaction->amount * $rate;
-        $transaction->amountCleared  = $transaction->clearedAmount * $rate;
-        $unclearedAmount             = $transaction->originalAmount - $transaction->clearedAmount * $rate;
+        $transaction->amountCleared = $transaction->clearedAmount * $rate;
+        $unclearedAmount = $transaction->originalAmount - $transaction->clearedAmount * $rate;
 
         if ($unclearedAmount > 0) {
 
@@ -131,8 +131,8 @@ class AccountSchedule extends AccountStatement
                 $transaction->transactionType = $transaction->type;
             }
 
-            $date                         = Carbon::parse($transaction->transaction_date);
-            $transaction->age             = $date->diffInDays($this->period['endDate']);
+            $date = Carbon::parse($transaction->transaction_date);
+            $transaction->age = $date->diffInDays($this->period['endDate']);
             $transaction->transactionDate = Carbon::parse($transaction->transaction_date)->toFormattedDateString();
 
             $this->balances["originalAmount"] += $transaction->originalAmount;

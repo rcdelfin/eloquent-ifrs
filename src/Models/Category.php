@@ -106,7 +106,7 @@ class Category extends Model implements Segregatable, Recyclable
         $reportingCurrency = $entity->currency_id;
 
         $periodStart = ReportingPeriod::periodStart($endDate, $entity);
-        $year        = ReportingPeriod::year($endDate, $entity);
+        $year = ReportingPeriod::year($endDate, $entity);
 
         foreach ($this->accounts as $account) {
 

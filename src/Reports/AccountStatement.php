@@ -36,7 +36,7 @@ class AccountStatement
      */
     public $period = [
         "startDate" => null,
-        "endDate"   => null,
+        "endDate" => null,
     ];
     /**
      * Account Statement transactions.
@@ -86,9 +86,9 @@ class AccountStatement
         $this->entity = $this->account->entity;
 
         $this->period['startDate'] = is_null($startDate) ? ReportingPeriod::periodStart(null, $this->entity) : Carbon::parse($startDate);
-        $this->period['endDate']   = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
-        $this->currency            = is_null($currencyId) ? $this->entity->currency : Currency::find($currencyId);
-        $this->currencyId          = $currencyId;
+        $this->period['endDate'] = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
+        $this->currency = is_null($currencyId) ? $this->entity->currency : Currency::find($currencyId);
+        $this->currencyId = $currencyId;
     }
 
     /**
@@ -99,11 +99,11 @@ class AccountStatement
     public function attributes()
     {
         return (object) [
-            "Account"      => $this->account->name,
-            "Currency"     => $this->currency->name,
-            "Entity"       => $this->entity->name,
-            "Period"       => $this->period,
-            "Balances"     => $this->balances,
+            "Account" => $this->account->name,
+            "Currency" => $this->currency->name,
+            "Entity" => $this->entity->name,
+            "Period" => $this->period,
+            "Balances" => $this->balances,
             "Transactions" => $this->transactions,
         ];
     }

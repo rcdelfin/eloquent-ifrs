@@ -12,11 +12,11 @@ $factory->define(
     JournalEntry::class,
     function (Faker $faker) {
         return [
-            'account_id'       => factory(Account::class)->create()->id,
-            'date'             => Carbon::now(),
-            'narration'        => $faker->word,
+            'account_id' => factory(Account::class)->create()->id,
+            'date' => Carbon::now(),
+            'narration' => $faker->word,
             'transaction_type' => Transaction::JN,
-            'amount'           => $faker->randomFloat(2),
+            'amount' => $faker->randomFloat(2),
         ];
     },
 );

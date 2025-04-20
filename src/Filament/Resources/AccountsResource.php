@@ -29,11 +29,11 @@ class AccountsResource extends Resource
                     ->label('Code'),
                 Forms\Components\Select::make('account_type')
                     ->options([
-                        'asset'     => 'Asset',
+                        'asset' => 'Asset',
                         'liability' => 'Liability',
-                        'equity'    => 'Equity',
-                        'revenue'   => 'Revenue',
-                        'expense'   => 'Expense',
+                        'equity' => 'Equity',
+                        'revenue' => 'Revenue',
+                        'expense' => 'Expense',
                     ])
                     ->required()
                     ->label('Type'),
@@ -102,9 +102,9 @@ class AccountsResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListAccounts::route('/'),
+            'index' => Pages\ListAccounts::route('/'),
             'create' => Pages\CreateAccounts::route('/create'),
-            'edit'   => Pages\EditAccounts::route('/{record}/edit'),
+            'edit' => Pages\EditAccounts::route('/{record}/edit'),
         ];
     }
 }

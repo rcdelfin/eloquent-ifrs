@@ -141,9 +141,9 @@ class Entity extends Model implements Recyclable
     public function getDefaultRateAttribute(): ExchangeRate
     {
 
-        $now      = Carbon::now();
+        $now = Carbon::now();
         $existing = ExchangeRate::where([
-            "entity_id"   => $this->id,
+            "entity_id" => $this->id,
             "currency_id" => $this->currency_id,
         ])->where("valid_from", "<=", $now)
             ->first();
@@ -153,10 +153,10 @@ class Entity extends Model implements Recyclable
         }
 
         $new = new ExchangeRate([
-            'valid_from'  => $now,
+            'valid_from' => $now,
             'currency_id' => $this->reportingCurrency->id,
-            "rate"        => 1,
-            'entity_id'   => $this->id,
+            "rate" => 1,
+            'entity_id' => $this->id,
         ]);
 
         $new->save();
@@ -180,8 +180,8 @@ class Entity extends Model implements Recyclable
 
         $new = new ReportingPeriod([
             'calendar_year' => date('Y'),
-            'period_count'  => count(ReportingPeriod::where('entity_id', '=', $this->id)->withTrashed()->get()) + 1,
-            'entity_id'     => $this->id,
+            'period_count' => count(ReportingPeriod::where('entity_id', '=', $this->id)->withTrashed()->get()) + 1,
+            'entity_id' => $this->id,
         ]);
 
         $new->save();

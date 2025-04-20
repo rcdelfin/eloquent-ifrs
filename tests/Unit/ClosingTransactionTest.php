@@ -24,12 +24,12 @@ class ClosingTransactionTest extends TestCase
             'transaction_type' => Transaction::JN,
         ]);
         $reportingPeriod = factory(ReportingPeriod::class)->create();
-        $currency        = factory(Currency::class)->create();
+        $currency = factory(Currency::class)->create();
 
         $closingTransaction = ClosingTransaction::create([
-            'transaction_id'      => $transaction->id,
+            'transaction_id' => $transaction->id,
             'reporting_period_id' => $reportingPeriod->id,
-            'currency_id'         => $currency->id,
+            'currency_id' => $currency->id,
         ]);
 
         $closingTransaction->attributes();
@@ -76,7 +76,7 @@ class ClosingTransactionTest extends TestCase
                 'transaction_type' => Transaction::JN,
             ])->id,
             'reporting_period_id' => factory(ReportingPeriod::class)->create()->id,
-            'currency_id'         => factory(Currency::class)->create()->id,
+            'currency_id' => factory(Currency::class)->create()->id,
         ]);
 
         $this->assertEquals(count(ClosingTransaction::all()), 1);
@@ -97,7 +97,7 @@ class ClosingTransactionTest extends TestCase
                 'transaction_type' => Transaction::JN,
             ])->id,
             'reporting_period_id' => factory(ReportingPeriod::class)->create()->id,
-            'currency_id'         => factory(Currency::class)->create()->id,
+            'currency_id' => factory(Currency::class)->create()->id,
         ]);
 
         $transaction->delete();

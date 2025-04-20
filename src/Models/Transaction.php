@@ -213,7 +213,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
      */
     public function __construct($attributes = [])
     {
-        $this->table                    = config('ifrs.table_prefix') . 'transactions';
+        $this->table = config('ifrs.table_prefix') . 'transactions';
         $attributes['transaction_date'] = !isset($attributes['transaction_date']) ? Carbon::now() : Carbon::parse($attributes['transaction_date']);
 
         parent::__construct($attributes);
@@ -406,8 +406,8 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
                 ->selectRaw("SUM(amount/rate) as amount")
                 ->where([
                     "transaction_id" => $this->id,
-                    "entry_type"     => Transaction::getCompoundEntrytype($this->credited),
-                    "currency_id"    => $this->currency_id,
+                    "entry_type" => Transaction::getCompoundEntrytype($this->credited),
+                    "currency_id" => $this->currency_id,
                 ]);
 
             if (!$this->compound) {
@@ -439,13 +439,13 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
 
             $this->compoundEntries = [
                 Balance::CREDIT => [],
-                Balance::DEBIT  => [],
+                Balance::DEBIT => [],
             ];
 
             $this->compoundEntries[Transaction::getCompoundEntrytype($this->credited)][] = ['id' => $this->account_id, 'amount' => floatval($this->main_account_amount)];
 
             foreach ($this->getLineItems() as $lineItem) {
-                $this->compoundEntries[Transaction::getCompoundEntrytype($lineItem->credited)][] = ['id' => $lineItem->account_id, 'amount' =>  $lineItem->amount * $lineItem->quantity];
+                $this->compoundEntries[Transaction::getCompoundEntrytype($lineItem->credited)][] = ['id' => $lineItem->account_id, 'amount' => $lineItem->amount * $lineItem->quantity];
             }
         }
 
@@ -624,7 +624,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
                 $this->assigned[] = $toBeAssigned;
             } elseif ($this->assignedAmountBalance() > 0) {
                 $this->assigned[] = [
-                    'id'     => $toBeAssigned['id'],
+                    'id' => $toBeAssigned['id'],
                     'amount' => $this->assignedAmountBalance(),
                 ];
             }
@@ -659,12 +659,12 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
             $cleared = Transaction::find($outstanding['id']);
 
             Assignment::create([
-                'assignment_date'  => Carbon::now(),
-                'transaction_id'   => $this->id,
+                'assignment_date' => Carbon::now(),
+                'transaction_id' => $this->id,
                 'forex_account_id' => $forexAccountId,
-                'cleared_id'       => $cleared->id,
-                'cleared_type'     => $cleared->cleared_type,
-                'amount'           => $outstanding['amount'],
+                'cleared_id' => $cleared->id,
+                'cleared_type' => $cleared->cleared_type,
+                'amount' => $outstanding['amount'],
             ]);
         }
     }
@@ -745,7 +745,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
         }
 
         if (!isset($this->exchange_rate_id)) {
-            $this->exchange_rate_id =  Auth::user()->entity->default_rate->id;
+            $this->exchange_rate_id = Auth::user()->entity->default_rate->id;
         }
 
         if ($this->isDirty('transaction_type') && $this->transaction_type != $this->getOriginal('transaction_type') && !is_null($this->id)) {

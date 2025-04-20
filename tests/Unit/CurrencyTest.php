@@ -20,7 +20,7 @@ class CurrencyTest extends TestCase
     public function testCurrencyRelationships()
     {
         $currency = new Currency([
-            'name'          => $this->faker->word,
+            'name' => $this->faker->word,
             'currency_code' => $this->faker->currencyCode,
         ]);
         $currency->attributes();
@@ -82,7 +82,7 @@ class CurrencyTest extends TestCase
     public function testCurrencyRecycling()
     {
         $currency = Currency::create([
-            'name'          => $this->faker->word,
+            'name' => $this->faker->word,
             'currency_code' => $this->faker->currencyCode,
         ]);
         $currency->delete();

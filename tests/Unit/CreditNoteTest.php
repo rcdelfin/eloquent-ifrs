@@ -24,13 +24,13 @@ class CreditNoteTest extends TestCase
     {
         $clientAccount = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $creditNote = new CreditNote([
-            "account_id"       => $clientAccount->id,
+            "account_id" => $clientAccount->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $creditNote->save();
 
@@ -49,17 +49,17 @@ class CreditNoteTest extends TestCase
         $creditNote = new CreditNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
@@ -73,7 +73,7 @@ class CreditNoteTest extends TestCase
 
         $creditNote->post();
 
-        $debit  = Ledger::where("entry_type", Balance::DEBIT)->get()[0];
+        $debit = Ledger::where("entry_type", Balance::DEBIT)->get()[0];
         $credit = Ledger::where("entry_type", Balance::CREDIT)->get()[0];
 
         $this->assertEquals($debit->folio_account, $creditNote->account->id);
@@ -83,7 +83,7 @@ class CreditNoteTest extends TestCase
         $this->assertEquals($debit->amount, 100);
         $this->assertEquals($credit->amount, 100);
 
-        $vat_debit  = Ledger::where("entry_type", Balance::DEBIT)->get()[1];
+        $vat_debit = Ledger::where("entry_type", Balance::DEBIT)->get()[1];
         $vat_credit = Ledger::where("entry_type", Balance::CREDIT)->get()[1];
 
         $this->assertEquals($vat_debit->folio_account, $creditNote->account->id);
@@ -106,19 +106,19 @@ class CreditNoteTest extends TestCase
         $creditNote = new CreditNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $this->expectException(LineItemAccount::class);
         $this->expectExceptionMessage('Credit Note LineItem Account must be of type Operating Revenue');
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
@@ -142,19 +142,19 @@ class CreditNoteTest extends TestCase
         $creditNote = new CreditNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $this->expectException(MainAccount::class);
         $this->expectExceptionMessage('Credit Note Main Account must be of type Receivable');
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
         $lineItem->addVat(
@@ -177,12 +177,12 @@ class CreditNoteTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $transaction = new CreditNote([
-            "account_id"       => $account->id,
+            "account_id" => $account->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $transaction->save();
 

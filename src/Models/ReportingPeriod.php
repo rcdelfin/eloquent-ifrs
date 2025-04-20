@@ -52,8 +52,8 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
      * @var string
      */
 
-    public const OPEN      = "OPEN";
-    public const CLOSED    = "CLOSED";
+    public const OPEN = "OPEN";
+    public const CLOSED = "CLOSED";
     public const ADJUSTING = "ADJUSTING";
 
     /**
@@ -118,7 +118,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
             return date("Y");
         }
 
-        $year  = is_null($date) ? date("Y") : date("Y", strtotime($date));
+        $year = is_null($date) ? date("Y") : date("Y", strtotime($date));
         $month = is_null($date) ? date("m") : date("m", strtotime($date));
 
         $year = intval($month) < $entity->year_start ? intval($year) - 1 : $year;
@@ -178,21 +178,21 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
 
         foreach ($this->closingTransactions as $translation) {
             $transaction = Transaction::find($translation->transaction_id);
-            $account     = $transaction->account;
-            $balances    = $account->closingBalance($transaction->transaction_date, $translation->currency_id);
+            $account = $transaction->account;
+            $balances = $account->closingBalance($transaction->transaction_date, $translation->currency_id);
             $closingRate = ClosingRate::where('reporting_period_id', $this->id)
                 ->whereHas('ExchangeRate', function ($q) use ($translation) {
                     $q->where('currency_id', $translation->currency_id);
                 })->first()->exchangeRate->rate;
-            $credited                       = $transaction->credited ? -1 : 1;
+            $credited = $transaction->credited ? -1 : 1;
             $transactions[$account->name][] = [
-                'currency'        => $transaction->reference,
-                'closingRate'     => $closingRate,
+                'currency' => $transaction->reference,
+                'closingRate' => $closingRate,
                 'currencyBalance' => $balances[$translation->currency_id],
-                'localBalance'    => $balances[$transaction->currency_id],
-                'foreignBalance'  => $balances[$translation->currency_id] * $closingRate,
-                'translation'     => $transaction->amount * $credited,
-                'posted'          => $transaction->is_posted,
+                'localBalance' => $balances[$transaction->currency_id],
+                'foreignBalance' => $balances[$translation->currency_id] * $closingRate,
+                'translation' => $transaction->amount * $credited,
+                'posted' => $transaction->is_posted,
             ];
         }
         return $transactions;
@@ -245,7 +245,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
         }
 
         $reportingCurrency = $this->entity->currency_id;
-        $periodEnd         = ReportingPeriod::periodEnd($this->calendar_year . '01-01', $this->entity);
+        $periodEnd = ReportingPeriod::periodEnd($this->calendar_year . '01-01', $this->entity);
 
         $accounts = Account::whereNotIn('currency_id', [$reportingCurrency]);
         if (!is_null($accountId)) {
@@ -256,8 +256,8 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
                 $balances = $account->closingBalance($periodEnd);
                 if (0 <> array_sum($balances)) {
                     foreach ($this->transactionCurrencies($account->id) as $currency) {
-                        $balances       = $account->closingBalance($periodEnd, $currency->currency_id);
-                        $localBalance   = $balances[$reportingCurrency];
+                        $balances = $account->closingBalance($periodEnd, $currency->currency_id);
+                        $localBalance = $balances[$reportingCurrency];
                         $foreignBalance = $balances[$currency->currency_id] * $rates[$currency->currency_id];
 
                         if ($localBalance <> round($foreignBalance, config('ifrs.forex_scale'))) {
@@ -287,9 +287,9 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
     public function transactionCurrencies($accountId = null)
     {
         $reportingCurrency = $this->entity->currency_id;
-        $transactionTable  = config('ifrs.table_prefix') . 'transactions';
-        $currenciesTable   = config('ifrs.table_prefix') . 'currencies';
-        $query             = DB::table($transactionTable)
+        $transactionTable = config('ifrs.table_prefix') . 'transactions';
+        $currenciesTable = config('ifrs.table_prefix') . 'currencies';
+        $query = DB::table($transactionTable)
             ->leftJoin($currenciesTable, $currenciesTable . '.id', '=', $transactionTable . '.currency_id')
             ->whereYear($transactionTable . '.transaction_date', '=', $this->calendar_year)
             ->whereNotIn($currenciesTable . '.id', [$reportingCurrency])
@@ -355,8 +355,8 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
         object $currency,
     ): Transaction {
 
-        $difference  = $foreignBalance - $localBalance;
-        $isAsset     = in_array($account->account_type, config('ifrs')[BalanceSheet::ASSETS]);
+        $difference = $foreignBalance - $localBalance;
+        $isAsset = in_array($account->account_type, config('ifrs')[BalanceSheet::ASSETS]);
         $isLiability = in_array($account->account_type, config('ifrs')[BalanceSheet::LIABILITIES]);
 
         if ($isAsset && $difference > 0 || $isLiability && $difference < 0) {
@@ -368,27 +368,27 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
         $entity = $account->entity;
 
         $balanceTransaction = JournalEntry::create([
-            "account_id"       => $account->id,
+            "account_id" => $account->id,
             "transaction_date" => $closingDate,
-            "narration"        => $currency->currency_code . " " . $this->calendar_year . " Forex Balance Translation",
-            "reference"        => $currency->currency_code,
-            "credited"         => $credited,
-            "entity_id"        => $entity->id,
+            "narration" => $currency->currency_code . " " . $this->calendar_year . " Forex Balance Translation",
+            "reference" => $currency->currency_code,
+            "credited" => $credited,
+            "entity_id" => $entity->id,
         ]);
 
         $balanceTransaction->addLineItem(LineItem::create([
             'account_id' => $forexAccountId,
-            'amount'     => abs($difference),
-            'entity_id'  => $entity->id,
+            'amount' => abs($difference),
+            'entity_id' => $entity->id,
         ]));
 
         $balanceTransaction->save();
 
         ClosingTransaction::create([
             "reporting_period_id" => $this->id,
-            "transaction_id"      => $balanceTransaction->id,
-            "currency_id"         => $currency->currency_id,
-            "entity_id"           => $entity->id,
+            "transaction_id" => $balanceTransaction->id,
+            "currency_id" => $currency->currency_id,
+            "entity_id" => $entity->id,
         ]);
         return $balanceTransaction;
     }

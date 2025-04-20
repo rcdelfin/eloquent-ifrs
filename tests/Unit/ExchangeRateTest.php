@@ -18,13 +18,13 @@ class ExchangeRateTest extends TestCase
      */
     public function testExchangeRateRelationships()
     {
-        $currency  = factory(Currency::class)->create();
+        $currency = factory(Currency::class)->create();
 
         $exchangeRate = new ExchangeRate([
-            'valid_from'  => Carbon::now(),
-            'valid_to'    => Carbon::now()->addMonth(),
+            'valid_from' => Carbon::now(),
+            'valid_to' => Carbon::now()->addMonth(),
             'currency_id' => $currency->id,
-            'rate'        => 10,
+            'rate' => 10,
         ]);
         $exchangeRate->attributes();
         $exchangeRate->save();
@@ -47,17 +47,17 @@ class ExchangeRateTest extends TestCase
      */
     public function testExchangeRateEntityScope()
     {
-        $user            = factory(User::class)->create();
+        $user = factory(User::class)->create();
         $user->entity_id = 2;
         $user->save();
 
         $this->be($user);
 
         $exchangeRate = new ExchangeRate([
-            'valid_from'  => Carbon::now(),
-            'valid_to'    => Carbon::now()->addMonth(),
+            'valid_from' => Carbon::now(),
+            'valid_to' => Carbon::now()->addMonth(),
             'currency_id' => factory(Currency::class)->create()->id,
-            'rate'        => 10,
+            'rate' => 10,
         ]);
         $exchangeRate->save();
 
@@ -75,10 +75,10 @@ class ExchangeRateTest extends TestCase
     public function testExchangeRateRecycling()
     {
         $exchangeRate = ExchangeRate::create([
-            'valid_from'  => Carbon::now(),
-            'valid_to'    => Carbon::now()->addMonth(),
+            'valid_from' => Carbon::now(),
+            'valid_to' => Carbon::now()->addMonth(),
             'currency_id' => factory(Currency::class)->create()->id,
-            'rate'        => 10,
+            'rate' => 10,
         ]);
         $exchangeRate->delete();
 

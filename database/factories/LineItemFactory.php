@@ -12,12 +12,12 @@ $factory->define(
     function (Faker $faker) {
         return [
             'transaction_id' => factory(Transaction::class)->create()->id,
-            'account_id'     => factory(Account::class)->create([
+            'account_id' => factory(Account::class)->create([
                 'category_id' => null,
             ])->id,
             'narration' => $faker->sentence,
-            'quantity'  => $faker->randomNumber(),
-            'amount'    => $faker->randomFloat(2, 0, 200),
+            'quantity' => $faker->randomNumber(),
+            'amount' => $faker->randomFloat(2, 0, 200),
         ];
     },
 );

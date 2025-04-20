@@ -22,33 +22,33 @@ class CashFlowStatement extends FinancialStatement
      *
      * @var string
      */
-    public const TITLE                = 'CASH_FLOW_STATEMENT';
+    public const TITLE = 'CASH_FLOW_STATEMENT';
     public const OPERATIONS_CASH_FLOW = 'OPERATIONS_CASH_FLOW';
     public const INVESTMENT_CASH_FLOW = 'INVESTMENT_CASH_FLOW';
-    public const FINANCING_CASH_FLOW  = 'FINANCING_CASH_FLOW';
-    public const NET_CASH_FLOW        = 'NET_CASH_FLOW';
+    public const FINANCING_CASH_FLOW = 'FINANCING_CASH_FLOW';
+    public const NET_CASH_FLOW = 'NET_CASH_FLOW';
 
     /**
      * Cash Flow Statement Sections
      *
      * @var string
      */
-    public const PROVISIONS                 = 'PROVISIONS';
-    public const RECEIVABLES                = 'RECEIVABLES';
-    public const PAYABLES                   = 'PAYABLES';
-    public const CURRENT_ASSETS             = 'CURRENT_ASSETS';
-    public const CURRENT_LIABILITIES        = 'CURRENT_LIABILITIES';
-    public const TAXATION                   = 'TAXATION';
-    public const NON_CURRENT_ASSETS         = 'NON_CURRENT_ASSETS';
-    public const NON_CURRENT_LIABILITIES    = 'NON_CURRENT_LIABILITIES';
-    public const EQUITY                     = 'EQUITY';
-    public const PROFIT                     = 'PROFIT';
+    public const PROVISIONS = 'PROVISIONS';
+    public const RECEIVABLES = 'RECEIVABLES';
+    public const PAYABLES = 'PAYABLES';
+    public const CURRENT_ASSETS = 'CURRENT_ASSETS';
+    public const CURRENT_LIABILITIES = 'CURRENT_LIABILITIES';
+    public const TAXATION = 'TAXATION';
+    public const NON_CURRENT_ASSETS = 'NON_CURRENT_ASSETS';
+    public const NON_CURRENT_LIABILITIES = 'NON_CURRENT_LIABILITIES';
+    public const EQUITY = 'EQUITY';
+    public const PROFIT = 'PROFIT';
     public const TOTAL_OPERATIONS_CASH_FLOW = 'OPERATIONS_CASH_FLOW';
     public const TOTAL_INVESTMENT_CASH_FLOW = 'INVESTMENT_CASH_FLOW';
-    public const TOTAL_FINANCING_CASH_FLOW  = 'FINANCING_CASH_FLOW';
-    public const START_CASH_BALANCE         = 'START_CASH_BALANCE';
-    public const END_CASH_BALANCE           = 'END_CASH_BALANCE';
-    public const CASHBOOK_BALANCE           = 'CASHBOOK_BALANCE';
+    public const TOTAL_FINANCING_CASH_FLOW = 'FINANCING_CASH_FLOW';
+    public const START_CASH_BALANCE = 'START_CASH_BALANCE';
+    public const END_CASH_BALANCE = 'END_CASH_BALANCE';
+    public const CASHBOOK_BALANCE = 'CASHBOOK_BALANCE';
 
     /**
      * Cash Flow Statement period.
@@ -57,7 +57,7 @@ class CashFlowStatement extends FinancialStatement
      */
     public $period = [
         "startDate" => null,
-        "endDate"   => null,
+        "endDate" => null,
     ];
 
     /**
@@ -77,7 +77,7 @@ class CashFlowStatement extends FinancialStatement
     public function __construct(?string $startDate = null, ?string $endDate = null, ?Entity $entity = null)
     {
         $this->period['startDate'] = is_null($startDate) ? ReportingPeriod::periodStart(null, $entity) : Carbon::parse($startDate);
-        $this->period['endDate']   = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
+        $this->period['endDate'] = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
         if ($this->period['endDate'] != ReportingPeriod::periodEnd($endDate)) {
             $this->period['endDate']->addDay();
         }
@@ -88,22 +88,22 @@ class CashFlowStatement extends FinancialStatement
         $this->result_indents = 1;
 
         // Section Balances
-        $this->balances[self::PROVISIONS]              = 0;
-        $this->balances[self::RECEIVABLES]             = 0;
-        $this->balances[self::PAYABLES]                = 0;
-        $this->balances[self::TAXATION]                = 0;
-        $this->balances[self::CURRENT_ASSETS]          = 0;
-        $this->balances[self::CURRENT_LIABILITIES]     = 0;
-        $this->balances[self::NON_CURRENT_ASSETS]      = 0;
+        $this->balances[self::PROVISIONS] = 0;
+        $this->balances[self::RECEIVABLES] = 0;
+        $this->balances[self::PAYABLES] = 0;
+        $this->balances[self::TAXATION] = 0;
+        $this->balances[self::CURRENT_ASSETS] = 0;
+        $this->balances[self::CURRENT_LIABILITIES] = 0;
+        $this->balances[self::NON_CURRENT_ASSETS] = 0;
         $this->balances[self::NON_CURRENT_LIABILITIES] = 0;
-        $this->balances[self::EQUITY]                  = 0;
+        $this->balances[self::EQUITY] = 0;
 
         // Statement Results
         $this->results[self::OPERATIONS_CASH_FLOW] = 0;
         $this->results[self::INVESTMENT_CASH_FLOW] = 0;
-        $this->results[self::FINANCING_CASH_FLOW]  = 0;
-        $this->results[self::CASHBOOK_BALANCE]     = 0;
-        $this->results[self::END_CASH_BALANCE]     = 0;
+        $this->results[self::FINANCING_CASH_FLOW] = 0;
+        $this->results[self::CASHBOOK_BALANCE] = 0;
+        $this->results[self::END_CASH_BALANCE] = 0;
     }
 
     /**
@@ -154,7 +154,7 @@ class CashFlowStatement extends FinancialStatement
         $this->balances[self::NET_CASH_FLOW] = $this->results[self::OPERATIONS_CASH_FLOW] + $this->results[self::INVESTMENT_CASH_FLOW] + $this->results[self::FINANCING_CASH_FLOW];
 
         // Cash at start of the Period
-        $periodStart                              = ReportingPeriod::periodStart($this->period['endDate'], $this->entity);
+        $periodStart = ReportingPeriod::periodStart($this->period['endDate'], $this->entity);
         $this->balances[self::START_CASH_BALANCE] = Account::sectionBalances(
             [Account::BANK],
             $periodStart,
@@ -177,7 +177,7 @@ class CashFlowStatement extends FinancialStatement
 
         return [
             "balances" => $this->balances,
-            "results"  => $this->results,
+            "results" => $this->results,
         ];
     }
 

@@ -29,16 +29,16 @@ class BalanceSheet extends FinancialStatement
      *
      * @var string
      */
-    public const ASSETS               = 'ASSETS';
-    public const LIABILITIES          = 'LIABILITIES';
-    public const EQUITY               = 'EQUITY';
-    public const RECONCILIATION       = 'RECONCILIATION';
-    public const TOTAL_ASSETS         = 'TOTAL_ASSETS';
-    public const TOTAL_LIABILITIES    = 'TOTAL_LIABILITIES';
-    public const NET_ASSETS           = 'NET_ASSETS';
+    public const ASSETS = 'ASSETS';
+    public const LIABILITIES = 'LIABILITIES';
+    public const EQUITY = 'EQUITY';
+    public const RECONCILIATION = 'RECONCILIATION';
+    public const TOTAL_ASSETS = 'TOTAL_ASSETS';
+    public const TOTAL_LIABILITIES = 'TOTAL_LIABILITIES';
+    public const NET_ASSETS = 'NET_ASSETS';
     public const TOTAL_RECONCILIATION = 'TOTAL_RECONCILIATION';
-    public const NET_PROFIT           = 'NET_PROFIT';
-    public const TOTAL_EQUITY         = 'TOTAL_EQUITY';
+    public const NET_PROFIT = 'NET_PROFIT';
+    public const TOTAL_EQUITY = 'TOTAL_EQUITY';
 
     /**
      * Balance Sheet period.
@@ -58,31 +58,31 @@ class BalanceSheet extends FinancialStatement
     public function __construct(?string $endDate = null, ?Entity $entity = null)
     {
         $this->period['startDate'] = ReportingPeriod::periodStart($endDate, $entity);
-        $this->period['endDate']   = is_null($endDate) ? ReportingPeriod::periodEnd(null, $entity) : Carbon::parse($endDate);
+        $this->period['endDate'] = is_null($endDate) ? ReportingPeriod::periodEnd(null, $entity) : Carbon::parse($endDate);
 
         $period = ReportingPeriod::getPeriod($this->period['endDate'], $entity);
         parent::__construct($period, $entity);
 
         // Section Accounts
-        $this->accounts[self::ASSETS]         = [];
-        $this->accounts[self::LIABILITIES]    = [];
-        $this->accounts[self::EQUITY]         = [];
+        $this->accounts[self::ASSETS] = [];
+        $this->accounts[self::LIABILITIES] = [];
+        $this->accounts[self::EQUITY] = [];
         $this->accounts[self::RECONCILIATION] = [];
 
         // Section Balances
-        $this->balances[self::ASSETS]         = [];
-        $this->balances[self::LIABILITIES]    = [];
-        $this->balances[self::EQUITY]         = [];
+        $this->balances[self::ASSETS] = [];
+        $this->balances[self::LIABILITIES] = [];
+        $this->balances[self::EQUITY] = [];
         $this->balances[self::RECONCILIATION] = [];
 
         // Statement Results
-        $this->results[self::NET_ASSETS]   = 0;
+        $this->results[self::NET_ASSETS] = 0;
         $this->results[self::TOTAL_EQUITY] = 0;
 
         // Statement Totals
-        $this->totals[self::ASSETS]         = 0;
-        $this->totals[self::LIABILITIES]    = 0;
-        $this->totals[self::EQUITY]         = 0;
+        $this->totals[self::ASSETS] = 0;
+        $this->totals[self::LIABILITIES] = 0;
+        $this->totals[self::EQUITY] = 0;
         $this->totals[self::RECONCILIATION] = 0;
     }
 
@@ -130,11 +130,11 @@ class BalanceSheet extends FinancialStatement
             $this->entity,
         )["sectionClosingBalance"];
 
-        $this->balances[self::EQUITY][self::NET_PROFIT]                                                 = $netProfit;
+        $this->balances[self::EQUITY][self::NET_PROFIT] = $netProfit;
         $this->accounts[self::EQUITY][self::NET_PROFIT][config('ifrs')['statements'][self::NET_PROFIT]] = [
             "accounts" => null,
-            "total"    => $netProfit,
-            "id"       => 0,
+            "total" => $netProfit,
+            "id" => 0,
         ];
 
         // Total Equity
@@ -143,8 +143,8 @@ class BalanceSheet extends FinancialStatement
         return [
             "accounts" => $this->accounts,
             "balances" => $this->balances,
-            "results"  => $this->results,
-            "totals"   => $this->totals,
+            "results" => $this->results,
+            "totals" => $this->totals,
         ];
     }
 

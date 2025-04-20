@@ -96,9 +96,9 @@ class LineItem extends Model implements Recyclable, Segregatable
             $tax = $this->vat_inclusive ? $itemAmount - ($itemAmount / (1 + ($vat->rate / 100))) : $itemAmount * $vat->rate / 100;
 
             AppliedVat::firstOrCreate([
-                'vat_id'       => $vat->id,
+                'vat_id' => $vat->id,
                 'line_item_id' => $this->id,
-                'amount'       => $tax,
+                'amount' => $tax,
             ]);
             $itemAmount += $this->compound_vat ? $tax : 0;
         }
@@ -127,7 +127,7 @@ class LineItem extends Model implements Recyclable, Segregatable
      */
     public function toString($type = false)
     {
-        $classname   = explode('\\', self::class);
+        $classname = explode('\\', self::class);
         $description = $this->account->toString() . ' for ' . $this->amount * $this->quantity;
         return $type ? array_pop($classname) . ': ' . $description : $description;
     }
@@ -271,7 +271,7 @@ class LineItem extends Model implements Recyclable, Segregatable
 
             AppliedVat::where([
                 'line_item_id' => $this->id,
-                'vat_id'       => $vat->id,
+                'vat_id' => $vat->id,
             ])->first()->delete();
         }
 

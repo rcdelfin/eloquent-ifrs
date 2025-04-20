@@ -69,7 +69,7 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
      * @var string
      */
 
-    public const DEBIT  = "D";
+    public const DEBIT = "D";
     public const CREDIT = "C";
 
     /**
@@ -143,7 +143,7 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
      */
     public function toString($type = false): string
     {
-        $classname   = explode('\\', self::class);
+        $classname = explode('\\', self::class);
         $description = $this->account->toString() . ' for year ' . $this->reportingPeriod->calendar_year;
         return $type ? $this->type . ' ' . array_pop($classname) . ': ' . $description : $description;
     }
@@ -310,8 +310,8 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
         }
 
         if (!isset($this->transaction_no)) {
-            $currency             = $this->currency->currency_code;
-            $year                 = ReportingPeriod::find($this->reporting_period_id)->calendar_year;
+            $currency = $this->currency->currency_code;
+            $year = ReportingPeriod::find($this->reporting_period_id)->calendar_year;
             $this->transaction_no = $this->account_id . $currency . $year;
         }
 

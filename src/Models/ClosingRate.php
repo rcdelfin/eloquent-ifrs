@@ -55,7 +55,7 @@ class ClosingRate extends Model implements Segregatable, Recyclable
      */
     public function toString($type = false)
     {
-        $classname    = explode('\\', self::class);
+        $classname = explode('\\', self::class);
         $exchangeRate = $this->exchangeRate;
         $instanceName = $this->reportingPeriod->calendar_year . ' ' . $exchangeRate->currency->currency_code . ' at ' . $exchangeRate->rate;
         return $type ? array_pop($classname) . ': ' . $instanceName : $instanceName;
@@ -106,7 +106,7 @@ class ClosingRate extends Model implements Segregatable, Recyclable
      */
     public function save(array $options = []): bool
     {
-        $rate   = ExchangeRate::find($this->exchange_rate_id);
+        $rate = ExchangeRate::find($this->exchange_rate_id);
         $period = ReportingPeriod::find($this->reporting_period_id);
 
         if (ClosingRate::where('reporting_period_id', $period->id)

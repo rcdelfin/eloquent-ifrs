@@ -44,7 +44,7 @@ class EntityTest extends TestCase
         $entity->save();
 
         $period = factory(ReportingPeriod::class)->create([
-            'entity_id'     => $entity->id,
+            'entity_id' => $entity->id,
             'calendar_year' => date("Y"),
         ]);
 
@@ -54,17 +54,17 @@ class EntityTest extends TestCase
 
         // Daughter entity
         $entity2 = new Entity([
-            'name'        => $this->faker->company,
+            'name' => $this->faker->company,
             'currency_id' => $currency2->id,
-            'parent_id'   => $entity->id,
+            'parent_id' => $entity->id,
         ]);
         $entity2->save();
 
         // Second daughter entity
         $entity3 = new Entity([
-            'name'        => $this->faker->company,
+            'name' => $this->faker->company,
             'currency_id' => $currency2->id,
-            'parent_id'   => $entity->id,
+            'parent_id' => $entity->id,
         ]);
         $entity3->save();
 
@@ -97,7 +97,7 @@ class EntityTest extends TestCase
     public function testEntityRecycling()
     {
         $entity = Entity::create([
-            'name'        => $this->faker->company,
+            'name' => $this->faker->company,
             'currency_id' => factory(Currency::class)->create()->id,
         ]);
 
@@ -157,7 +157,7 @@ class EntityTest extends TestCase
         $this->assertEquals($entity->locale, 'en_GB');
 
         $entity = new Entity([
-            'name'   => $this->faker->company,
+            'name' => $this->faker->company,
             'locale' => 'ar_BH',
         ]);
         $entity->save();
@@ -173,7 +173,7 @@ class EntityTest extends TestCase
     public function testEntityLocaleException()
     {
         $entity = new Entity([
-            'name'   => $this->faker->company,
+            'name' => $this->faker->company,
             'locale' => 'en_US',
         ]);
         $this->expectException(UnconfiguredLocale::class);
@@ -192,9 +192,9 @@ class EntityTest extends TestCase
         $entity = Auth::user()->entity;
 
         $currency = factory(Currency::class)->create([
-            'name'          => 'Euros',
+            'name' => 'Euros',
             'currency_code' => 'EUR',
-            'entity_id'     => $entity->id,
+            'entity_id' => $entity->id,
         ]);
 
         $entity->currency()->associate($currency);
@@ -203,7 +203,7 @@ class EntityTest extends TestCase
         $this->assertEquals($entity->localizeAmount(1234567.891, 'EUR', 'de_DE'), "1.234.567,89\xc2\xa0€");
 
         $entity = new Entity([
-            'name'   => $this->faker->company,
+            'name' => $this->faker->company,
             'locale' => 'ar_BH',
         ]);
         $entity->save();

@@ -62,7 +62,7 @@ class Vat extends Model implements Segregatable, Recyclable
      */
     public function toString($type = false): string
     {
-        $classname   = explode('\\', self::class);
+        $classname = explode('\\', self::class);
         $description = $this->name . ' (' . $this->code . ') at ' . number_format($this->rate, 2) . '%';
         return $type ? array_pop($classname) . ': ' . $description : $description;
     }

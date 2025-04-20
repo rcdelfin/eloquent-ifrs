@@ -36,7 +36,7 @@ class ClientInvoice extends Transaction implements Sells, Clearable
      */
     public function __construct($attributes = [])
     {
-        $attributes['credited']         = false;
+        $attributes['credited'] = false;
         $attributes['transaction_type'] = self::PREFIX;
 
         parent::__construct($attributes);

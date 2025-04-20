@@ -31,13 +31,13 @@ class LedgerTest extends TestCase
 
         $transaction = new JournalEntry([
             "account_id" => $account->id,
-            "date"       => Carbon::now(),
-            "narration"  => $this->faker->word,
+            "date" => Carbon::now(),
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
             "account_id" => $lineAccount->id,
-            "amount"     => 50,
+            "amount" => 50,
         ]);
 
         $transaction->addLineItem($lineItem);
@@ -70,22 +70,22 @@ class LedgerTest extends TestCase
 
         $transaction = new JournalEntry([
             "account_id" => $account->id,
-            "date"       => Carbon::now(),
-            "narration"  => $this->faker->word,
+            "date" => Carbon::now(),
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
             "account_id" => $lineAccount1->id,
-            "amount"     => 75,
-            "quantity"   => 1,
+            "amount" => 75,
+            "quantity" => 1,
         ]);
 
         $transaction->addLineItem($lineItem1);
 
         $lineItem2 = factory(LineItem::class)->create([
             "account_id" => $lineAccount2->id,
-            "amount"     => 120,
-            "quantity"   => 1,
+            "amount" => 120,
+            "quantity" => 1,
         ]);
 
         $transaction->addLineItem($lineItem2);
@@ -105,22 +105,22 @@ class LedgerTest extends TestCase
     public function testLedgerAccountBalance()
     {
         $account = factory(Account::class)->create([
-            'category_id'  => null,
+            'category_id' => null,
             "account_type" => Account::INVENTORY,
         ]);
 
         factory(Ledger::class, 3)->create([
             "post_account" => $account->id,
-            "entry_type"   => Balance::DEBIT,
+            "entry_type" => Balance::DEBIT,
             "posting_date" => Carbon::now(),
-            "amount"       => 50,
+            "amount" => 50,
         ]);
 
         factory(Ledger::class, 2)->create([
             "post_account" => $account->id,
-            "entry_type"   => Balance::CREDIT,
+            "entry_type" => Balance::CREDIT,
             "posting_date" => Carbon::now(),
-            "amount"       => 95,
+            "amount" => 95,
         ]);
 
         $localBalance = Ledger::balance($account, Carbon::now()->startOfYear(), Carbon::now());
@@ -151,16 +151,16 @@ class LedgerTest extends TestCase
         ]);
 
         $transaction = new JournalEntry([
-            "account_id"       => $account->id,
-            "date"             => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "account_id" => $account->id,
+            "date" => Carbon::now(),
+            "narration" => $this->faker->word,
             "exchange_rate_id" => $rate->id,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
             "account_id" => $lineAccount1->id,
-            "amount"     => 75,
-            "quantity"   => 1,
+            "amount" => 75,
+            "quantity" => 1,
         ]);
         $lineItem1->addVat(
             factory(Vat::class)->create(["rate" => 10]),
@@ -171,8 +171,8 @@ class LedgerTest extends TestCase
 
         $lineItem2 = factory(LineItem::class)->create([
             "account_id" => $lineAccount2->id,
-            "amount"     => 120,
-            "quantity"   => 1,
+            "amount" => 120,
+            "quantity" => 1,
         ]);
         $lineItem2->addVat(
             factory(Vat::class)->create(["rate" => 10]),
@@ -196,21 +196,21 @@ class LedgerTest extends TestCase
         );
 
         $rate1 = factory(ExchangeRate::class)->create([
-            'rate'        => 10,
+            'rate' => 10,
             'currency_id' => factory(Currency::class)->create()->id,
         ]);
 
         $transaction = new JournalEntry([
-            "account_id"       => $account->id,
-            "date"             => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "account_id" => $account->id,
+            "date" => Carbon::now(),
+            "narration" => $this->faker->word,
             "exchange_rate_id" => $rate1->id,
         ]);
 
         $lineItem1 = factory(LineItem::class)->create([
             "account_id" => $lineAccount1->id,
-            "amount"     => 75,
-            "quantity"   => 1,
+            "amount" => 75,
+            "quantity" => 1,
         ]);
 
         $transaction->addLineItem($lineItem1);

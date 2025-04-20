@@ -25,7 +25,7 @@ class UnassignableTransaction extends IFRSException
     public function __construct(string $transactionType, array $transactionTypes, ?string $message = null, ?int $code = null)
     {
         $transactionTypes = Transaction::getTypes($transactionTypes);
-        $transactionType  = Transaction::getType($transactionType);
+        $transactionType = Transaction::getType($transactionType);
 
         $error = $transactionType . " Transaction cannot have assignments. Assignment Transaction must be one of: ";
         $error .= implode(", ", $transactionTypes) . ' ';

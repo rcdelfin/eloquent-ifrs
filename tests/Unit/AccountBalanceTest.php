@@ -32,22 +32,22 @@ class AccountBalanceTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::INVENTORY,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $exchangeRate = factory(ExchangeRate::class)->create();
-        $currency     = factory(Currency::class)->create([
+        $currency = factory(Currency::class)->create([
             'currency_code' => 'EUR',
         ]);
         $balance = new Balance([
             'exchange_rate_id' => $exchangeRate->id,
-            'account_id'       => $account->id,
-            'currency_id'      => $currency->id,
+            'account_id' => $account->id,
+            'currency_id' => $currency->id,
             'transaction_type' => Transaction::JN,
             'transaction_date' => Carbon::now()->subYears(1.5),
-            'reference'        => $this->faker->word,
-            'balance_type'     => Balance::DEBIT,
-            'amount'           => $this->faker->randomFloat(2),
+            'reference' => $this->faker->word,
+            'balance_type' => Balance::DEBIT,
+            'amount' => $this->faker->randomFloat(2),
         ]);
         $balance->save();
 
@@ -75,37 +75,37 @@ class AccountBalanceTest extends TestCase
 
         $account = Account::create([
             'account_type' => Account::INVENTORY,
-            'category_id'  => null,
-            'entity_id'    => $entity->id,
+            'category_id' => null,
+            'entity_id' => $entity->id,
         ]);
 
         $exchangeRate = ExchangeRate::create([
-            'valid_from'  => $faker->dateTimeThisMonth(),
-            'valid_to'    => Carbon::now(),
+            'valid_from' => $faker->dateTimeThisMonth(),
+            'valid_to' => Carbon::now(),
             'currency_id' => Currency::create([
-                'name'          => $faker->name,
+                'name' => $faker->name,
                 'currency_code' => $faker->currencyCode,
-                'entity_id'     => $entity->id,
+                'entity_id' => $entity->id,
             ])->id,
-            'rate'      => 1,
+            'rate' => 1,
             'entity_id' => $entity->id,
         ]);
 
         $currency = factory(Currency::class)->create([
             'currency_code' => 'EUR',
-            'entity_id'     => $entity->id,
+            'entity_id' => $entity->id,
         ]);
 
         $balance = new Balance([
             'exchange_rate_id' => $exchangeRate->id,
-            'account_id'       => $account->id,
-            'currency_id'      => $currency->id,
+            'account_id' => $account->id,
+            'currency_id' => $currency->id,
             'transaction_type' => Transaction::JN,
             'transaction_date' => Carbon::now()->subYears(1.5),
-            'reference'        => $faker->word,
-            'balance_type'     => Balance::DEBIT,
-            'amount'           => $faker->randomFloat(2),
-            'entity_id'        => $entity->id,
+            'reference' => $faker->word,
+            'balance_type' => Balance::DEBIT,
+            'amount' => $faker->randomFloat(2),
+            'entity_id' => $entity->id,
         ]);
         $balance->save();
 
@@ -133,7 +133,7 @@ class AccountBalanceTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $exchangeRate = factory(ExchangeRate::class)->create([
@@ -142,15 +142,15 @@ class AccountBalanceTest extends TestCase
 
         $balance = new Balance([
             'exchange_rate_id' => $exchangeRate->id,
-            'account_id'       => $account->id,
+            'account_id' => $account->id,
             'transaction_type' => Transaction::JN,
             'transaction_date' => Carbon::now()->subYears(1.5),
-            'reference'        => $this->faker->word,
-            'currency_id'      => factory(Currency::class)->create([
+            'reference' => $this->faker->word,
+            'currency_id' => factory(Currency::class)->create([
                 'currency_code' => 'USD',
             ])->id,
             'balance_type' => Balance::DEBIT,
-            'balance'      => 50,
+            'balance' => 50,
         ]);
         $balance->save();
 
@@ -167,36 +167,36 @@ class AccountBalanceTest extends TestCase
 
         $account = Account::create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
-            'entity_id'    => $entity->id,
+            'category_id' => null,
+            'entity_id' => $entity->id,
         ]);
 
         $exchangeRate = ExchangeRate::create([
-            'valid_from'  => $faker->dateTimeThisMonth(),
-            'valid_to'    => Carbon::now(),
+            'valid_from' => $faker->dateTimeThisMonth(),
+            'valid_to' => Carbon::now(),
             'currency_id' => Currency::create([
-                'name'          => $faker->name,
+                'name' => $faker->name,
                 'currency_code' => $faker->currencyCode,
-                'entity_id'     => $entity->id,
+                'entity_id' => $entity->id,
             ])->id,
-            'rate'      => 105,
+            'rate' => 105,
             'entity_id' => $entity->id,
         ]);
 
         $balance = new Balance([
             'exchange_rate_id' => $exchangeRate->id,
-            'account_id'       => $account->id,
+            'account_id' => $account->id,
             'transaction_type' => Transaction::JN,
             'transaction_date' => Carbon::now()->subYears(1.5),
-            'reference'        => $this->faker->word,
-            'currency_id'      => Currency::create([
-                'name'          => $faker->name,
+            'reference' => $this->faker->word,
+            'currency_id' => Currency::create([
+                'name' => $faker->name,
                 'currency_code' => 'USD',
-                'entity_id'     => $entity->id,
+                'entity_id' => $entity->id,
             ])->id,
             'balance_type' => Balance::DEBIT,
-            'balance'      => 50,
-            'entity_id'    => $entity->id,
+            'balance' => 50,
+            'entity_id' => $entity->id,
         ]);
         $balance->save();
 
@@ -257,32 +257,32 @@ class AccountBalanceTest extends TestCase
 
         $balance = new Balance([
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from'  => $faker->dateTimeThisMonth(),
-                'valid_to'    => Carbon::now(),
+                'valid_from' => $faker->dateTimeThisMonth(),
+                'valid_to' => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name'          => $faker->name,
+                    'name' => $faker->name,
                     'currency_code' => $faker->currencyCode,
-                    'entity_id'     => $entity->id,
+                    'entity_id' => $entity->id,
                 ])->id,
-                'rate'      => 105,
+                'rate' => 105,
                 'entity_id' => $entity->id,
             ])->id,
             'account_id' => $account = Account::create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
-                'entity_id'    => $entity->id,
+                'category_id' => null,
+                'entity_id' => $entity->id,
             ])->id,
             'transaction_type' => Transaction::JN,
             'transaction_date' => Carbon::now()->subYears(1.5),
-            'reference'        => $this->faker->word,
-            'currency_id'      => Currency::create([
-                'name'          => $faker->name,
+            'reference' => $this->faker->word,
+            'currency_id' => Currency::create([
+                'name' => $faker->name,
                 'currency_code' => 'USD',
-                'entity_id'     => $entity->id,
+                'entity_id' => $entity->id,
             ])->id,
             'balance_type' => Balance::DEBIT,
-            'balance'      => 50,
-            'entity_id'    => $entity->id,
+            'balance' => 50,
+            'entity_id' => $entity->id,
         ]);
 
         $balance->delete();
@@ -304,7 +304,7 @@ class AccountBalanceTest extends TestCase
         factory(Balance::class)->create([
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
     }
@@ -320,31 +320,31 @@ class AccountBalanceTest extends TestCase
         Balance::create([
             'account_id' => Account::create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id'  => null ,
-                'entity_id'    => $entity->id,
+                'category_id' => null ,
+                'entity_id' => $entity->id,
             ])->id,
-            'balance_type'     => Balance::CREDIT,
+            'balance_type' => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from'  => $this->faker->dateTimeThisMonth(),
-                'valid_to'    => Carbon::now(),
+                'valid_from' => $this->faker->dateTimeThisMonth(),
+                'valid_to' => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name'          => $this->faker->name,
+                    'name' => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id'     => $entity->id,
+                    'entity_id' => $entity->id,
                 ])->id,
-                'rate'      => 1,
+                'rate' => 1,
                 'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date'    => Carbon::now()->subYears(1.5),
-            'transaction_no'      => $this->faker->word,
-            'transaction_type'    => $this->faker->randomElement([
+            'transaction_date' => Carbon::now()->subYears(1.5),
+            'transaction_no' => $this->faker->word,
+            'transaction_type' => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
                 Transaction::JN,
             ]),
             'reference' => $this->faker->word,
-            'balance'   => 100,
+            'balance' => 100,
             'entity_id' => $entity->id,
 
         ]);
@@ -380,28 +380,28 @@ class AccountBalanceTest extends TestCase
         Balance::create([
             'account_id' => Account::create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null ,
-                'entity_id'    => $entity->id,
+                'category_id' => null ,
+                'entity_id' => $entity->id,
             ])->id,
-            'balance_type'     => Balance::CREDIT,
+            'balance_type' => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from'  => $this->faker->dateTimeThisMonth(),
-                'valid_to'    => Carbon::now(),
+                'valid_from' => $this->faker->dateTimeThisMonth(),
+                'valid_to' => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name'          => $this->faker->name,
+                    'name' => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id'     => $entity->id,
+                    'entity_id' => $entity->id,
                 ])->id,
-                'rate'      => 1,
+                'rate' => 1,
                 'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date'    => Carbon::now()->subYears(1.5),
-            'transaction_no'      => $this->faker->word,
-            'transaction_type'    => Transaction::CN,
-            'reference'           => $this->faker->word,
-            'balance'             => 100,
-            'entity_id'           => $entity->id,
+            'transaction_date' => Carbon::now()->subYears(1.5),
+            'transaction_no' => $this->faker->word,
+            'transaction_type' => Transaction::CN,
+            'reference' => $this->faker->word,
+            'balance' => 100,
+            'entity_id' => $entity->id,
 
         ]);
     }
@@ -432,28 +432,28 @@ class AccountBalanceTest extends TestCase
         Balance::create([
             'account_id' => Account::create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null ,
-                'entity_id'    => $entity->id,
+                'category_id' => null ,
+                'entity_id' => $entity->id,
             ])->id,
-            'balance_type'     => 'X',
+            'balance_type' => 'X',
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from'  => $this->faker->dateTimeThisMonth(),
-                'valid_to'    => Carbon::now(),
+                'valid_from' => $this->faker->dateTimeThisMonth(),
+                'valid_to' => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name'          => $this->faker->name,
+                    'name' => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id'     => $entity->id,
+                    'entity_id' => $entity->id,
                 ])->id,
-                'rate'      => 1,
+                'rate' => 1,
                 'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date'    => Carbon::now()->subYears(1.5),
-            'transaction_no'      => $this->faker->word,
-            'transaction_type'    => Transaction::IN,
-            'reference'           => $this->faker->word,
-            'balance'             => 100,
-            'entity_id'           => $entity->id,
+            'transaction_date' => Carbon::now()->subYears(1.5),
+            'transaction_no' => $this->faker->word,
+            'transaction_type' => Transaction::IN,
+            'reference' => $this->faker->word,
+            'balance' => 100,
+            'entity_id' => $entity->id,
 
         ]);
     }
@@ -484,31 +484,31 @@ class AccountBalanceTest extends TestCase
         Balance::create([
             'account_id' => Account::create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null ,
-                'entity_id'    => $entity->id,
+                'category_id' => null ,
+                'entity_id' => $entity->id,
             ])->id,
-            'balance_type'     => Balance::CREDIT,
+            'balance_type' => Balance::CREDIT,
             'exchange_rate_id' => ExchangeRate::create([
-                'valid_from'  => $this->faker->dateTimeThisMonth(),
-                'valid_to'    => Carbon::now(),
+                'valid_from' => $this->faker->dateTimeThisMonth(),
+                'valid_to' => Carbon::now(),
                 'currency_id' => Currency::create([
-                    'name'          => $this->faker->name,
+                    'name' => $this->faker->name,
                     'currency_code' => $this->faker->currencyCode,
-                    'entity_id'     => $entity->id,
+                    'entity_id' => $entity->id,
                 ])->id,
-                'rate'      => 1,
+                'rate' => 1,
                 'entity_id' => $entity->id,
             ])->id,
             'reporting_period_id' => $this->period->id,
-            'transaction_date'    => Carbon::now()->subYears(1.5),
-            'transaction_no'      => $this->faker->word,
-            'transaction_type'    => $this->faker->randomElement([
+            'transaction_date' => Carbon::now()->subYears(1.5),
+            'transaction_no' => $this->faker->word,
+            'transaction_type' => $this->faker->randomElement([
                 Transaction::IN,
                 Transaction::BL,
                 Transaction::JN,
             ]),
             'reference' => $this->faker->word,
-            'balance'   => -100,
+            'balance' => -100,
             'entity_id' => $entity->id,
 
         ]);
@@ -529,7 +529,7 @@ class AccountBalanceTest extends TestCase
         //no exception
         $balance = factory(Balance::class)->create([
             "transaction_date" => Carbon::now(),
-            "entity_id"        => $entity->id,
+            "entity_id" => $entity->id,
         ]);
 
         $entity->mid_year_balances = false;
@@ -551,10 +551,10 @@ class AccountBalanceTest extends TestCase
     public function testInvalidBalanceCurrency()
     {
         $account = factory(Account::class)->create([
-            'name'         => 'Savings & Loan',
+            'name' => 'Savings & Loan',
             'account_type' => Account::BANK,
-            'category_id'  => null,
-            'currency_id'  => factory(Currency::class)->create([
+            'category_id' => null,
+            'currency_id' => factory(Currency::class)->create([
                 'currency_code' => 'EUR',
             ])->id,
         ]);

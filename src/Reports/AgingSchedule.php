@@ -66,7 +66,7 @@ class AgingSchedule
         }
 
         $this->period['endDate'] = is_null($endDate) ? Carbon::now() : Carbon::parse($endDate);
-        $this->currency          = is_null($currencyId) ? $this->entity->currency : Currency::find($currencyId);
+        $this->currency = is_null($currencyId) ? $this->entity->currency : Currency::find($currencyId);
 
         $this->brackets = config('ifrs')['aging_schedule_brackets'];
 
@@ -109,7 +109,7 @@ class AgingSchedule
             return array_key_first($brackets);
         } else {
             $bracketName = array_key_first($brackets);
-            $bracket     = array_shift($brackets);
+            $bracket = array_shift($brackets);
             if ($age < $bracket) {
                 return $bracketName;
             } else {
@@ -127,7 +127,7 @@ class AgingSchedule
     {
         return (object) [
             "Currency" => $this->currency->name,
-            "Entity"   => $this->entity->name,
+            "Entity" => $this->entity->name,
             "Accounts" => $this->accounts,
             "Balances" => $this->balances,
             "Brackets" => $this->brackets,

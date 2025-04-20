@@ -55,7 +55,7 @@ class ClosingTransaction extends Model implements Segregatable, Recyclable
      */
     public function toString($type = false)
     {
-        $classname    = explode('\\', self::class);
+        $classname = explode('\\', self::class);
         $instanceName = $this->reportingPeriod->calendar_year . ' Forex Translation Transaction ' . $this->transaction->toString();
         return $type ? array_pop($classname) . ': ' . $instanceName : $instanceName;
     }

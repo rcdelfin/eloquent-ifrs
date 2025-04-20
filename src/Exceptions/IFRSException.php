@@ -45,7 +45,7 @@ abstract class IFRSException extends \Exception
             $message,
             [
                 'user_id' => Auth::check() ? Auth::user()->id : null,
-                'time'    => Carbon::now(),
+                'time' => Carbon::now(),
             ],
         );
         parent::__construct($message ?: $this->message, $code, null);

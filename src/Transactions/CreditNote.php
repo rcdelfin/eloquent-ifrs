@@ -36,7 +36,7 @@ class CreditNote extends Transaction implements Sells, Assignable
      */
     public function __construct($attributes = [])
     {
-        $attributes['credited']         = true;
+        $attributes['credited'] = true;
         $attributes['transaction_type'] = self::PREFIX;
 
         parent::__construct($attributes);

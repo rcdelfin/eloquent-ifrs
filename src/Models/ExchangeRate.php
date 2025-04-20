@@ -58,7 +58,7 @@ class ExchangeRate extends Model implements Segregatable, Recyclable
      */
     public function toString($type = false)
     {
-        $classname   = explode('\\', self::class);
+        $classname = explode('\\', self::class);
         $description = number_format($this->rate, 2) . ' for ' . $this->currency->toString() . ' from ' . $this->valid_from->toDateString();
         return $type ? array_pop($classname) . ': ' . $description : $description;
     }

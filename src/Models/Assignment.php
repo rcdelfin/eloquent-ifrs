@@ -110,9 +110,9 @@ class Assignment extends Model implements Segregatable
         foreach ($schedule->transactions as $outstanding) {
             $assignment = new Assignment([
                 'assignment_date' => Carbon::now(),
-                'transaction_id'  => $transaction->id,
-                'cleared_id'      => $outstanding->id,
-                'cleared_type'    => $outstanding->cleared_type,
+                'transaction_id' => $transaction->id,
+                'cleared_id' => $outstanding->id,
+                'cleared_type' => $outstanding->cleared_type,
             ]);
 
             if ($outstanding->unclearedAmount > $balance) {
@@ -134,10 +134,10 @@ class Assignment extends Model implements Segregatable
     public function save(array $options = []): bool
     {
         $transactionType = $this->transaction->transaction_type;
-        $clearedType     = $this->cleared->transaction_type;
+        $clearedType = $this->cleared->transaction_type;
 
         $transactionRate = $this->transaction->exchangeRate->rate;
-        $clearedRate     = $this->cleared->exchangeRate->rate;
+        $clearedRate = $this->cleared->exchangeRate->rate;
 
         $this->validate($transactionRate, $clearedRate, $transactionType, $clearedType);
 
@@ -225,7 +225,7 @@ class Assignment extends Model implements Segregatable
      */
     public function toString($type = false): string
     {
-        $classname   = explode('\\', self::class);
+        $classname = explode('\\', self::class);
         $description = 'Assigning ' . $this->transaction->transaction_no . ' on ' . $this->assignment_date;
         return $type ? array_pop($classname) . ': ' . $description : $description;
     }

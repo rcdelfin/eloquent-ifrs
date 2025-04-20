@@ -11,10 +11,10 @@ $factory->define(
     function (Faker $faker) {
         return [
             'assignment_date' => $faker->dateTimeThisMonth(),
-            'transaction_id'  => factory(Transaction::class)->create()->id,
-            'cleared_id'      => factory(Transaction::class)->create()->id,
-            'cleared_type'    => Transaction::class,
-            'amount'          => $faker->randomFloat(2),
+            'transaction_id' => factory(Transaction::class)->create()->id,
+            'cleared_id' => factory(Transaction::class)->create()->id,
+            'cleared_type' => Transaction::class,
+            'amount' => $faker->randomFloat(2),
         ];
     },
 );

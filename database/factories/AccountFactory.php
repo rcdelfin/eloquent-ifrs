@@ -15,9 +15,9 @@ $factory->define(
 
         $type = $this->faker->randomElement($types);
         return [
-            'name'         => $faker->name,
+            'name' => $faker->name,
             'account_type' => $type,
-            'category_id'  => factory('IFRS\Models\Category')->create([
+            'category_id' => factory('IFRS\Models\Category')->create([
                 'category_type' => $type,
             ])->id,
             'code' => $faker->randomDigit,

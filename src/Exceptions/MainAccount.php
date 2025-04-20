@@ -26,7 +26,7 @@ class MainAccount extends IFRSException
     public function __construct(string $transactionType, string $accountType, ?string $message = null, ?int $code = null)
     {
         $transactionType = Transaction::getType($transactionType);
-        $accountType     = Account::getType($accountType);
+        $accountType = Account::getType($accountType);
 
         $error = $transactionType . " Main Account must be of type " . $accountType;
 

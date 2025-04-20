@@ -36,7 +36,7 @@ class SupplierBill extends Transaction implements Buys, Clearable
      */
     public function __construct($attributes = [])
     {
-        $attributes['credited']         = true;
+        $attributes['credited'] = true;
         $attributes['transaction_type'] = self::PREFIX;
 
         parent::__construct($attributes);

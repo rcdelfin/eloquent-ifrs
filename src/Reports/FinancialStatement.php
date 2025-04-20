@@ -33,7 +33,7 @@ abstract class FinancialStatement
      * @var array
      */
     public $balances = [
-        "debit"  => 0,
+        "debit" => 0,
         "credit" => 0,
     ];
     /**
@@ -75,10 +75,10 @@ abstract class FinancialStatement
         }
         $this->reportingPeriod = is_null($period) ? $this->entity->currentReportingPeriod : $period;
 
-        $this->statement      = "";
-        $this->indent         = "    ";
-        $this->separator      = "                        ---------------";
-        $this->grand_total    = "                        ===============";
+        $this->statement = "";
+        $this->indent = "    ";
+        $this->separator = "                        ---------------";
+        $this->grand_total = "                        ===============";
         $this->result_indents = 4;
     }
 
@@ -90,9 +90,9 @@ abstract class FinancialStatement
     public function attributes()
     {
         return [
-            "Entity"          => $this->entity->name,
+            "Entity" => $this->entity->name,
             "ReportingPeriod" => $this->reportingPeriod,
-            "Balances"        => $this->balances,
+            "Balances" => $this->balances,
         ];
     }
 

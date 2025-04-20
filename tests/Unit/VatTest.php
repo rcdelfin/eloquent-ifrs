@@ -21,7 +21,7 @@ class VatTest extends TestCase
      */
     public function testVatEntityScope()
     {
-        $newEntity              = factory(Entity::class)->create();
+        $newEntity = factory(Entity::class)->create();
         $newEntity->currency_id = factory(Currency::class)->create()->id;
 
         $user = factory(User::class)->create();
@@ -31,12 +31,12 @@ class VatTest extends TestCase
         $this->be($user);
 
         $vat = new Vat([
-            'name'       => $this->faker->name,
-            'code'       => $this->faker->randomLetter(),
-            'rate'       => 10,
+            'name' => $this->faker->name,
+            'code' => $this->faker->randomLetter(),
+            'rate' => 10,
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::CONTROL,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
         $vat->attributes();
@@ -64,12 +64,12 @@ class VatTest extends TestCase
     public function testVatRecycling()
     {
         $vat = Vat::create([
-            'name'       => $this->faker->name,
-            'code'       => $this->faker->randomLetter(),
-            'rate'       => 10,
+            'name' => $this->faker->name,
+            'code' => $this->faker->randomLetter(),
+            'rate' => 10,
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::CONTROL,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
         $vat->delete();
@@ -124,12 +124,12 @@ class VatTest extends TestCase
     public function testInvalidVatAccountType()
     {
         $vat = new Vat([
-            'name'       => $this->faker->name,
-            'code'       => $this->faker->randomLetter(),
-            'rate'       => 10,
+            'name' => $this->faker->name,
+            'code' => $this->faker->randomLetter(),
+            'rate' => 10,
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::RECEIVABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
         $this->expectException(InvalidAccountType::class);

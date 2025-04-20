@@ -24,13 +24,13 @@ class DebitNoteTest extends TestCase
     {
         $supplierAccount = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $debitNote = new DebitNote([
-            "account_id"       => $supplierAccount->id,
+            "account_id" => $supplierAccount->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $debitNote->save();
 
@@ -49,17 +49,17 @@ class DebitNoteTest extends TestCase
         $debitNote = new DebitNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "quantity" => 1,
         ]);
@@ -74,7 +74,7 @@ class DebitNoteTest extends TestCase
 
         $debitNote->post();
 
-        $debit  = Ledger::where("entry_type", Balance::DEBIT)->get()[0];
+        $debit = Ledger::where("entry_type", Balance::DEBIT)->get()[0];
         $credit = Ledger::where("entry_type", Balance::CREDIT)->get()[0];
 
         $this->assertEquals($debit->post_account, $debitNote->account->id);
@@ -84,7 +84,7 @@ class DebitNoteTest extends TestCase
         $this->assertEquals($debit->amount, 100);
         $this->assertEquals($credit->amount, 100);
 
-        $vat_debit  = Ledger::where("entry_type", Balance::DEBIT)->get()[1];
+        $vat_debit = Ledger::where("entry_type", Balance::DEBIT)->get()[1];
         $vat_credit = Ledger::where("entry_type", Balance::CREDIT)->get()[1];
 
         $this->assertEquals($vat_debit->post_account, $debitNote->account->id);
@@ -107,10 +107,10 @@ class DebitNoteTest extends TestCase
         $debitNote = new DebitNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::PAYABLE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $this->expectException(LineItemAccount::class);
         $this->expectExceptionMessage(
@@ -120,10 +120,10 @@ class DebitNoteTest extends TestCase
         );
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::RECONCILIATION,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
 
@@ -149,19 +149,19 @@ class DebitNoteTest extends TestCase
         $debitNote = new DebitNote([
             "account_id" => factory(Account::class)->create([
                 'account_type' => Account::RECONCILIATION,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $this->expectException(MainAccount::class);
         $this->expectExceptionMessage('Debit Note Main Account must be of type Payable');
 
         $lineItem = factory(LineItem::class)->create([
-            "amount"     => 100,
+            "amount" => 100,
             "account_id" => factory(Account::class)->create([
                 "account_type" => Account::DIRECT_EXPENSE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
         ]);
 
@@ -185,12 +185,12 @@ class DebitNoteTest extends TestCase
     {
         $account = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
         $transaction = new DebitNote([
-            "account_id"       => $account->id,
+            "account_id" => $account->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
         ]);
         $transaction->save();
 

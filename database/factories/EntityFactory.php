@@ -11,7 +11,7 @@ $factory->define(
     Entity::class,
     function (Faker $faker) {
         return [
-            'name'           => $faker->company,
+            'name' => $faker->company,
             'multi_currency' => $faker->boolean(),
         ];
     },

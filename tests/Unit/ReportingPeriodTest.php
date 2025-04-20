@@ -35,7 +35,7 @@ class ReportingPeriodTest extends TestCase
         $entity = Auth::user()->entity;
 
         $period = new ReportingPeriod([
-            'period_count'  => 1,
+            'period_count' => 1,
             'calendar_year' => Carbon::now()->year,
         ]);
         $period->save();
@@ -59,7 +59,7 @@ class ReportingPeriodTest extends TestCase
      */
     public function testReportingPeriodEntityScope()
     {
-        $user            = factory(User::class)->create();
+        $user = factory(User::class)->create();
         $user->entity_id = 2;
         $user->save();
 
@@ -79,7 +79,7 @@ class ReportingPeriodTest extends TestCase
     public function testReportingPeriodRecycling()
     {
         $period = new ReportingPeriod([
-            'period_count'  => 1,
+            'period_count' => 1,
             'calendar_year' => Carbon::now()->year,
         ]);
 
@@ -100,7 +100,7 @@ class ReportingPeriodTest extends TestCase
         $this->assertEquals(ReportingPeriod::year("2025-06-25"), "2025");
         $this->assertEquals(ReportingPeriod::periodStart("2025-06-25")->toDateString(), "2025-01-01");
 
-        $entity             = Auth::user()->entity;
+        $entity = Auth::user()->entity;
         $entity->year_start = 4;
         $entity->save();
 
@@ -134,17 +134,17 @@ class ReportingPeriodTest extends TestCase
         // Receivables
         $account1 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
 
         $transaction = new ClientReceipt([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 'currency_id' => $currency1->id,
-                "rate"        => 110,
+                "rate" => 110,
             ])->id,
             'currency_id' => $currency1->id,
         ]);
@@ -153,8 +153,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -164,12 +164,12 @@ class ReportingPeriodTest extends TestCase
         $transaction->post();
 
         $cleared = new ClientInvoice([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
                 'currency_id' => $currency1->id,
-                "rate"        => 100,
+                "rate" => 100,
             ])->id,
             'currency_id' => $currency1->id,
         ]);
@@ -177,7 +177,7 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::OPERATING_REVENUE,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 100,
         ]);
@@ -187,15 +187,15 @@ class ReportingPeriodTest extends TestCase
 
         $forex = factory(Account::class)->create([
             'account_type' => Account::NON_OPERATING_REVENUE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $assignment = new Assignment([
-            'assignment_date'  => Carbon::now(),
-            'transaction_id'   => $transaction->id,
-            'cleared_id'       => $cleared->id,
-            'cleared_type'     => $cleared->cleared_type,
-            'amount'           => 100,
+            'assignment_date' => Carbon::now(),
+            'transaction_id' => $transaction->id,
+            'cleared_id' => $cleared->id,
+            'cleared_type' => $cleared->cleared_type,
+            'amount' => 100,
             'forex_account_id' => $forex->id,
         ]);
         $assignment->save();
@@ -207,16 +207,16 @@ class ReportingPeriodTest extends TestCase
         // Payables
         $account2 = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency2->id,
+            'category_id' => null,
+            'currency_id' => $currency2->id,
         ]);
 
         $transaction = new SupplierPayment([
-            "account_id"       => $account2->id,
+            "account_id" => $account2->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 100,
+                "rate" => 100,
                 'currency_id' => $currency2->id,
             ])->id,
             'currency_id' => $currency2->id,
@@ -225,8 +225,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency2->id,
+                'category_id' => null,
+                'currency_id' => $currency2->id,
             ])->id,
             'amount' => 50,
         ]);
@@ -235,11 +235,11 @@ class ReportingPeriodTest extends TestCase
         $transaction->post();
 
         $cleared = new SupplierBill([
-            "account_id"       => $account2->id,
+            "account_id" => $account2->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 110,
+                "rate" => 110,
                 'currency_id' => $currency2->id,
             ])->id,
             'currency_id' => $currency2->id,
@@ -248,7 +248,7 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::NON_CURRENT_ASSET,
-                'category_id'  => null,
+                'category_id' => null,
             ])->id,
             'amount' => 100,
         ]);
@@ -281,7 +281,7 @@ class ReportingPeriodTest extends TestCase
     {
         $forex = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $this->expectException(InvalidAccountType::class);
@@ -300,7 +300,7 @@ class ReportingPeriodTest extends TestCase
     {
         $forex = factory(Account::class)->create([
             'account_type' => Account::EQUITY,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $this->expectException(InvalidPeriodStatus::class);
@@ -319,7 +319,7 @@ class ReportingPeriodTest extends TestCase
     {
         $forex = factory(Account::class)->create([
             'account_type' => Account::EQUITY,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $this->period->status = ReportingPeriod::ADJUSTING;
@@ -331,16 +331,16 @@ class ReportingPeriodTest extends TestCase
         // Receivables
         $account1 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
 
         $transaction = new ClientReceipt([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 110,
+                "rate" => 110,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -349,8 +349,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -373,14 +373,14 @@ class ReportingPeriodTest extends TestCase
     {
         $forex = factory(Account::class)->create([
             'account_type' => Account::EQUITY,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
         $currency1 = factory(Currency::class)->create();
         ClosingRate::create([
             'exchange_rate_id' => factory(ExchangeRate::class)->create([
                 'currency_id' => $currency1->id,
-                "rate"        => 100,
+                "rate" => 100,
             ])->id,
             'reporting_period_id' => $this->period->id,
         ]);
@@ -388,21 +388,21 @@ class ReportingPeriodTest extends TestCase
         // Receivables
         $account1 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
         $account2 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
 
         $transaction = new ClientReceipt([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 110,
+                "rate" => 110,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -411,8 +411,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -421,11 +421,11 @@ class ReportingPeriodTest extends TestCase
         $transaction->post();
 
         $transaction = new ClientReceipt([
-            "account_id"       => $account2->id,
+            "account_id" => $account2->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 90,
+                "rate" => 90,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -434,8 +434,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -462,21 +462,21 @@ class ReportingPeriodTest extends TestCase
         // Payables
         $account3 = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
         $account4 = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
 
         $transaction = new SupplierBill([
-            "account_id"       => $account3->id,
+            "account_id" => $account3->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 110,
+                "rate" => 110,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -485,8 +485,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::NON_CURRENT_ASSET,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -495,11 +495,11 @@ class ReportingPeriodTest extends TestCase
         $transaction->post();
 
         $transaction = new SupplierBill([
-            "account_id"       => $account4->id,
+            "account_id" => $account4->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 90,
+                "rate" => 90,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -508,8 +508,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::NON_CURRENT_ASSET,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -541,14 +541,14 @@ class ReportingPeriodTest extends TestCase
     {
         $forex = factory(Account::class)->create([
             'account_type' => Account::EQUITY,
-            'category_id'  => null,
+            'category_id' => null,
         ]);
 
-        $currency1    = factory(Currency::class)->create();
+        $currency1 = factory(Currency::class)->create();
         $closingRate1 = ClosingRate::create([
             'exchange_rate_id' => factory(ExchangeRate::class)->create([
                 'currency_id' => $currency1->id,
-                "rate"        => 100,
+                "rate" => 100,
             ])->id,
             'reporting_period_id' => $this->period->id,
         ]);
@@ -556,21 +556,21 @@ class ReportingPeriodTest extends TestCase
         // Receivables
         $account1 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
         $account2 = factory(Account::class)->create([
             'account_type' => Account::RECEIVABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
 
         $transaction = new ClientReceipt([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 110,
+                "rate" => 110,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -579,8 +579,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -589,11 +589,11 @@ class ReportingPeriodTest extends TestCase
         $transaction->post();
 
         $transaction = new ClientReceipt([
-            "account_id"       => $account2->id,
+            "account_id" => $account2->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 90,
+                "rate" => 90,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -602,8 +602,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -614,21 +614,21 @@ class ReportingPeriodTest extends TestCase
         // Payables
         $account3 = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
         $account4 = factory(Account::class)->create([
             'account_type' => Account::PAYABLE,
-            'category_id'  => null,
-            'currency_id'  => $currency1->id,
+            'category_id' => null,
+            'currency_id' => $currency1->id,
         ]);
 
         $transaction = new SupplierBill([
-            "account_id"       => $account3->id,
+            "account_id" => $account3->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 110,
+                "rate" => 110,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -637,8 +637,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::NON_CURRENT_ASSET,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -647,11 +647,11 @@ class ReportingPeriodTest extends TestCase
         $transaction->post();
 
         $transaction = new SupplierBill([
-            "account_id"       => $account4->id,
+            "account_id" => $account4->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 90,
+                "rate" => 90,
                 'currency_id' => $currency1->id,
             ])->id,
             'currency_id' => $currency1->id,
@@ -660,8 +660,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::NON_CURRENT_ASSET,
-                'category_id'  => null,
-                'currency_id'  => $currency1->id,
+                'category_id' => null,
+                'currency_id' => $currency1->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -674,17 +674,17 @@ class ReportingPeriodTest extends TestCase
         $closingRate2 = ClosingRate::create([
             'exchange_rate_id' => factory(ExchangeRate::class)->create([
                 'currency_id' => $currency2->id,
-                "rate"        => 100,
+                "rate" => 100,
             ])->id,
             'reporting_period_id' => $this->period->id,
         ]);
 
         $transaction = new ClientReceipt([
-            "account_id"       => $account1->id,
+            "account_id" => $account1->id,
             "transaction_date" => Carbon::now(),
-            "narration"        => $this->faker->word,
+            "narration" => $this->faker->word,
             "exchange_rate_id" => factory(ExchangeRate::class)->create([
-                "rate"        => 90,
+                "rate" => 90,
                 'currency_id' => $currency2->id,
             ])->id,
             'currency_id' => $currency2->id,
@@ -693,8 +693,8 @@ class ReportingPeriodTest extends TestCase
         $line = new LineItem([
             'account_id' => factory(Account::class)->create([
                 'account_type' => Account::BANK,
-                'category_id'  => null,
-                'currency_id'  => $currency2->id,
+                'category_id' => null,
+                'currency_id' => $currency2->id,
             ])->id,
             'amount' => 100,
         ]);
@@ -712,22 +712,22 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account1->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -11000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => -1000.0,
-                    "posted"          => false,
+                    "localBalance" => -11000,
+                    "foreignBalance" => -10000,
+                    "translation" => -1000.0,
+                    "posted" => false,
                 ],
                 [
-                    "currency"        => $currency2->currency_code,
-                    "closingRate"     => $closingRate2->exchangeRate->rate,
+                    "currency" => $currency2->currency_code,
+                    "closingRate" => $closingRate2->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -9000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => 1000.0,
-                    "posted"          => false,
+                    "localBalance" => -9000,
+                    "foreignBalance" => -10000,
+                    "translation" => 1000.0,
+                    "posted" => false,
                 ],
             ],
         );
@@ -735,13 +735,13 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account2->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -9000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => 1000.0,
-                    "posted"          => false,
+                    "localBalance" => -9000,
+                    "foreignBalance" => -10000,
+                    "translation" => 1000.0,
+                    "posted" => false,
                 ],
             ],
         );
@@ -749,13 +749,13 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account3->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -11000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => 1000.0,
-                    "posted"          => false,
+                    "localBalance" => -11000,
+                    "foreignBalance" => -10000,
+                    "translation" => 1000.0,
+                    "posted" => false,
                 ],
             ],
         );
@@ -763,13 +763,13 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account4->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -9000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => -1000.0,
-                    "posted"          => false,
+                    "localBalance" => -9000,
+                    "foreignBalance" => -10000,
+                    "translation" => -1000.0,
+                    "posted" => false,
                 ],
             ],
         );
@@ -782,22 +782,22 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account1->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -11000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => -1000.0,
-                    "posted"          => true,
+                    "localBalance" => -11000,
+                    "foreignBalance" => -10000,
+                    "translation" => -1000.0,
+                    "posted" => true,
                 ],
                 [
-                    "currency"        => $currency2->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency2->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -9000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => 1000.0,
-                    "posted"          => true,
+                    "localBalance" => -9000,
+                    "foreignBalance" => -10000,
+                    "translation" => 1000.0,
+                    "posted" => true,
                 ],
             ],
         );
@@ -805,13 +805,13 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account2->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -9000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => 1000.0,
-                    "posted"          => true,
+                    "localBalance" => -9000,
+                    "foreignBalance" => -10000,
+                    "translation" => 1000.0,
+                    "posted" => true,
                 ],
             ],
         );
@@ -819,13 +819,13 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account3->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -11000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => 1000.0,
-                    "posted"          => true,
+                    "localBalance" => -11000,
+                    "foreignBalance" => -10000,
+                    "translation" => 1000.0,
+                    "posted" => true,
                 ],
             ],
         );
@@ -833,13 +833,13 @@ class ReportingPeriodTest extends TestCase
             $transactions[$account4->name],
             [
                 [
-                    "currency"        => $currency1->currency_code,
-                    "closingRate"     => $closingRate1->exchangeRate->rate,
+                    "currency" => $currency1->currency_code,
+                    "closingRate" => $closingRate1->exchangeRate->rate,
                     "currencyBalance" => -100,
-                    "localBalance"    => -9000,
-                    "foreignBalance"  => -10000,
-                    "translation"     => -1000.0,
-                    "posted"          => true,
+                    "localBalance" => -9000,
+                    "foreignBalance" => -10000,
+                    "translation" => -1000.0,
+                    "posted" => true,
                 ],
             ],
         );

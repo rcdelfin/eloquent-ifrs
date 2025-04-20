@@ -26,7 +26,7 @@ class LineItemAccount extends IFRSException
     public function __construct(string $transactionType, array $accountTypes, ?string $message = null, ?int $code = null)
     {
         $transactionType = Transaction::getType($transactionType);
-        $accountTypes    = Account::getTypes($accountTypes);
+        $accountTypes = Account::getTypes($accountTypes);
 
         $error = $transactionType . " LineItem Account must be of type " . implode(", ", $accountTypes);
 

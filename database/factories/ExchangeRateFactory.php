@@ -13,10 +13,10 @@ $factory->define(
     ExchangeRate::class,
     function (Faker $faker) {
         return [
-            'valid_from'  => $faker->dateTimeThisMonth(),
-            'valid_to'    => Carbon::now(),
+            'valid_from' => $faker->dateTimeThisMonth(),
+            'valid_to' => Carbon::now(),
             'currency_id' => factory(Currency::class)->create()->id,
-            'rate'        => $faker->randomFloat(2, 1, 5),
+            'rate' => $faker->randomFloat(2, 1, 5),
         ];
     },
 );

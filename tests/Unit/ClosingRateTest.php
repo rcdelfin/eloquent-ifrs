@@ -20,11 +20,11 @@ class ClosingRateTest extends TestCase
      */
     public function testClosingRateRelationships()
     {
-        $exchangeRate    = factory(ExchangeRate::class)->create();
+        $exchangeRate = factory(ExchangeRate::class)->create();
         $reportingPeriod = factory(ReportingPeriod::class)->create();
 
         $closingRate = ClosingRate::create([
-            'exchange_rate_id'    => $exchangeRate->id,
+            'exchange_rate_id' => $exchangeRate->id,
             'reporting_period_id' => $reportingPeriod->id,
         ]);
 
@@ -60,7 +60,7 @@ class ClosingRateTest extends TestCase
         $this->be($user);
 
         ClosingRate::create([
-            'exchange_rate_id'    => factory(ExchangeRate::class)->create()->id,
+            'exchange_rate_id' => factory(ExchangeRate::class)->create()->id,
             'reporting_period_id' => factory(ReportingPeriod::class)->create()->id,
         ]);
 
@@ -78,7 +78,7 @@ class ClosingRateTest extends TestCase
     public function testClosingRateRecycling()
     {
         $closingRate = ClosingRate::create([
-            'exchange_rate_id'    => factory(ExchangeRate::class)->create()->id,
+            'exchange_rate_id' => factory(ExchangeRate::class)->create()->id,
             'reporting_period_id' => factory(ReportingPeriod::class)->create()->id,
         ]);
 
@@ -93,20 +93,20 @@ class ClosingRateTest extends TestCase
      */
     public function testClosingRateDuplicate()
     {
-        $rate   = factory(ExchangeRate::class)->create();
+        $rate = factory(ExchangeRate::class)->create();
         $period = factory(ReportingPeriod::class)->create();
 
         ClosingRate::create([
-            'exchange_rate_id'    => $rate->id,
+            'exchange_rate_id' => $rate->id,
             'reporting_period_id' => $period->id,
         ]);
 
         ClosingRate::create([
-            'exchange_rate_id'    => factory(ExchangeRate::class)->create()->id,
+            'exchange_rate_id' => factory(ExchangeRate::class)->create()->id,
             'reporting_period_id' => $period->id,
         ]);
         ClosingRate::create([
-            'exchange_rate_id'    => $rate->id,
+            'exchange_rate_id' => $rate->id,
             'reporting_period_id' => factory(ReportingPeriod::class)->create()->id,
         ]);
 
@@ -114,7 +114,7 @@ class ClosingRateTest extends TestCase
         $this->expectExceptionMessage('A Closing Rate already exists for ' . $rate->currency->currency_code . ' for ' . $period->calendar_year);
 
         ClosingRate::create([
-            'exchange_rate_id'    => $rate->id,
+            'exchange_rate_id' => $rate->id,
             'reporting_period_id' => $period->id,
         ]);
     }

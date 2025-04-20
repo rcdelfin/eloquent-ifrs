@@ -44,7 +44,7 @@ class RecycledObjectTest extends TestCase
 
         $this->assertEquals(count(RecycledObject::all()), 0);
 
-        $user            = factory(User::class)->create();
+        $user = factory(User::class)->create();
         $user->entity_id = 2;
         $user->save();
 

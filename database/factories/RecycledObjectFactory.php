@@ -12,8 +12,8 @@ $factory->define(
     RecycledObject::class,
     function (Faker $faker) {
         return [
-            'user_id'         => factory(User::class)->create()->id,
-            'recyclable_id'   => factory(User::class)->create()->id,
+            'user_id' => factory(User::class)->create()->id,
+            'recyclable_id' => factory(User::class)->create()->id,
             'recyclable_type' => User::class,
         ];
     },
