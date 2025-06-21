@@ -77,8 +77,11 @@ class Account extends Model implements Recyclable, Segregatable
      * @var array
      */
     public const TYPES = [
+        self::NON_CURRENT_ASSET,
         self::CONTRA_ASSET,
+        self::INVENTORY,
         self::BANK,
+        self::CURRENT_ASSET,
         self::RECEIVABLE,
         self::NON_CURRENT_LIABILITY,
         self::CONTROL,
@@ -86,7 +89,11 @@ class Account extends Model implements Recyclable, Segregatable
         self::PAYABLE,
         self::EQUITY,
         self::OPERATING_REVENUE,
+        self::OPERATING_EXPENSE,
         self::NON_OPERATING_REVENUE,
+        self::DIRECT_EXPENSE,
+        self::OVERHEAD_EXPENSE,
+        self::OTHER_EXPENSE,
         self::RECONCILIATION,
     ];
 
@@ -117,6 +124,7 @@ class Account extends Model implements Recyclable, Segregatable
         'account_id',
         'currency_id',
         'category_id',
+        'cost_center_id',
         'entity_id',
         'description',
         'code',
@@ -289,6 +297,16 @@ class Account extends Model implements Recyclable, Segregatable
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Account Cost Center.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function costCenter()
+    {
+        return $this->belongsTo(CostCenter::class);
     }
 
     /**

@@ -28,15 +28,18 @@ class AccountsResource extends Resource
                     ->required()
                     ->label('Code'),
                 Forms\Components\Select::make('account_type')
-                    ->options([
-                        'asset' => 'Asset',
-                        'liability' => 'Liability',
-                        'equity' => 'Equity',
-                        'revenue' => 'Revenue',
-                        'expense' => 'Expense',
-                    ])
+                    ->options(fn() => collect(Account::TYPES)->mapWithKeys(fn($type) => [$type => ucfirst(strtolower(str_replace('_', ' ', $type)))]))
                     ->required()
                     ->label('Type'),
+                Forms\Components\Select::make('cost_center_id')
+                    ->relationship('costCenter', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->label('Cost Center'),
+                Forms\Components\Textarea::make('description')
+                    ->columnSpanFull()
+                    ->label('Description'),
                 Forms\Components\TextInput::make('balance')
                     ->required()
                     ->label('Balance'),
@@ -62,7 +65,11 @@ class AccountsResource extends Resource
                 Tables\Columns\TextColumn::make('category.name')
                     ->sortable()
                     ->searchable()
-                    ->label('Type'),
+                    ->label('Category'),
+                Tables\Columns\TextColumn::make('costCenter.name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Cost Center'),
                 Tables\Columns\TextColumn::make('balance')
                     ->sortable()
                     ->searchable()
@@ -72,10 +79,13 @@ class AccountsResource extends Resource
                 Group::make('category.name')
                     ->label('Category')
                     ->collapsible(),
-
+                Group::make('costCenter.name')
+                    ->label('Cost Center')
+                    ->collapsible(),
                 Group::make('account_type')
                     ->label('Type')
-                    ->collapsible(),
+                    ->collapsible()
+                    ->getTitleFromRecordUsing(fn($record) => ucfirst(strtolower(str_replace('_', ' ', $record->account_type)))),
             ])
             ->defaultGroup('account_type')
             ->defaultSort('code', 'asc')

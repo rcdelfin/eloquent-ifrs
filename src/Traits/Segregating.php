@@ -32,12 +32,12 @@ trait Segregating
             function ($model) {
 
                 // only users can be created without requiring to be logged on
-                //                if (!Auth::check() && !is_a($model, config('ifrs.user_model'))) {
-                //                    throw new UnauthorizedUser();
-                //                }
+                // if (!Auth::check() && !is_a($model, config('ifrs.user_model'))) {
+                //     throw new UnauthorizedUser();
+                // }
 
                 if (Auth::check() && is_null($model->entity_id)) {
-                    $model->entity_id = Auth::user()->entity->id;
+                    $model->entity_id = Auth::user()->entity?->id;
                 }
             },
         );

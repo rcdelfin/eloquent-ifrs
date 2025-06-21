@@ -5,6 +5,7 @@ namespace IFRS\Filament;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use IFRS\Filament\Resources\AccountsResource;
+use IFRS\Filament\Resources\CostCenterResource;
 use IFRS\Filament\Resources\ReportingPeriodResource;
 
 class IFRSPlugin implements Plugin
@@ -20,6 +21,7 @@ class IFRSPlugin implements Plugin
             ->resources([
                 AccountsResource::class,
                 ReportingPeriodResource::class,
+                CostCenterResource::class,
             ])
             ->pages([
                 // Settings::class,
