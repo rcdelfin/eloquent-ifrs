@@ -42,6 +42,7 @@ class TransactionScheduleItem extends Model
         'receivable_account_id',
         'currency_id',
         'amount',
+        'description',
     ];
 
     /**

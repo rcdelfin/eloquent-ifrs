@@ -94,7 +94,14 @@ class Currency extends Model implements Recyclable, Segregatable
     public function save(array $options = []): bool
     {
         if (!isset($this->entity_id)) {
-            $this->entity_id = Auth::user()->entity->id;
+            $entity = Auth::user()?->entity;
+
+            // Get 1st entity as default if no user entity is set
+            if (!$entity) {
+                $entity = Entity::first();
+            }
+
+            $this->entity_id = $entity->id;
         }
 
         return parent::save($options);
