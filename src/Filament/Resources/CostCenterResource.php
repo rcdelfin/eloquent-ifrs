@@ -2,26 +2,24 @@
 
 namespace IFRS\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Filters\TernaryFilter;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use IFRS\Filament\Resources\CostCenterResource\Pages\ListCostCenters;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
 use IFRS\Filament\Resources\CostCenterResource\Pages\CreateCostCenter;
 use IFRS\Filament\Resources\CostCenterResource\Pages\EditCostCenter;
-use Filament\Forms;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use IFRS\Filament\Resources\CostCenterResource\Pages;
+use IFRS\Filament\Resources\CostCenterResource\Pages\ListCostCenters;
 use IFRS\Models\CostCenter;
 use IFRS\Models\Entity;
 
@@ -29,7 +27,7 @@ class CostCenterResource extends Resource
 {
     protected static ?string $model = CostCenter::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?string $label = 'Cost Center';
 

@@ -2,30 +2,28 @@
 
 namespace IFRS\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\EditAction;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use IFRS\Filament\Resources\AccountsResource\Pages\ListAccounts;
-use IFRS\Filament\Resources\AccountsResource\Pages\CreateAccounts;
-use IFRS\Filament\Resources\AccountsResource\Pages\EditAccounts;
-use Filament\Forms;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use IFRS\Filament\Resources\AccountsResource\Pages;
+use IFRS\Filament\Resources\AccountsResource\Pages\CreateAccounts;
+use IFRS\Filament\Resources\AccountsResource\Pages\EditAccounts;
+use IFRS\Filament\Resources\AccountsResource\Pages\ListAccounts;
 use IFRS\Models\Account;
 
 class AccountsResource extends Resource
 {
     protected static ?string $model = Account::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Schema $schema): Schema
     {

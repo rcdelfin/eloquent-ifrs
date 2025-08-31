@@ -2,26 +2,25 @@
 
 namespace IFRS\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\EditAction;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use IFRS\Filament\Resources\ReportingPeriodResource\Pages\ListReportingPeriods;
-use Filament\Forms;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use IFRS\Filament\Resources\ReportingPeriodResource\Pages;
+use IFRS\Filament\Resources\ReportingPeriodResource\Pages\ListReportingPeriods;
 use IFRS\Models\ReportingPeriod;
 
 class ReportingPeriodResource extends Resource
 {
     protected static ?string $model = ReportingPeriod::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Schema $schema): Schema
     {
@@ -51,16 +50,16 @@ class ReportingPeriodResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('calendar_year')->label(
-                    'Year Period'
+                    'Year Period',
                 ),
                 TextColumn::make('period_count')->label(
-                    'Period Count'
+                    'Period Count',
                 ),
                 TextColumn::make('status')->label('Status'),
                 TextColumn::make('entity.name')->label('Entity'),
             ])
             ->filters([
-                //
+
             ])
             ->headerActions([])
             ->filters([])
