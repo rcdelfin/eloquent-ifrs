@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use IFRS\Exceptions\InvalidAccountType;
 use IFRS\Exceptions\MissingVatAccount;
 use IFRS\Interfaces\Recyclable;
@@ -80,7 +81,7 @@ class Vat extends Model implements Segregatable, Recyclable
     /**
      * LineItem Vat Account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function account()
     {

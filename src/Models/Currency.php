@@ -10,6 +10,8 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\belongsTo;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
@@ -61,7 +63,7 @@ class Currency extends Model implements Recyclable, Segregatable
     /**
      * Currency Exchange Rates.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function exchangeRates()
     {
@@ -71,7 +73,7 @@ class Currency extends Model implements Recyclable, Segregatable
     /**
      * Model's Parent Entity.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function entity()
     {

@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
@@ -75,7 +76,7 @@ class CostCenter extends Model implements Segregatable, Recyclable
     /**
      * Cost Center Accounts.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function accounts()
     {

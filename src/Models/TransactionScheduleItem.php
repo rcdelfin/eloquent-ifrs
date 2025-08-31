@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Exceptions\InvalidCurrency;
 use IFRS\Exceptions\MissingAccountType;
 use IFRS\Traits\ModelTablePrefix;
@@ -57,7 +58,7 @@ class TransactionScheduleItem extends Model
     /**
      * Transaction Schedule relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function schedule()
     {
@@ -67,7 +68,7 @@ class TransactionScheduleItem extends Model
     /**
      * Account relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account()
     {
@@ -77,7 +78,7 @@ class TransactionScheduleItem extends Model
     /**
      * Receivable Account relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function receivableAccount()
     {
@@ -87,7 +88,7 @@ class TransactionScheduleItem extends Model
     /**
      * Currency relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency()
     {

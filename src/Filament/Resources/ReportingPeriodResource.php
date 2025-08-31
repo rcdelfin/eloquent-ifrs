@@ -2,8 +2,15 @@
 
 namespace IFRS\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use IFRS\Filament\Resources\ReportingPeriodResource\Pages\ListReportingPeriods;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -16,23 +23,23 @@ class ReportingPeriodResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
-            Forms\Components\TextInput::make('calendar_year')
+        return $schema->components([
+            TextInput::make('calendar_year')
                 ->required()
                 ->numeric()
                 ->label('Year Period'),
-            Forms\Components\TextInput::make('period_count')
+            TextInput::make('period_count')
                 ->required()
                 ->numeric()
                 ->label('Period Count'),
-            Forms\Components\Select::make('status')->options([
+            Select::make('status')->options([
                 'OPEN' => 'Open',
                 'CLOSED' => 'Closed',
                 'ADJUSTING' => 'Adjusting',
             ]),
-            Forms\Components\Select::make('entity_id')
+            Select::make('entity_id')
                 ->relationship('entity', 'name')
                 ->required()
                 ->label('Entity'),
@@ -43,24 +50,24 @@ class ReportingPeriodResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('calendar_year')->label(
+                TextColumn::make('calendar_year')->label(
                     'Year Period'
                 ),
-                Tables\Columns\TextColumn::make('period_count')->label(
+                TextColumn::make('period_count')->label(
                     'Period Count'
                 ),
-                Tables\Columns\TextColumn::make('status')->label('Status'),
-                Tables\Columns\TextColumn::make('entity.name')->label('Entity'),
+                TextColumn::make('status')->label('Status'),
+                TextColumn::make('entity.name')->label('Entity'),
             ])
             ->filters([
                 //
             ])
             ->headerActions([])
             ->filters([])
-            ->actions([Tables\Actions\EditAction::make()])
+            ->actions([EditAction::make()])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -73,7 +80,7 @@ class ReportingPeriodResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListReportingPeriods::route('/'),
+            'index' => ListReportingPeriods::route('/'),
             // 'create' => Pages\CreateReportingPeriod::route('/create'),
             // 'edit' => Pages\EditReportingPeriod::route('/{record}/edit'),
         ];

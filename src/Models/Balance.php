@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Exceptions\InvalidAccountClassBalance;
 use IFRS\Exceptions\InvalidBalanceDate;
 use IFRS\Exceptions\InvalidBalanceTransaction;
@@ -209,7 +210,7 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
     /**
      * Balance Currency.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency()
     {
@@ -219,7 +220,7 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
     /**
      * Balance Account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account()
     {
@@ -229,7 +230,7 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
     /**
      * Balance Exchange Rate.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function exchangeRate()
     {
@@ -239,7 +240,7 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
     /**
      * Balance Reporting Period.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function reportingPeriod()
     {

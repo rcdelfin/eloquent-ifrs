@@ -2,6 +2,7 @@
 
 namespace IFRS\Filament\Resources\CostCenterResource\Pages;
 
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use IFRS\Filament\Resources\CostCenterResource;
 
@@ -12,7 +13,7 @@ class ListCostCenters extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }

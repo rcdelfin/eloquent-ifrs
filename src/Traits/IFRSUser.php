@@ -10,6 +10,7 @@
 
 namespace IFRS\Traits;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Models\Entity;
 
 trait IFRSUser
@@ -17,7 +18,7 @@ trait IFRSUser
     /**
      * User's Parent Entity.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function entity()
     {

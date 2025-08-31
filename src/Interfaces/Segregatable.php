@@ -10,6 +10,8 @@
 
 namespace IFRS\Interfaces;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 /**
  *
  * @author emung
@@ -26,7 +28,7 @@ interface Segregatable
     /**
      * Model's Parent Entity.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function entity();
 }

@@ -2,6 +2,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Traits\ModelTablePrefix;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,7 +24,7 @@ class AppliedVat extends Model
     /**
      * LineItem.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function lineItem()
     {
@@ -33,7 +34,7 @@ class AppliedVat extends Model
     /**
      * Vat.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function vat()
     {

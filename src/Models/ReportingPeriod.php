@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 use IFRS\Exceptions\InvalidAccountType;
 use IFRS\Exceptions\InvalidPeriodStatus;
@@ -140,7 +141,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
     /**
      * Closing Rates.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function closingRates()
     {
@@ -150,7 +151,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
     /**
      * Closing Transactions.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function closingTransactions()
     {

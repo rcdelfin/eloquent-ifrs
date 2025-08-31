@@ -10,6 +10,8 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
@@ -133,7 +135,7 @@ class TransactionSchedule extends Model implements Recyclable, Segregatable
     /**
      * Transaction Schedule Items relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function items()
     {
@@ -143,7 +145,7 @@ class TransactionSchedule extends Model implements Recyclable, Segregatable
     /**
      * Entity relationship
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function entity()
     {

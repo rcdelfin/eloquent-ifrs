@@ -2,6 +2,7 @@
 
 namespace IFRS\Filament\Resources\AccountsResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use IFRS\Filament\Resources\AccountsResource;
@@ -13,7 +14,7 @@ class EditAccounts extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

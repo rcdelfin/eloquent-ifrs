@@ -10,6 +10,9 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\belongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 use IFRS\Exceptions\MissingReportingCurrency;
 use IFRS\Exceptions\UnconfiguredLocale;
@@ -55,7 +58,7 @@ class Entity extends Model implements Recyclable
     /**
      * Entity's Reporting Currency.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function currency()
     {
@@ -76,7 +79,7 @@ class Entity extends Model implements Recyclable
     /**
      * Model's Parent Entity (if exists).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function parent()
     {
@@ -86,7 +89,7 @@ class Entity extends Model implements Recyclable
     /**
      * Model's Daughter Entities (if any).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function daughters()
     {
@@ -96,7 +99,7 @@ class Entity extends Model implements Recyclable
     /**
      * Users associated with the reporting Entity.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function users()
     {
@@ -116,7 +119,7 @@ class Entity extends Model implements Recyclable
     /**
      * Entity's Reporting Periods.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function reportingPeriods()
     {

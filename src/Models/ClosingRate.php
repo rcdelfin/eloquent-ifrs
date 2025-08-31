@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\belongsTo;
 use IFRS\Exceptions\DuplicateClosingRate;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
@@ -64,7 +65,7 @@ class ClosingRate extends Model implements Segregatable, Recyclable
     /**
      * Model's Parent Entity.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function entity()
     {
@@ -74,7 +75,7 @@ class ClosingRate extends Model implements Segregatable, Recyclable
     /**
      * Closing Rates's Exchange Rate.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function exchangeRate()
     {
@@ -84,7 +85,7 @@ class ClosingRate extends Model implements Segregatable, Recyclable
     /**
      * Closing Rates's Reporting Period.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function reportingPeriod()
     {

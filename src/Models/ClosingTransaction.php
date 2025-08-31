@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\belongsTo;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
@@ -63,7 +64,7 @@ class ClosingTransaction extends Model implements Segregatable, Recyclable
     /**
      * Model's Parent Entity.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function entity()
     {
@@ -73,7 +74,7 @@ class ClosingTransaction extends Model implements Segregatable, Recyclable
     /**
      * Closing Transaction's Transaction.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function transaction()
     {
@@ -83,7 +84,7 @@ class ClosingTransaction extends Model implements Segregatable, Recyclable
     /**
      * Closing Transaction's Currency.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function currency()
     {
@@ -93,7 +94,7 @@ class ClosingTransaction extends Model implements Segregatable, Recyclable
     /**
      * Closing Transaction's Reporting Period.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
+     * @return belongsTo
      */
     public function reportingPeriod()
     {

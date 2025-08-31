@@ -10,6 +10,8 @@
 
 namespace IFRS\Interfaces;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
 /**
  *
  * @author emung
@@ -26,7 +28,7 @@ interface Recyclable
     /**
      * Recycled Model records.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
     public function recycled();
 }

@@ -2,8 +2,18 @@
 
 namespace IFRS\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use IFRS\Filament\Resources\AccountsResource\Pages\ListAccounts;
+use IFRS\Filament\Resources\AccountsResource\Pages\CreateAccounts;
+use IFRS\Filament\Resources\AccountsResource\Pages\EditAccounts;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Grouping\Group;
@@ -17,30 +27,30 @@ class AccountsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->label('Name'),
-                Forms\Components\TextInput::make('code')
+                TextInput::make('code')
                     ->required()
                     ->label('Code'),
-                Forms\Components\Select::make('account_type')
+                Select::make('account_type')
                     ->options(fn() => collect(Account::TYPES)->mapWithKeys(fn($type) => [$type => ucfirst(strtolower(str_replace('_', ' ', $type)))]))
                     ->required()
                     ->label('Type'),
-                Forms\Components\Select::make('cost_center_id')
+                Select::make('cost_center_id')
                     ->relationship('costCenter', 'name')
                     ->searchable()
                     ->preload()
                     ->nullable()
                     ->label('Cost Center'),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->columnSpanFull()
                     ->label('Description'),
-                Forms\Components\TextInput::make('balance')
+                TextInput::make('balance')
                     ->required()
                     ->label('Balance'),
             ]);
@@ -50,27 +60,27 @@ class AccountsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->sortable()
                     ->searchable()
                     ->label('ID'),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->sortable()
                     ->searchable()
                     ->label('Name'),
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->sortable()
                     ->searchable()
                     ->label('Code'),
-                Tables\Columns\TextColumn::make('category.name')
+                TextColumn::make('category.name')
                     ->sortable()
                     ->searchable()
                     ->label('Category'),
-                Tables\Columns\TextColumn::make('costCenter.name')
+                TextColumn::make('costCenter.name')
                     ->sortable()
                     ->searchable()
                     ->label('Cost Center'),
-                Tables\Columns\TextColumn::make('balance')
+                TextColumn::make('balance')
                     ->sortable()
                     ->searchable()
                     ->label('Balance'),
@@ -93,11 +103,11 @@ class AccountsResource extends Resource
 
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -112,9 +122,9 @@ class AccountsResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAccounts::route('/'),
-            'create' => Pages\CreateAccounts::route('/create'),
-            'edit' => Pages\EditAccounts::route('/{record}/edit'),
+            'index' => ListAccounts::route('/'),
+            'create' => CreateAccounts::route('/create'),
+            'edit' => EditAccounts::route('/{record}/edit'),
         ];
     }
 }

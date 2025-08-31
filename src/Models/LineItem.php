@@ -10,6 +10,8 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Exceptions\MultipleVatError;
 use IFRS\Exceptions\NegativeAmount;
 use IFRS\Exceptions\NegativeQuantity;
@@ -135,7 +137,7 @@ class LineItem extends Model implements Recyclable, Segregatable
     /**
      * LineItem Ledgers.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function ledgers()
     {
@@ -145,7 +147,7 @@ class LineItem extends Model implements Recyclable, Segregatable
     /**
      * LineItem Transaction.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function transaction()
     {
@@ -155,7 +157,7 @@ class LineItem extends Model implements Recyclable, Segregatable
     /**
      * LineItem Account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account()
     {
@@ -165,7 +167,7 @@ class LineItem extends Model implements Recyclable, Segregatable
     /**
      * LineItem Applied VATs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function appliedVats()
     {

@@ -10,6 +10,7 @@
 
 namespace IFRS\Traits;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Exceptions\UnauthorizedUser;
 use IFRS\Models\Entity;
 use IFRS\Scopes\EntityScope;
@@ -47,7 +48,7 @@ trait Segregating
     /**
      * Model's Parent Entity.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function entity()
     {

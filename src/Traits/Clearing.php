@@ -10,6 +10,7 @@
 
 namespace IFRS\Traits;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use IFRS\Models\Assignment;
 
 /**
@@ -36,7 +37,7 @@ trait Clearing
     /**
      * Cleared Model records.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
     public function clearances()
     {

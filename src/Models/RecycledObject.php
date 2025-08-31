@@ -21,7 +21,8 @@ namespace IFRS\Models;
  * @property Carbon $destroyed_at
  * @property Carbon $deleted_at
  */
-
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Segregating;
@@ -46,7 +47,7 @@ class RecycledObject extends Model implements Segregatable
     /**
      * Recycled object.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
     public function recyclable()
     {
@@ -56,7 +57,7 @@ class RecycledObject extends Model implements Segregatable
     /**
      * User responsible for the action.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user()
     {

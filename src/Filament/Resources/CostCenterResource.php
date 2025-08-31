@@ -2,8 +2,22 @@
 
 namespace IFRS\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use IFRS\Filament\Resources\CostCenterResource\Pages\ListCostCenters;
+use IFRS\Filament\Resources\CostCenterResource\Pages\CreateCostCenter;
+use IFRS\Filament\Resources\CostCenterResource\Pages\EditCostCenter;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -21,31 +35,31 @@ class CostCenterResource extends Resource
 
     protected static ?string $pluralLabel = 'Cost Centers';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('code')
+        return $schema
+            ->components([
+                TextInput::make('code')
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(20)
                     ->label('Code'),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255)
                     ->label('Name'),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->columnSpanFull()
                     ->rows(3)
                     ->label('Description'),
 
-                Forms\Components\Select::make('entity_id')
+                Select::make('entity_id')
                     ->options(fn() => Entity::query()->pluck('name', 'id'))
                     ->default(fn($record) => $record?->entity_id ?? auth()->user()?->entity_id)
                     ->required()
                     ->label('Entity'),
 
-                Forms\Components\Toggle::make('active')
+                Toggle::make('active')
                     ->default(true)
                     ->label('Active'),
             ]);
@@ -55,35 +69,35 @@ class CostCenterResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->sortable()
                     ->searchable()
                     ->label('Code'),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->sortable()
                     ->searchable()
                     ->label('Name'),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->limit(50)
                     ->label('Description'),
-                Tables\Columns\TextColumn::make('entity.name')
+                TextColumn::make('entity.name')
                     ->sortable()
                     ->label('Entity'),
-                Tables\Columns\IconColumn::make('active')
+                IconColumn::make('active')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger')
                     ->label('Active'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Created'),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('active')
+                TernaryFilter::make('active')
                     ->label('Active Status')
                     ->boolean()
                     ->trueLabel('Active only')
@@ -91,12 +105,12 @@ class CostCenterResource extends Resource
                     ->native(false),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('name');
@@ -112,9 +126,9 @@ class CostCenterResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCostCenters::route('/'),
-            'create' => Pages\CreateCostCenter::route('/create'),
-            'edit' => Pages\EditCostCenter::route('/{record}/edit'),
+            'index' => ListCostCenters::route('/'),
+            'create' => CreateCostCenter::route('/create'),
+            'edit' => EditCostCenter::route('/{record}/edit'),
         ];
     }
 }

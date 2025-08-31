@@ -2,6 +2,7 @@
 
 namespace IFRS\Filament\Resources\CostCenterResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use IFRS\Filament\Resources\CostCenterResource;
@@ -13,7 +14,7 @@ class EditCostCenter extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

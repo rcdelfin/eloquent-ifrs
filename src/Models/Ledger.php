@@ -10,6 +10,9 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
@@ -77,7 +80,7 @@ class Ledger extends Model implements Segregatable
     /**
      * Create VAT Ledger entries for the Transaction LineItem's Vat.
      *
-     * @param \Illuminate\Database\Eloquent\Relations\HasMany $appliedVats
+     * @param HasMany $appliedVats
      * @param Transaction $transaction
      * @param LineItem $lineItem
      *
@@ -423,7 +426,7 @@ class Ledger extends Model implements Segregatable
     /**
      * Transaction
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function transaction()
     {
@@ -433,7 +436,7 @@ class Ledger extends Model implements Segregatable
     /**
      * Ledger Post Account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function postAccount()
     {
@@ -443,7 +446,7 @@ class Ledger extends Model implements Segregatable
     /**
      * Ledger Folio Account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function folioAccount()
     {
@@ -453,7 +456,7 @@ class Ledger extends Model implements Segregatable
     /**
      * Ledger Folio Account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function currency()
     {
@@ -463,7 +466,7 @@ class Ledger extends Model implements Segregatable
     /**
      * Ledger LineItem.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function lineItem()
     {

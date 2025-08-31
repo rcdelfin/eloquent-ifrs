@@ -10,6 +10,7 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
@@ -66,7 +67,7 @@ class ExchangeRate extends Model implements Segregatable, Recyclable
     /**
      * Exchange Rate Currency.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency()
     {

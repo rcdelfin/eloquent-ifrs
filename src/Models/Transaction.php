@@ -10,6 +10,9 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Carbon\Carbon;
 use IFRS\Exceptions\AdjustingReportingPeriod;
 use IFRS\Exceptions\ClosedReportingPeriod;
@@ -285,7 +288,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     /**
      * Transaction Ledgers.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function ledgers()
     {
@@ -295,7 +298,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     /**
      * Transaction Currency.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency()
     {
@@ -305,7 +308,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     /**
      * Transaction Account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account()
     {
@@ -315,7 +318,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     /**
      * Transaction Exchange Rate.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function exchangeRate()
     {
@@ -325,7 +328,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     /**
      * Transaction Assignments.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function assignments()
     {
@@ -335,7 +338,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     /**
      * Transaction Saved Line Items.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function lineItems()
     {
@@ -345,7 +348,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     /**
      * The model attached to the transaction.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
     public function attachment()
     {

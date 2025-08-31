@@ -10,6 +10,9 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 use IFRS\Exceptions\InsufficientBalance;
 use IFRS\Exceptions\InvalidClearanceAccount;
@@ -233,7 +236,7 @@ class Assignment extends Model implements Segregatable
     /**
      * Transaction to be cleared.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function transaction()
     {
@@ -243,7 +246,7 @@ class Assignment extends Model implements Segregatable
     /**
      * Transaction|Balance to be cleared.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
     public function cleared()
     {
@@ -253,7 +256,7 @@ class Assignment extends Model implements Segregatable
     /**
      * Account for posting Exchange Rate Differences.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function forexAccount()
     {

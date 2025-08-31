@@ -10,6 +10,8 @@
 
 namespace IFRS\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 use IFRS\Exceptions\HangingTransactions;
 use IFRS\Exceptions\InvalidCategoryType;
@@ -282,7 +284,7 @@ class Account extends Model implements Recyclable, Segregatable
     /**
      * Account Currency.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency()
     {
@@ -292,7 +294,7 @@ class Account extends Model implements Recyclable, Segregatable
     /**
      * Account Category.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function category()
     {
@@ -302,7 +304,7 @@ class Account extends Model implements Recyclable, Segregatable
     /**
      * Account Cost Center.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function costCenter()
     {
@@ -312,7 +314,7 @@ class Account extends Model implements Recyclable, Segregatable
     /**
      * Account Balances.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function balances()
     {
