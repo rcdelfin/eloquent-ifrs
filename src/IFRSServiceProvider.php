@@ -43,6 +43,10 @@ class IFRSServiceProvider extends ServiceProvider
             $this->loadFactoriesFrom(__DIR__ . '/../database/factories');
         }
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'ifrs');
+        // Only load views if the views directory exists
+        $viewsPath = __DIR__ . '/../resources/views';
+        if (file_exists($viewsPath)) {
+            $this->loadViewsFrom($viewsPath, 'ifrs');
+        }
     }
 }
