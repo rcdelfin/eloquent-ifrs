@@ -34,6 +34,7 @@ use IFRS\Traits\Clearing;
 use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
 {
     use Assigning;
     use Clearing;
+    use HasFactory;
     use ModelTablePrefix;
     use Recycling;
     use Segregating;

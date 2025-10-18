@@ -19,6 +19,7 @@ use IFRS\Exceptions\UnconfiguredLocale;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use NumberFormatter;
@@ -37,6 +38,7 @@ use NumberFormatter;
  */
 class Entity extends Model implements Recyclable
 {
+    use HasFactory;
     use ModelTablePrefix;
     use Recycling;
     use SoftDeletes;
