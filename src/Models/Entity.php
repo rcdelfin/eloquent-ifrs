@@ -10,9 +10,6 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\belongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 use IFRS\Exceptions\MissingReportingCurrency;
 use IFRS\Exceptions\UnconfiguredLocale;
@@ -21,6 +18,9 @@ use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\belongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use NumberFormatter;
 
@@ -111,7 +111,7 @@ class Entity extends Model implements Recyclable
     /**
      * Entity's Registered Currencies.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     * @return HasMany
      */
     public function currencies()
     {

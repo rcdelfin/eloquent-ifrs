@@ -10,8 +10,6 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\belongsTo;
 use IFRS\Interfaces\Recyclable;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
@@ -19,6 +17,8 @@ use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\belongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 

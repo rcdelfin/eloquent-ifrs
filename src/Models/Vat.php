@@ -10,7 +10,6 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use IFRS\Exceptions\InvalidAccountType;
 use IFRS\Exceptions\MissingVatAccount;
 use IFRS\Interfaces\Recyclable;
@@ -19,6 +18,7 @@ use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**

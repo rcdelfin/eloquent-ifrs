@@ -10,7 +10,6 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Exceptions\InvalidAccountClassBalance;
 use IFRS\Exceptions\InvalidBalanceDate;
 use IFRS\Exceptions\InvalidBalanceTransaction;
@@ -26,6 +25,7 @@ use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 

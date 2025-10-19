@@ -10,10 +10,10 @@
 
 namespace IFRS\Traits;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Exceptions\UnauthorizedUser;
 use IFRS\Models\Entity;
 use IFRS\Scopes\EntityScope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
 trait Segregating

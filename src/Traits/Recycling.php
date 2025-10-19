@@ -10,9 +10,9 @@
 
 namespace IFRS\Traits;
 
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Carbon\Carbon;
 use IFRS\Models\RecycledObject;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 
 trait Recycling

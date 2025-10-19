@@ -10,11 +10,11 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Exceptions\InvalidCurrency;
 use IFRS\Exceptions\MissingAccountType;
 use IFRS\Traits\ModelTablePrefix;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class TransactionScheduleItem
@@ -121,10 +121,9 @@ class TransactionScheduleItem extends Model
         // Validate currency compatibility
         if (
             isset($this->account_id, $this->currency_id)
-             &&
-            ($account = Account::find($this->account_id)) &&
-            in_array($account->account_type, config('ifrs.single_currency')) &&
-            $account->currency_id != $this->currency_id
+            && ($account = Account::find($this->account_id))
+            && in_array($account->account_type, config('ifrs.single_currency'))
+            && $account->currency_id != $this->currency_id
         ) {
             throw new InvalidCurrency("TransactionScheduleItem", $account);
         }

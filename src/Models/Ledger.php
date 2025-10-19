@@ -10,14 +10,14 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -164,10 +164,10 @@ class Ledger extends Model implements Segregatable
     {
         if (0 == count($posts)) {
             return true;
-        } else {
-            $key = array_key_first($posts);
-            return Ledger::allocateAmount($posts[$key]['id'], $posts[$key]['amount'], $posts, $folios, $transaction, $entryType);
         }
+        $key = array_key_first($posts);
+        return Ledger::allocateAmount($posts[$key]['id'], $posts[$key]['amount'], $posts, $folios, $transaction, $entryType);
+
     }
 
     /**
@@ -188,38 +188,38 @@ class Ledger extends Model implements Segregatable
             $key = array_key_first($posts);
             unset($posts[$key]);
             return Ledger::makeCompountEntryLedgers($posts, $folios, $transaction, $entryType);
-        } else {
-
-            $key = array_key_first($folios);
-            $folioAccount = $folios[$key]['id'];
-
-            $ledger = new Ledger();
-
-            $ledger->transaction_id = $transaction->id;
-            $ledger->currency_id = $transaction->currency_id;
-            $ledger->posting_date = $transaction->transaction_date;
-            $ledger->rate = $transaction->exchangeRate->rate;
-            $ledger->entry_type = $entryType;
-            $ledger->post_account = $postAccount;
-            $ledger->folio_account = $folioAccount;
-
-            if ($folios[$key]['amount'] > $amount) {
-                $ledger->amount = $amount;
-                $ledger->save();
-
-                $folios[$key]['amount'] -= $ledger->amount;
-                $amount = 0;
-            } else {
-                $debitAmount = $folios[$key]['amount'];
-                $ledger->amount = $debitAmount;
-                $ledger->save();
-
-                unset($folios[$key]);
-                $amount -= $ledger->amount;
-            }
-
-            return Ledger::allocateAmount($postAccount, $amount, $posts, $folios, $transaction, $entryType);
         }
+
+        $key = array_key_first($folios);
+        $folioAccount = $folios[$key]['id'];
+
+        $ledger = new Ledger();
+
+        $ledger->transaction_id = $transaction->id;
+        $ledger->currency_id = $transaction->currency_id;
+        $ledger->posting_date = $transaction->transaction_date;
+        $ledger->rate = $transaction->exchangeRate->rate;
+        $ledger->entry_type = $entryType;
+        $ledger->post_account = $postAccount;
+        $ledger->folio_account = $folioAccount;
+
+        if ($folios[$key]['amount'] > $amount) {
+            $ledger->amount = $amount;
+            $ledger->save();
+
+            $folios[$key]['amount'] -= $ledger->amount;
+            $amount = 0;
+        } else {
+            $debitAmount = $folios[$key]['amount'];
+            $ledger->amount = $debitAmount;
+            $ledger->save();
+
+            unset($folios[$key]);
+            $amount -= $ledger->amount;
+        }
+
+        return Ledger::allocateAmount($postAccount, $amount, $posts, $folios, $transaction, $entryType);
+
     }
 
     /**

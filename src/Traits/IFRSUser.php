@@ -10,8 +10,8 @@
 
 namespace IFRS\Traits;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Models\Entity;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait IFRSUser
 {

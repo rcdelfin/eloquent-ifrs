@@ -10,9 +10,6 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Carbon\Carbon;
 use IFRS\Exceptions\AdjustingReportingPeriod;
 use IFRS\Exceptions\ClosedReportingPeriod;
@@ -36,6 +33,9 @@ use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
@@ -730,9 +730,9 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
         }
 
         if (
-            in_array($this->account->account_type, config('ifrs.single_currency')) &&
-            $this->account->currency_id != $this->currency_id &&
-            $this->currency_id != $entity->currency_id
+            in_array($this->account->account_type, config('ifrs.single_currency'))
+            && $this->account->currency_id != $this->currency_id
+            && $this->currency_id != $entity->currency_id
         ) {
             throw new InvalidCurrency("Transaction", $this->account);
         }
@@ -790,8 +790,8 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
             ->count() + 1;
 
         return $type . str_pad((string) $periodCount, 2, "0", STR_PAD_LEFT)
-            . "/" .
-            str_pad((string) $nextId, 4, "0", STR_PAD_LEFT);
+            . "/"
+            . str_pad((string) $nextId, 4, "0", STR_PAD_LEFT);
     }
 
     /**

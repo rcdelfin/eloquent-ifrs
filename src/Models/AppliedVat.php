@@ -2,9 +2,9 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Traits\ModelTablePrefix;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AppliedVat extends Model
 {

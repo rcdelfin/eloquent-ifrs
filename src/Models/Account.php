@@ -10,8 +10,6 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 use IFRS\Exceptions\HangingTransactions;
 use IFRS\Exceptions\InvalidCategoryType;
@@ -23,6 +21,8 @@ use IFRS\Traits\Recycling;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -391,13 +391,13 @@ class Account extends Model implements Recyclable, Segregatable
         foreach ($openingBalances as $each) {
 
             if (!is_null($currencyId) && $entity->currency_id != $currencyId) {
-                Balance::DEBIT == $each->balance_type ?
-                    $balances[$currencyId] += $each->balance / $each->exchangeRate->rate :
-                    $balances[$currencyId] -= $each->balance / $each->exchangeRate->rate;
+                Balance::DEBIT == $each->balance_type
+                    ? $balances[$currencyId] += $each->balance / $each->exchangeRate->rate
+                    : $balances[$currencyId] -= $each->balance / $each->exchangeRate->rate;
             }
-            Balance::DEBIT == $each->balance_type ?
-                $balances[$entity->currency_id] += $each->balance :
-                $balances[$entity->currency_id] -= $each->balance;
+            Balance::DEBIT == $each->balance_type
+                ? $balances[$entity->currency_id] += $each->balance
+                : $balances[$entity->currency_id] -= $each->balance;
         }
         return $balances;
     }

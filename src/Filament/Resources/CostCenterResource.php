@@ -27,7 +27,7 @@ class CostCenterResource extends Resource
 {
     protected static ?string $model = CostCenter::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-building-office';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?string $label = 'Cost Center';
 

@@ -10,9 +10,6 @@
 
 namespace IFRS\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 use IFRS\Exceptions\InsufficientBalance;
 use IFRS\Exceptions\InvalidClearanceAccount;
@@ -33,6 +30,9 @@ use IFRS\Reports\AccountSchedule;
 use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -122,12 +122,12 @@ class Assignment extends Model implements Segregatable
                 $assignment->amount = $balance;
                 $assignment->save();
                 break;
-            } else {
-                $assignment->amount = $outstanding->unclearedAmount;
-                $assignment->save();
-
-                $balance -= $outstanding->unclearedAmount;
             }
+            $assignment->amount = $outstanding->unclearedAmount;
+            $assignment->save();
+
+            $balance -= $outstanding->unclearedAmount;
+
         }
     }
 

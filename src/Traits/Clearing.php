@@ -10,8 +10,8 @@
 
 namespace IFRS\Traits;
 
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use IFRS\Models\Assignment;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  *

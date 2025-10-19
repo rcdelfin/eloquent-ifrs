@@ -21,12 +21,12 @@ namespace IFRS\Models;
  * @property Carbon $destroyed_at
  * @property Carbon $deleted_at
  */
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IFRS\Interfaces\Segregatable;
 use IFRS\Traits\ModelTablePrefix;
 use IFRS\Traits\Segregating;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RecycledObject extends Model implements Segregatable

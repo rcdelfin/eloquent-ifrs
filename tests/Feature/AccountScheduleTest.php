@@ -45,7 +45,7 @@ class AccountScheduleTest extends TestCase
         $this->expectException(MissingAccount::class);
         $this->expectExceptionMessage('Account Schedule Transactions require an Account');
 
-        new AccountSchedule;
+        new AccountSchedule();
     }
 
     /**

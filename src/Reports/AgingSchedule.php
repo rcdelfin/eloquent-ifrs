@@ -107,15 +107,15 @@ class AgingSchedule
     {
         if (1 == count($brackets)) {
             return array_key_first($brackets);
-        } else {
-            $bracketName = array_key_first($brackets);
-            $bracket = array_shift($brackets);
-            if ($age < $bracket) {
-                return $bracketName;
-            } else {
-                return $this->getBracket($age, $brackets);
-            }
         }
+        $bracketName = array_key_first($brackets);
+        $bracket = array_shift($brackets);
+        if ($age < $bracket) {
+            return $bracketName;
+        }
+        return $this->getBracket($age, $brackets);
+
+
     }
 
     /**

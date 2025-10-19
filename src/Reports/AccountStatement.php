@@ -79,9 +79,9 @@ class AccountStatement
     ) {
         if (is_null($accountId)) {
             throw new MissingAccount("Account Statement");
-        } else {
-            $this->account = Account::find($accountId);
         }
+        $this->account = Account::find($accountId);
+
 
         $this->entity = $this->account->entity;
 

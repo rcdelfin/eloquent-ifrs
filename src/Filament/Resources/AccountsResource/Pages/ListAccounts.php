@@ -3,7 +3,6 @@
 namespace IFRS\Filament\Resources\AccountsResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use IFRS\Filament\Resources\AccountsResource;
 
