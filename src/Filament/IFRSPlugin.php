@@ -6,6 +6,7 @@ use Filament\Contracts\Plugin;
 use Filament\Panel;
 use IFRS\Filament\Resources\AccountsResource;
 use IFRS\Filament\Resources\CostCenterResource;
+use IFRS\Filament\Resources\Entities\EntityResource;
 use IFRS\Filament\Resources\ReportingPeriodResource;
 
 class IFRSPlugin implements Plugin
@@ -17,16 +18,17 @@ class IFRSPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel
-            ->resources([
-                AccountsResource::class,
-                ReportingPeriodResource::class,
-                CostCenterResource::class,
-            ])
-            ->pages([
-                // Settings::class,
-            ]);
+        $panel->resources([
+            EntityResource::class,
+            AccountsResource::class,
+            ReportingPeriodResource::class,
+            CostCenterResource::class,
+        ])->pages([
+            // Settings::class,
+        ]);
     }
 
-    public function boot(Panel $panel): void {}
+    public function boot(Panel $panel): void
+    {
+    }
 }

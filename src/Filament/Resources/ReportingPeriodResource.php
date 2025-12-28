@@ -15,12 +15,17 @@ use Filament\Tables\Table;
 use IFRS\Filament\Resources\ReportingPeriodResource\Pages;
 use IFRS\Filament\Resources\ReportingPeriodResource\Pages\ListReportingPeriods;
 use IFRS\Models\ReportingPeriod;
+use UnitEnum;
 
 class ReportingPeriodResource extends Resource
 {
-    protected static ?string $model = ReportingPeriod::class;
+    protected static null|string $model = ReportingPeriod::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+
+    protected static string|UnitEnum|null $navigationGroup = 'IFRS';
+
+    protected static null|int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {
@@ -49,18 +54,12 @@ class ReportingPeriodResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('calendar_year')->label(
-                    'Year Period',
-                ),
-                TextColumn::make('period_count')->label(
-                    'Period Count',
-                ),
+                TextColumn::make('calendar_year')->label('Year Period'),
+                TextColumn::make('period_count')->label('Period Count'),
                 TextColumn::make('status')->label('Status'),
                 TextColumn::make('entity.name')->label('Entity'),
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->headerActions([])
             ->filters([])
             ->actions([EditAction::make()])

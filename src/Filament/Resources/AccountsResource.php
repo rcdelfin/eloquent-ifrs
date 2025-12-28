@@ -18,40 +18,37 @@ use IFRS\Filament\Resources\AccountsResource\Pages\CreateAccounts;
 use IFRS\Filament\Resources\AccountsResource\Pages\EditAccounts;
 use IFRS\Filament\Resources\AccountsResource\Pages\ListAccounts;
 use IFRS\Models\Account;
+use UnitEnum;
 
 class AccountsResource extends Resource
 {
-    protected static ?string $model = Account::class;
+    protected static null|string $model = Account::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-scale';
+
+    protected static string|UnitEnum|null $navigationGroup = 'IFRS';
+
+    protected static null|int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->label('Name'),
-                TextInput::make('code')
-                    ->required()
-                    ->label('Code'),
-                Select::make('account_type')
-                    ->options(fn() => collect(Account::TYPES)->mapWithKeys(fn($type) => [$type => ucfirst(strtolower(str_replace('_', ' ', $type)))]))
-                    ->required()
-                    ->label('Type'),
-                Select::make('cost_center_id')
-                    ->relationship('costCenter', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->nullable()
-                    ->label('Cost Center'),
-                Textarea::make('description')
-                    ->columnSpanFull()
-                    ->label('Description'),
-                TextInput::make('balance')
-                    ->required()
-                    ->label('Balance'),
-            ]);
+        return $schema->components([
+            TextInput::make('name')->required()->label('Name'),
+            TextInput::make('code')->required()->label('Code'),
+            Select::make('account_type')
+                ->options(fn() => collect(Account::TYPES)
+                    ->mapWithKeys(fn($type) => [$type => ucfirst(strtolower(str_replace('_', ' ', $type)))]))
+                ->required()
+                ->label('Type'),
+            Select::make('cost_center_id')
+                ->relationship('costCenter', 'name')
+                ->searchable()
+                ->preload()
+                ->nullable()
+                ->label('Cost Center'),
+            Textarea::make('description')->columnSpanFull()->label('Description'),
+            TextInput::make('balance')->required()->label('Balance'),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -84,22 +81,20 @@ class AccountsResource extends Resource
                     ->label('Balance'),
             ])
             ->groups([
-                Group::make('category.name')
-                    ->label('Category')
-                    ->collapsible(),
-                Group::make('costCenter.name')
-                    ->label('Cost Center')
-                    ->collapsible(),
+                Group::make('category.name')->label('Category')->collapsible(),
+                Group::make('costCenter.name')->label('Cost Center')->collapsible(),
                 Group::make('account_type')
                     ->label('Type')
                     ->collapsible()
-                    ->getTitleFromRecordUsing(fn($record) => ucfirst(strtolower(str_replace('_', ' ', $record->account_type)))),
+                    ->getTitleFromRecordUsing(fn($record) => ucfirst(strtolower(str_replace(
+                        '_',
+                        ' ',
+                        $record->account_type,
+                    )))),
             ])
             ->defaultGroup('account_type')
             ->defaultSort('code', 'asc')
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 EditAction::make(),
             ])
@@ -112,9 +107,7 @@ class AccountsResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array

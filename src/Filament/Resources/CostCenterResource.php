@@ -22,45 +22,45 @@ use IFRS\Filament\Resources\CostCenterResource\Pages\EditCostCenter;
 use IFRS\Filament\Resources\CostCenterResource\Pages\ListCostCenters;
 use IFRS\Models\CostCenter;
 use IFRS\Models\Entity;
+use UnitEnum;
 
 class CostCenterResource extends Resource
 {
-    protected static ?string $model = CostCenter::class;
+    protected static null|string $model = CostCenter::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
-    protected static ?string $label = 'Cost Center';
+    protected static string|UnitEnum|null $navigationGroup = 'IFRS';
 
-    protected static ?string $pluralLabel = 'Cost Centers';
+    protected static null|int $navigationSort = 3;
+
+    protected static null|string $label = 'Cost Center';
+
+    protected static null|string $pluralLabel = 'Cost Centers';
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                TextInput::make('code')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(20)
-                    ->label('Code'),
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->label('Name'),
-                Textarea::make('description')
-                    ->columnSpanFull()
-                    ->rows(3)
-                    ->label('Description'),
-
-                Select::make('entity_id')
-                    ->options(fn() => Entity::query()->pluck('name', 'id'))
-                    ->default(fn($record) => $record?->entity_id ?? auth()->user()?->entity_id)
-                    ->required()
-                    ->label('Entity'),
-
-                Toggle::make('active')
-                    ->default(true)
-                    ->label('Active'),
-            ]);
+        return $schema->components([
+            TextInput::make('code')
+                ->required()
+                ->unique(ignoreRecord: true)
+                ->maxLength(20)
+                ->label('Code'),
+            TextInput::make('name')
+                ->required()
+                ->maxLength(255)
+                ->label('Name'),
+            Textarea::make('description')
+                ->columnSpanFull()
+                ->rows(3)
+                ->label('Description'),
+            Select::make('entity_id')
+                ->options(fn() => Entity::query()->pluck('name', 'id'))
+                ->default(fn($record) => $record?->entity_id ?? auth()->user()?->entity_id)
+                ->required()
+                ->label('Entity'),
+            Toggle::make('active')->default(true)->label('Active'),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -75,12 +75,8 @@ class CostCenterResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('Name'),
-                TextColumn::make('description')
-                    ->limit(50)
-                    ->label('Description'),
-                TextColumn::make('entity.name')
-                    ->sortable()
-                    ->label('Entity'),
+                TextColumn::make('description')->limit(50)->label('Description'),
+                TextColumn::make('entity.name')->sortable()->label('Entity'),
                 IconColumn::make('active')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
@@ -116,9 +112,7 @@ class CostCenterResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array
