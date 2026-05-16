@@ -2,6 +2,7 @@
 
 namespace IFRS\Filament\Resources\Entities\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -21,6 +22,20 @@ class EntityForm
                         ->maxLength(255)
                         ->placeholder('e.g., ABC School, Inc.')
                         ->helperText('Legal or operational name of the entity'),
+                    FileUpload::make('logo')
+                        ->label('Logo')
+                        ->image()
+                        ->maxSize(2048)
+                        ->disk('public')
+                        ->directory('logos')
+                        ->imagePreviewHeight('80')
+                        ->loadingIndicatorPosition('left')
+                        ->panelAspectRatio('1:1')
+                        ->panelLayout('compact')
+                        ->removeUploadedFileButtonPosition('right')
+                        ->uploadButtonPosition('left')
+                        ->uploadProgressIndicatorPosition('left')
+                        ->helperText('School logo (max 2MB). Displayed on the login page.'),
                     Select::make('currency_id')
                         ->label('Reporting Currency')
                         ->relationship(

@@ -50,6 +50,7 @@ class Entity extends Model implements Recyclable
      */
     protected $fillable = [
         'name',
+        'logo',
         'currency_id',
         'parent_id',
         'year_start',
