@@ -114,7 +114,7 @@ class IncomeStatement extends FinancialStatement
     public static function getResults($month, $year, ?Entity $entity = null)
     {
         if (is_null($entity)) {
-            $entity = Auth::user()->entity;
+            $entity = Auth::user()?->entity;
         }
 
         $startDate = Carbon::parse($year . '-' . $month . '-01')->startOfDay();
@@ -147,7 +147,7 @@ class IncomeStatement extends FinancialStatement
     private static function getBalance(array $accountTypes, Carbon $startDate, Carbon $endDate, ?Entity $entity = null): float
     {
         if (is_null($entity)) {
-            $entity = Auth::user()->entity;
+            $entity = Auth::user()?->entity;
         }
 
         $accountTable = config('ifrs.table_prefix') . 'accounts';

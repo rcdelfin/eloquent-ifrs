@@ -92,15 +92,15 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
     public static function getPeriod($date = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
-            $entity = Auth::user()->entity;
+            $entity = Auth::user()?->entity;
         }
 
         $year = ReportingPeriod::year($date, $entity);
 
         $period = ReportingPeriod::where("calendar_year", $year)
-            ->where('entity_id', '=', $entity->id)->first();
+            ->where('entity_id', '=', $entity?->id)->first();
         if (is_null($period)) {
-            throw new MissingReportingPeriod($entity->name, $year);
+            throw new MissingReportingPeriod($entity?->name ?? 'Unknown', $year);
         }
         return $period;
     }
@@ -115,7 +115,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
     public static function year($date = null, ?Entity $entity = null)
     {
         if (is_null($entity)) {
-            $entity = Auth::user()->entity;
+            $entity = Auth::user()?->entity;
         }
 
         if (is_null($entity)) {
@@ -328,7 +328,7 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
     {
         if (is_null($entity)) {
             if (Auth::user()) {
-                $entity = Auth::user()->entity;
+                $entity = Auth::user()?->entity;
             }
         }
         return is_null($entity) ? Carbon::parse(date("Y") . "-01-01")->startOfDay() : Carbon::create(

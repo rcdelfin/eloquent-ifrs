@@ -265,7 +265,7 @@ class Balance extends Model implements Recyclable, Clearable, Segregatable
     public function save(array $options = []): bool
     {
         if (is_null($this->entity_id)) {
-            $entity = Auth::user()->entity;
+            $entity = Auth::user()?->entity;
         } else {
             $entity = Entity::where('id', '=', $this->entity_id)->first();
         }

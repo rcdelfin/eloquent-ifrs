@@ -174,7 +174,7 @@ class Account extends Model implements Recyclable, Segregatable
     public static function openingBalances(int $year, ?Entity $entity = null)
     {
         if (is_null($entity)) {
-            $entity = Auth::user()->entity;
+            $entity = Auth::user()?->entity;
         }
 
         $accounts = collect([]);
@@ -213,7 +213,7 @@ class Account extends Model implements Recyclable, Segregatable
     ): array {
 
         if (is_null($entity)) {
-            $entity = Auth::user()->entity;
+            $entity = Auth::user()?->entity;
         }
 
         $balances = ['sectionOpeningBalance' => 0, 'sectionClosingBalance' => 0, 'sectionMovement' => 0, 'sectionCategories' => []];
@@ -558,15 +558,13 @@ class Account extends Model implements Recyclable, Segregatable
     public function save(array $options = []): bool
     {
 
-        if (Auth::user()) {
-            $entity = Auth::user()->entity;
+        $entity = Auth::user()?->entity;
+
+        if (!$entity && $this->entity_id) {
+            $entity = Entity::find($this->entity_id);
         }
 
-        if (!$entity) {
-            $entity = Entity::where('id', '=', $this->entity_id)->first();
-        }
-
-        if (!isset($this->currency_id)) {
+        if (!isset($this->currency_id) && $entity) {
             $this->currency_id = $entity->currency_id;
         }
 
