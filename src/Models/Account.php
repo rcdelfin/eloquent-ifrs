@@ -560,7 +560,9 @@ class Account extends Model implements Recyclable, Segregatable
 
         if (Auth::user()) {
             $entity = Auth::user()->entity;
-        } else {
+        }
+
+        if (!$entity) {
             $entity = Entity::where('id', '=', $this->entity_id)->first();
         }
 
