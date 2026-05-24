@@ -162,6 +162,17 @@ class ReportingPeriod extends Model implements Segregatable, Recyclable
     }
 
     /**
+     * Academic Terms linked to this reporting period.
+     * Used by carry-forward computation for date range resolution.
+     *
+     * @return HasMany
+     */
+    public function academicTerms()
+    {
+        return $this->hasMany(\App\Models\AcademicTerm::class);
+    }
+
+    /**
      * ReportingPeriod attributes.
      *
      * @return object
