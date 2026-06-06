@@ -3,6 +3,7 @@
 namespace IFRS\Filament\Resources\Entities\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -15,6 +16,11 @@ class EntityInfolist
             Section::make('Basic Information')
                 ->description('Entity identification and reporting configuration')
                 ->schema([
+                    ImageEntry::make('logo')
+                        ->label('Logo')
+                        ->disk('public')
+                        ->height(80)
+                        ->columnSpanFull(),
                     TextEntry::make('name')->label('Entity Name'),
                     TextEntry::make('currency.name')
                         ->label('Reporting Currency')

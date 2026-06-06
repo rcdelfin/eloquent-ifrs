@@ -12,21 +12,17 @@ class EntityForm
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema->components([
+        return $schema->schema([
             Section::make('Basic Information')
                 ->description('Entity identification and reporting configuration')
                 ->schema([
-                    TextInput::make('name')
-                        ->label('Entity Name')
-                        ->required()
-                        ->maxLength(255)
-                        ->placeholder('e.g., ABC School, Inc.')
-                        ->helperText('Legal or operational name of the entity'),
                     FileUpload::make('logo')
                         ->label('Logo')
                         ->image()
                         ->maxSize(2048)
                         ->disk('public')
+                        ->visibility('public')
+                        ->columnSpanFull()
                         ->directory('logos')
                         ->imagePreviewHeight('80')
                         ->loadingIndicatorPosition('left')
@@ -36,12 +32,16 @@ class EntityForm
                         ->uploadButtonPosition('left')
                         ->uploadProgressIndicatorPosition('left')
                         ->helperText('School logo (max 2MB). Displayed on the login page.'),
+                    TextInput::make('name')
+                        ->label('Entity Name')
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpanFull()
+                        ->placeholder('e.g., ABC School, Inc.')
+                        ->helperText('Legal or operational name of the entity'),
                     Select::make('currency_id')
                         ->label('Reporting Currency')
-                        ->relationship(
-                            name: 'currency',
-                            titleAttribute: 'name',
-                        )
+                        ->relationship(name: 'currency', titleAttribute: 'name')
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -55,16 +55,14 @@ class EntityForm
                         ->default(1)
                         ->helperText('Month number (1-12) when fiscal year begins'),
                 ])
-                ->columns(3),
+                ->columns(2)
+                ->columnSpan(['lg' => 2]),
             Section::make('Configuration')
                 ->description('Multi-currency and entity relationships')
                 ->schema([
                     Select::make('parent_id')
                         ->label('Parent Entity')
-                        ->relationship(
-                            name: 'parent',
-                            titleAttribute: 'name',
-                        )
+                        ->relationship(name: 'parent', titleAttribute: 'name')
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -74,10 +72,10 @@ class EntityForm
                         ->label('Locale')
                         ->options(function () {
                             $locales = config('ifrs.locales');
-                            return array_combine(
+                            return array_combine($locales, array_map(
+                                fn($l) => strtoupper($l) . ' - ' . locale_get_display_name($l),
                                 $locales,
-                                array_map(fn($l) => strtoupper($l) . ' - ' . locale_get_display_name($l), $locales),
-                            );
+                            ));
                         })
                         ->searchable()
                         ->native(false)
@@ -86,7 +84,7 @@ class EntityForm
                         ->helperText('Regional formatting for currency and numbers'),
                     TextInput::make('multi_currency')->label('Multi-Currency Mode')->hidden(),
                 ])
-                ->columns(3),
-        ]);
+                ->columnSpan(['lg' => 1]),
+        ])->columns(3);
     }
 }

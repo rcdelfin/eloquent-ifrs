@@ -10,6 +10,8 @@ class ViewEntity extends ViewRecord
 {
     protected static string $resource = EntityResource::class;
 
+    protected static bool $hasInfolist = true;
+
     protected function getHeaderActions(): array
     {
         return [
