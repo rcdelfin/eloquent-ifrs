@@ -26,17 +26,17 @@ use UnitEnum;
 
 class CostCenterResource extends Resource
 {
-    protected static null|string $model = CostCenter::class;
+    protected static ?string $model = CostCenter::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static string|UnitEnum|null $navigationGroup = 'IFRS';
 
-    protected static null|int $navigationSort = 3;
+    protected static ?int $navigationSort = 3;
 
-    protected static null|string $label = 'Cost Center';
+    protected static ?string $label = 'Cost Center';
 
-    protected static null|string $pluralLabel = 'Cost Centers';
+    protected static ?string $pluralLabel = 'Cost Centers';
 
     public static function form(Schema $schema): Schema
     {

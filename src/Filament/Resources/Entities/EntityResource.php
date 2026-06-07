@@ -20,17 +20,17 @@ use UnitEnum;
 
 class EntityResource extends Resource
 {
-    protected static null|string $model = Entity::class;
+    protected static ?string $model = Entity::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
 
-    protected static null|string $navigationLabel = 'Entities';
+    protected static ?string $navigationLabel = 'Entities';
 
-    protected static null|string $modelLabel = 'Entity';
+    protected static ?string $modelLabel = 'Entity';
 
     protected static string|UnitEnum|null $navigationGroup = 'IFRS';
 
-    protected static null|int $navigationSort = 1;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {
@@ -50,7 +50,7 @@ class EntityResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 
