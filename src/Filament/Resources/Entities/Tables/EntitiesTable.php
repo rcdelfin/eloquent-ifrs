@@ -10,6 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class EntitiesTable
@@ -23,6 +24,14 @@ class EntitiesTable
                     ->searchable()
                     ->sortable()
                     ->grow(true),
+                IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-star')
+                    ->falseIcon('heroicon-o-minus')
+                    ->trueColor('warning')
+                    ->falseColor('gray')
+                    ->alignCenter(),
                 TextColumn::make('currency.name')
                     ->label('Reporting Currency')
                     ->searchable()
@@ -116,6 +125,11 @@ class EntitiesTable
                         '1' => 'Yes',
                         '0' => 'No',
                     ]),
+                TernaryFilter::make('is_default')
+                    ->label('Default Entity')
+                    ->placeholder('All Entities')
+                    ->trueLabel('Default Only')
+                    ->falseLabel('Non-Default Only'),
             ])
             ->recordActions([
                 ViewAction::make(),

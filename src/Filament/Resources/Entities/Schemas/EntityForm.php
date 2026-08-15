@@ -5,6 +5,7 @@ namespace IFRS\Filament\Resources\Entities\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -83,6 +84,10 @@ class EntityForm
                         ->default(config('ifrs.locales')[0] ?? 'en_PH')
                         ->helperText('Regional formatting for currency and numbers'),
                     TextInput::make('multi_currency')->label('Multi-Currency Mode')->hidden(),
+                    Toggle::make('is_default')
+                        ->label('Default Entity')
+                        ->helperText('Used when no user or domain Entity is assigned.')
+                        ->default(false),
                 ])
                 ->columnSpan(['lg' => 1]),
         ])->columns(3);

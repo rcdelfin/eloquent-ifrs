@@ -43,6 +43,27 @@ class Entity extends Model implements Recyclable
     use Recycling;
     use SoftDeletes;
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $entity): void {
+            $otherDefaults = static::query()->where('is_default', true);
+
+            if ($entity->exists) {
+                $otherDefaults->where($entity->getKeyName(), '!=', $entity->getKey());
+            }
+
+            if ($entity->is_default) {
+                $otherDefaults->update(['is_default' => false]);
+
+                return;
+            }
+
+            if (! $otherDefaults->exists()) {
+                $entity->is_default = true;
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -56,7 +77,24 @@ class Entity extends Model implements Recyclable
         'year_start',
         'multi_currency',
         'locale',
+        'is_default',
     ];
+
+    /**
+     * Get the default reporting entity.
+     */
+    public static function default(): self
+    {
+        return static::query()->where('is_default', true)->first()
+            ?? static::query()->firstOrFail();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_default' => 'boolean',
+        ];
+    }
 
     /**
      * Entity's Reporting Currency.

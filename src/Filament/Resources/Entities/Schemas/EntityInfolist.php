@@ -39,6 +39,10 @@ class EntityInfolist
                         ->label('Multi-Currency')
                         ->boolean()
                         ->alignCenter(),
+                    IconEntry::make('is_default')
+                        ->label('Default Entity')
+                        ->boolean()
+                        ->alignCenter(),
                 ])
                 ->columns(3),
             Section::make('Configuration')
