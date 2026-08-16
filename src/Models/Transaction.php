@@ -113,6 +113,7 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
         'transaction_type',
         'transaction_no',
         'entity_id',
+        'cost_center_id',
         'attachment_id',
         'attachment_type',
     ];
@@ -295,6 +296,14 @@ class Transaction extends Model implements Segregatable, Recyclable, Clearable, 
     public function ledgers()
     {
         return $this->hasMany(Ledger::class, 'transaction_id', 'id');
+    }
+
+    /**
+     * The reporting cost center assigned to this transaction.
+     */
+    public function costCenter()
+    {
+        return $this->belongsTo(CostCenter::class);
     }
 
     /**
