@@ -4,6 +4,7 @@ namespace IFRS\Filament\Resources\Entities\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
@@ -40,6 +41,28 @@ class EntityForm
                         ->columnSpanFull()
                         ->placeholder('e.g., ABC School, Inc.')
                         ->helperText('Legal or operational name of the entity'),
+                    TextInput::make('subtitle')
+                        ->label('Subtitle')
+                        ->maxLength(255)
+                        ->columnSpanFull()
+                        ->placeholder('e.g., Catholic Educational Institution')
+                        ->helperText('Optional secondary line shown below the entity name in report headers'),
+                    TextInput::make('tin')
+                        ->label('TIN')
+                        ->maxLength(50)
+                        ->placeholder('e.g., 123-456-789-000')
+                        ->helperText('Tax identification number'),
+                    Textarea::make('address')
+                        ->label('Address')
+                        ->rows(3)
+                        ->maxLength(1000)
+                        ->columnSpanFull()
+                        ->placeholder('Registered or business address')
+                        ->helperText('Registered or business address of the entity'),
+                    Toggle::make('non_vat_registered')
+                        ->label('Non-VAT Registration')
+                        ->helperText('Show “NON VAT Reg.” on standard receipt headers.')
+                        ->default(false),
                     Select::make('currency_id')
                         ->label('Reporting Currency')
                         ->relationship(name: 'currency', titleAttribute: 'name')

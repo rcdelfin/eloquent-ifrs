@@ -31,6 +31,10 @@ use NumberFormatter;
  *
  * @property Currency $currency
  * @property string $name
+ * @property string|null $subtitle
+ * @property string|null $tin
+ * @property string|null $address
+ * @property bool $non_vat_registered
  * @property bool $multi_currency
  * @property integer $year_start
  * @property Carbon $destroyed_at
@@ -72,6 +76,10 @@ class Entity extends Model implements Recyclable
     protected $fillable = [
         'name',
         'logo',
+        'subtitle',
+        'tin',
+        'address',
+        'non_vat_registered',
         'currency_id',
         'parent_id',
         'year_start',
@@ -93,6 +101,7 @@ class Entity extends Model implements Recyclable
     {
         return [
             'is_default' => 'boolean',
+            'non_vat_registered' => 'boolean',
         ];
     }
 

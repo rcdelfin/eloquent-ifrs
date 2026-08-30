@@ -372,7 +372,10 @@ class Account extends Model implements Recyclable, Segregatable
         $balances = [$entity->currency_id => 0];
 
         if (!is_null($year)) {
-            $period = ReportingPeriod::getPeriod($year . "-01-01", $entity);
+            $period = ReportingPeriod::getPeriod(
+                Carbon::create($year, (int) $entity->year_start, 1),
+                $entity,
+            );
         } else {
             $period = $entity->current_reporting_period;
         }
